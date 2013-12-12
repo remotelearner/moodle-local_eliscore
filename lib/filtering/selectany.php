@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,18 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis-core
- * @subpackage filtering
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 
-require_once($CFG->dirroot .'/elis/core/lib/filtering/selectall.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/filtering/selectall.php');
 
 /**
  * This filter is a child to the selectall filter
@@ -50,9 +49,7 @@ class generalized_filter_selectany extends generalized_filter_selectall {
         $new_options = $options;
         $new_options['choices'] = array();
         if (empty($options['noany'])) {
-            $new_options['choices'][0] = empty($options['anyvalue'])
-                                         ? get_string('report_filter_all', 'elis_core')
-                                         : $options['anyvalue'];
+            $new_options['choices'][0] = empty($options['anyvalue']) ? get_string('report_filter_all', 'local_eliscore') : $options['anyvalue'];
             $new_options['noany'] = true;
         }
         if (!empty($options['choices'])) {
@@ -68,7 +65,7 @@ class generalized_filter_selectany extends generalized_filter_selectall {
      */
     function setupForm(&$mform) {
         $mform->addElement('select', $this->_uniqueid, $this->_label, $this->_options);
-        $mform->addHelpButton($this->_uniqueid, 'simpleselect', 'elis_core' /* , $this->_label */ ); // TBV
+        $mform->addHelpButton($this->_uniqueid, 'simpleselect', 'local_eliscore' /* , $this->_label */ ); // TBV
         if ($this->_advanced) {
             $mform->setAdvanced($this->_uniqueid);
         }

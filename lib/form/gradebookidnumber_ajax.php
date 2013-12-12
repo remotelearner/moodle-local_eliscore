@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis
- * @subpackage core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -32,11 +31,11 @@ $mode = optional_param('mode', 'course', PARAM_ACTION);
 
 if ($mode == 'course') {
     require_login();
-    $PAGE->set_url('/elis/core/lib/form/gradebookidnumber_ajax.php', array('course' => $course, 'mode' => 'course'));
+    $PAGE->set_url('/local/eliscore/lib/form/gradebookidnumber_ajax.php', array('course' => $course, 'mode' => 'course'));
     $lockcourse = optional_param('lockcourse', false, PARAM_BOOL);
     if ($lockcourse) {
         if (empty($course)) {
-            print_string('nocourseselected', 'elis_core');
+            print_string('nocourseselected', 'local_eliscore');
         } else {
             $c = $DB->get_record('course', array('id' => $course));
             echo s($c->fullname) . ' (' . s($c->shortname) . ')';
@@ -69,14 +68,14 @@ if ($mode == 'course') {
 }
 
 require_login($course);
-$PAGE->set_url('/elis/core/lib/form/gradebookidnumber_ajax.php', array('course' => $course, 'mode' => $mode));
+$PAGE->set_url('/local/eliscore/lib/form/gradebookidnumber_ajax.php', array('course' => $course, 'mode' => $mode));
 
 function print_item($item) {
     global $textelemid;
 
     $name = empty($item->fullname) ? $item->itemname : $item->fullname;
     if (empty($item->idnumber)) {
-        $item->idnumber = get_string('noidnumber', 'elis_core');
+        $item->idnumber = get_string('noidnumber', 'local_eliscore');
     } else {
         $link = true;
     }
@@ -107,7 +106,7 @@ if ($mode != 'gradebook') {
         }
         echo html_writer::end_tag('ul');
     } else {
-        print_string('noactivities', 'elis_core');
+        print_string('noactivities', 'local_eliscore');
     }
 } else {
     $sql = "SELECT gi.*, gc.fullname
@@ -135,6 +134,6 @@ if ($mode != 'gradebook') {
         }
         echo html_writer::end_tag('ul');
     } else {
-        print_string('nogradeitems', 'elis_core');
+        print_string('nogradeitems', 'local_eliscore');
     }
 }

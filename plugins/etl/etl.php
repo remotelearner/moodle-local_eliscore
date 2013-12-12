@@ -16,10 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis
- * @subpackage user_activity
+ * @package    eliscore_etl
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
@@ -29,8 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/../../lib/setup.php');
 require_once(dirname(__FILE__).'/lib.php');
 
-define('ETL_TABLE',     'etl_user_activity');
-define('ETL_MOD_TABLE', 'etl_user_module_activity');
+define('ETL_TABLE',     'eliscore_etl_useractivity');
+define('ETL_MOD_TABLE', 'eliscore_etl_modactivity');
 
 // process 10,000 records at a time
 define ('USERACT_RECORD_CHUNK', 10000);
@@ -44,7 +43,7 @@ define('ETL_BLOCKED_MAX_TIME', 7 * DAYSECS); // An arbitrary long time to use wh
 /**
  * ETL user activity
  */
-class etl_user_activity {
+class eliscore_etl_useractivity {
     public $state;
     public $duration;
 
@@ -252,18 +251,18 @@ class etl_user_activity {
             mtrace('Calculating user activity from Moodle log');
         }
 
-        $state = isset(elis::$config->eliscoreplugins_user_activity->state) ? elis::$config->eliscoreplugins_user_activity->state : '';
+        $state = isset(elis::$config->eliscore_etl->state) ? elis::$config->eliscore_etl->state : '';
         if (!empty($state)) {
             // We already have some state saved.  Use that.
             $this->state = unserialize($state);
         } else {
             $state = array();
             // ETL parameters
-            $state['sessiontimeout'] = elis::$config->eliscoreplugins_user_activity->session_timeout;
-            $state['sessiontail'] = elis::$config->eliscoreplugins_user_activity->session_tail;
+            $state['sessiontimeout'] = elis::$config->eliscore_etl->session_timeout;
+            $state['sessiontail'] = elis::$config->eliscore_etl->session_tail;
 
             // the last run time that we have processed until
-            $lastrun = isset(elis::$config->eliscoreplugins_user_activity->last_run) ? elis::$config->eliscoreplugins_user_activity->last_run : 0;
+            $lastrun = isset(elis::$config->eliscore_etl->last_run) ? elis::$config->eliscore_etl->last_run : 0;
             $state['starttime'] = !empty($lastrun) ? (int)$lastrun : 0;
 
             $startrec = $DB->get_field_select('log', 'MAX(id)', 'time <= ?', array($state['starttime']));
@@ -443,7 +442,7 @@ class etl_user_activity {
      */
     public function user_activity_task_save() {
         mtrace('* over time limit -- saving state and pausing');
-        set_config('state', serialize($this->state), 'eliscoreplugins_user_activity');
+        set_config('state', serialize($this->state), 'eliscore_etl');
     }
 
     /**
@@ -451,8 +450,8 @@ class etl_user_activity {
      */
     public function user_activity_task_finish() {
         mtrace('* completed');
-        set_config('last_run', $this->state['starttime'], 'eliscoreplugins_user_activity');
-        set_config('state', 0, 'eliscoreplugins_user_activity'); // WAS: null but not allowed in config_plugins
+        set_config('last_run', $this->state['starttime'], 'eliscore_etl');
+        set_config('state', 0, 'eliscore_etl'); // WAS: null but not allowed in config_plugins
     }
 
     /**
@@ -477,9 +476,9 @@ class etl_user_activity {
     public function set_etl_task_blocked($secs) {
         global $DB;
 
-        $task = $DB->get_record('elis_scheduled_tasks', array('plugin' => 'eliscoreplugins_user_activity'));
+        $task = $DB->get_record('local_eliscore_sched_tasks', array('plugin' => 'eliscore_etl'));
         $task->blocked = $secs;
-        $DB->update_record('elis_scheduled_tasks', $task);
+        $DB->update_record('local_eliscore_sched_tasks', $task);
     }
 }
 
@@ -492,7 +491,7 @@ class etl_user_activity {
  */
 function user_activity_etl_cron($taskname = '', $duration = 0, &$etlobj = null) {
     if ($etlobj === null) {
-        $etlobj = new etl_user_activity($duration);
+        $etlobj = new eliscore_etl_useractivity($duration);
     }
     // error_log("user_activity_etl_cron('{$taskname}', {$duration}, etlobj)");
     $etlobj->cron();

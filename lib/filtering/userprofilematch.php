@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,9 @@
  * @author     Remote-Learner.net Inc
  * @author     Brent Boghosian <brent.boghosian@remote-learner.net>
  * @version    $Id$
- * @package    elis-core
- * @subpackage filtering
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @package    local_eliscore
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * userprofilematch.php - PHP Report filter
  *
@@ -42,7 +41,7 @@
  * ['advanced'] => array, DB user feilds which are advanced form elements.
  * ['notadvanced'] => array, DB user fields which are NOT advanced form elements
  * (use only one of keys 'advanced' or 'notadvanced')
- * ['langfile'] => string optional language file, default: 'elis_core'
+ * ['langfile'] => string optional language file, default: 'local_eliscore'
  *   ['tables'] => optional array of tables as key, table alias as value
  * default values show below: array(
  *             'user' => 'u',
@@ -117,10 +116,9 @@
  * }
  *
  * @author Brent Boghosian <brent.boghosian@remote-learner.net>
- * @package elis-core
- * @subpackage filtering
- * @license  http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @package    local_eliscore
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  */
 
 require_once($CFG->dirroot.'/user/filters/lib.php');
@@ -142,7 +140,7 @@ class generalized_filter_userprofilematch extends generalized_filter_multifilter
     const filtertype_userprofiletext     = 'userprofiletext';
     const filtertype_userprofileselect   = 'userprofileselect';
 
-    //const languagefile = 'elis_core';
+    //const languagefile = 'local_eliscore';
 
     // Data type map
     protected $datatypemap = array(

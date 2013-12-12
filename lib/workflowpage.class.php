@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,18 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis
- * @subpackage core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->dirroot . '/elis/core/lib/page.class.php';
-require_once $CFG->dirroot . '/elis/core/lib/workflow.class.php';
+require_once $CFG->dirroot.'/local/eliscore/lib/page.class.php';
+require_once $CFG->dirroot.'/local/eliscore/lib/workflow.class.php';
 
 /**
  * Base class for the workflow page.  A workflow page responds to the following
@@ -107,7 +106,7 @@ abstract class workflowpage extends elis_page {
             $this->workflow = _workflow_instance::load_instance($workflow_id);
             if ($this->workflow->type !== $this->data_class
                 || $this->workflow->userid != $USER->id) {
-                print_error('invalidid', 'elis_core');
+                print_error('invalidid', 'local_eliscore');
             }
         } else {
             $this->workflow = $this->new_workflow();
@@ -137,7 +136,7 @@ abstract class workflowpage extends elis_page {
             $curr_step = key($steps);
         }
         if (!isset($steps[$curr_step])) {
-            print_error('workflow_invalidstep', 'elis_core');
+            print_error('workflow_invalidstep', 'local_eliscore');
         }
         return $curr_step;
     }
@@ -163,7 +162,7 @@ abstract class workflowpage extends elis_page {
                     return $step;
                 }
             }
-            print_error('workflow_invalidstep', 'elis_core');
+            print_error('workflow_invalidstep', 'local_eliscore');
         }
         return $step;
     }
@@ -303,7 +302,7 @@ abstract class workflowpage extends elis_page {
         if (!empty($this->workflow->id)) {
             $this->workflow->delete();
         }
-        return redirect($CFG->wwwroot . $this->cancel_url, get_string('workflow_cancelled', 'elis_core'));
+        return redirect($CFG->wwwroot.$this->cancel_url, get_string('workflow_cancelled', 'local_eliscore'));
     }
 
     function print_page() {
@@ -347,7 +346,7 @@ abstract class workflowpage extends elis_page {
      */
     public static function add_navigation_buttons(MoodleQuickForm $mform, $prevstep = null, $nextstep = null, $nextlabel = null) {
         global $CFG, $FULLME;
-        require_once ($CFG->dirroot.'/elis/core/lib/form/xbutton.php');
+        require_once ($CFG->dirroot.'/local/eliscore/lib/form/xbutton.php');
         // ELIS-3501: Previous button was broken in IE7, changed to onclick
         $target = null;
         if ($prevstep && ($workflow_id = optional_param('_wfid', 0, PARAM_INT))) {
@@ -364,7 +363,7 @@ abstract class workflowpage extends elis_page {
                          'onclick' => "window.location = '{$target}';"));
                 $buttonarray[] = $prevbutton;
             }
-            $nextbutton = $mform->createElement('xbutton', 'action', $nextlabel === null ? get_string('finish', 'elis_core') : $nextlabel, array('value' => 'finish', 'type' => 'submit'));
+            $nextbutton = $mform->createElement('xbutton', 'action', $nextlabel === null ? get_string('finish', 'local_eliscore') : $nextlabel, array('value' => 'finish', 'type' => 'submit'));
         } else {
             if ($target) {
                 $prevbutton = $mform->createElement('xbutton', 'previous', get_string('previous'), array('value' => $prevstep, 'type' => 'button',

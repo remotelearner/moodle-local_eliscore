@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis
- * @subpackage core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -76,7 +75,7 @@ class elis {
      * Return the full path name for a ELIS library file.
      */
     public static function lib($file) {
-        return self::file("core/lib/{$file}");
+        return self::file("eliscore/lib/{$file}");
     }
 
     /**
@@ -116,14 +115,14 @@ class elis_config {
 }
 
 global $CFG;
-elis::$basedir = "{$CFG->dirroot}/elis";
-elis::$libdir = elis::file('core/lib');
+elis::$basedir = "{$CFG->dirroot}/local";
+elis::$libdir = elis::file('eliscore/lib');
 
 elis::$config = new elis_config();
 
 {
     $plugin = new stdClass;
-    require(elis::file('core/version.php'));
+    require(elis::file('eliscore/version.php'));
     elis::$version = $plugin->version;
     elis::$release = $plugin->release;
 }

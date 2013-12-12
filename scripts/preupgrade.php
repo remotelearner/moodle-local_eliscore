@@ -3,7 +3,7 @@
  * A script to run certain steps that are required before an upgrade to Moodle 2.x / ELIS 2.
  *
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,20 +18,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis
- * @subpackage core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 
 define('CLI_SCRIPT', true);
 
-require_once(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php');
+require_once(dirname(__FILE__).'/../../../config.php');
 require_once($CFG->libdir.'/ddllib.php');
-
 
 $dbman = $DB->get_manager();
 
@@ -41,7 +39,7 @@ $dbman = $DB->get_manager();
 
 $status = true;
 
-mtrace(' >>> '.get_string('preup_gl_check', 'elis_core'));
+mtrace(' >>> '.get_string('preup_gl_check', 'local_eliscore'));
 
 // Detect if we have any duplicate records that need removal
 $sql = "SELECT contextid, lowerboundary, letter, COUNT('x') count
@@ -50,7 +48,7 @@ $sql = "SELECT contextid, lowerboundary, letter, COUNT('x') count
         HAVING COUNT('x') > 1";
 
 if ($rec = $DB->record_exists_sql($sql, array())) {
-    mtrace(' --- '.get_string('preup_dupfound', 'elis_core'));
+    mtrace(' --- '.get_string('preup_dupfound', 'local_eliscore'));
 
     $table = new xmldb_table('grade_letters_temp');
     $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
@@ -62,7 +60,7 @@ if ($rec = $DB->record_exists_sql($sql, array())) {
     try {
         $dbman->create_table($table);
     } catch (Excpetion $e) {
-        mtrace(' xxx '.get_string('preup_error_tablecreate', 'elis_core'));
+        mtrace(' xxx '.get_string('preup_error_tablecreate', 'local_eliscore'));
 
         $status = false;
     }
@@ -77,7 +75,7 @@ if ($rec = $DB->record_exists_sql($sql, array())) {
         try {
             $DB->execute($sql);
         } catch (Exception $e) {
-            mtrace(' xxx '.get_string('preup_error_uniquecopy', 'elis_core'));
+            mtrace(' xxx '.get_string('preup_error_uniquecopy', 'local_eliscore'));
 
             $status = false;
             break;
@@ -89,23 +87,23 @@ if ($rec = $DB->record_exists_sql($sql, array())) {
             $dbman->drop_table(new xmldb_table('grade_letters'));
             $dbman->rename_table($table, 'grade_letters');
 
-            mtrace(' --- '.get_string('preup_gl_success', 'elis_core'));
+            mtrace(' --- '.get_string('preup_gl_success', 'local_eliscore'));
         } catch (Exception $e) {
-            mtrace(' xxx '.get_string('preup_error_uniquecopy', 'elis_core'));
+            mtrace(' xxx '.get_string('preup_error_uniquecopy', 'local_eliscore'));
 
             $status = false;
         }
     }
 }
 
-mtrace(' ... '.get_string('done', 'elis_core')."!\n");
+mtrace(' ... '.get_string('done', 'local_eliscore')."!\n");
 
 
 /*
 * Handle duplicate records in the mdl_user_preferences table.
 */
 
-mtrace(' >>> '.get_string('preup_up_check', 'elis_core'));
+mtrace(' >>> '.get_string('preup_up_check', 'local_eliscore'));
 
 // Detect if we have any duplicate records before we try to remove duplicates
 $sql = "SELECT userid, name, value, COUNT('x') count
@@ -125,7 +123,7 @@ if ($rec = $DB->record_exists_sql($sql, array())) {
     try {
         $dbman->create_table($table);
     } catch (Excpetion $e) {
-        mtrace(' xxx '.get_string('preup_error_tablecreate', 'elis_core'));
+        mtrace(' xxx '.get_string('preup_error_tablecreate', 'local_eliscore'));
 
         $status = false;
     }
@@ -140,7 +138,7 @@ if ($rec = $DB->record_exists_sql($sql, array())) {
         try {
             $DB->execute($sql);
         } catch (Exception $e) {
-            mtrace(' xxx '.get_string('preup_error_uniquecopy', 'elis_core'));
+            mtrace(' xxx '.get_string('preup_error_uniquecopy', 'local_eliscore'));
 
             $status = false;
         }
@@ -151,23 +149,23 @@ if ($rec = $DB->record_exists_sql($sql, array())) {
             $dbman->drop_table(new xmldb_table('user_preferences'));
             $dbman->rename_table($table, 'user_preferences');
 
-            mtrace(' --- '.get_string('preup_up_success', 'elis_core'));
+            mtrace(' --- '.get_string('preup_up_success', 'local_eliscore'));
         } catch (Exception $e) {
-            mtrace(' xxx '.get_string('preup_error_uniquecopy', 'elis_core'));
+            mtrace(' xxx '.get_string('preup_error_uniquecopy', 'local_eliscore'));
 
             $status = false;
         }
     }
 }
 
-mtrace(' ... '.get_string('done', 'elis_core')."!\n");
+mtrace(' ... '.get_string('done', 'local_eliscore')."!\n");
 
 
 /*
  * Migrate the old Alfresco capability / role assignments to new ELIS Files capabilities.
  */
 
-mtrace(' >>> '.get_string('preup_ec_check', 'elis_core'));
+mtrace(' >>> '.get_string('preup_ec_check', 'local_eliscore'));
 
 if ($status) {
     try {
@@ -176,7 +174,7 @@ if ($status) {
         $params = array('cap' => 'block/repository:%', 'perm' => CAP_ALLOW);
 
         if ($rcaps = $DB->get_recordset_select('role_capabilities', $select, $params, 'timemodified ASC', 'id, capability')) {
-            mtrace(' --- '.get_string('preup_ec_found', 'elis_core'));
+            mtrace(' --- '.get_string('preup_ec_found', 'local_eliscore'));
 
             foreach ($rcaps as $rcap) {
                 $rcap->capability = str_replace('block/repository:', 'repository/elis_files:', $rcap->capability);
@@ -184,23 +182,23 @@ if ($status) {
             }
 
             $rcaps->close();
-            mtrace(' --- '.get_string('preup_ec_success', 'elis_core'));
+            mtrace(' --- '.get_string('preup_ec_success', 'local_eliscore'));
         }
     } catch (Exception $e) {
-        mtrace(' xxx '.get_string('preup_ec_error', 'elis_core'));
+        mtrace(' xxx '.get_string('preup_ec_error', 'local_eliscore'));
 
         $status = false;
     }
 }
 
-mtrace(' ... '.get_string('done', 'elis_core')."!\n");
+mtrace(' ... '.get_string('done', 'local_eliscore')."!\n");
 
 
 /*
  * Migrate the old Alfresco repository plugin configuration settings to the new ELIS Files repository plugin.
  */
 
-mtrace(' >>> '.get_string('preup_ac_check', 'elis_core'));
+mtrace(' >>> '.get_string('preup_ac_check', 'local_eliscore'));
 
 if ($status) {
     try {
@@ -209,7 +207,7 @@ if ($status) {
         $params = array('name' => 'repository_alfresco%');
 
         if ($cfgs = $DB->get_recordset_select('config', $select, $params, 'name ASC')) {
-            mtrace(' --- '.get_string('preup_ac_found', 'elis_core'));
+            mtrace(' --- '.get_string('preup_ac_found', 'local_eliscore'));
 
             foreach ($cfgs as $cfg) {
                 // We need to create a new entry in the mdl_plugin_config table and remove the mdl_config values
@@ -239,23 +237,23 @@ if ($status) {
 
             // Delete the old plugin configuration values
             $DB->delete_records_select('config', $select, $params);
-            mtrace(' --- '.get_string('preup_ac_success', 'elis_core'));
+            mtrace(' --- '.get_string('preup_ac_success', 'local_eliscore'));
         }
     } catch (Exception $e) {
-        mtrace(' xxx '.get_string('preup_ac_error', 'elis_core'));
+        mtrace(' xxx '.get_string('preup_ac_error', 'local_eliscore'));
 
         $status = false;
     }
 }
 
-mtrace(' ... '.get_string('done', 'elis_core')."!\n");
+mtrace(' ... '.get_string('done', 'local_eliscore')."!\n");
 
 
 /*
  * Remove two ELIS auth plugins that are no longer present if they are enabled (Alfresco SSO and ELIS dummy plugin).
  */
 
-mtrace(' >>> '.get_string('preup_as_check', 'elis_core'));
+mtrace(' >>> '.get_string('preup_as_check', 'local_eliscore'));
 
 if ($status) {
     try {
@@ -279,16 +277,16 @@ if ($status) {
         }
 
         if ($found) {
-            mtrace(' --- '.get_string('preup_as_found', 'elis_core'));
+            mtrace(' --- '.get_string('preup_as_found', 'local_eliscore'));
 
             $DB->set_field('config', 'value', implode(',', $auths), array('name' => 'auth'));
-            mtrace(' --- '.get_string('preup_as_success', 'elis_core'));
+            mtrace(' --- '.get_string('preup_as_success', 'local_eliscore'));
         }
     } catch (Excpetion $e) {
-        mtrace(' xxx '.get_string('preup_as_error', 'elis_core'));
+        mtrace(' xxx '.get_string('preup_as_error', 'local_eliscore'));
 
         $status = false;
     }
 }
 
-mtrace(' ... '.get_string('done', 'elis_core')."!\n");
+mtrace(' ... '.get_string('done', 'local_eliscore')."!\n");

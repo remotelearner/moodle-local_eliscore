@@ -4,7 +4,7 @@
  * http://docs.moodle.org/en/Development:Scheduled_Tasks_Proposal
  *
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,11 +19,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis
- * @subpackage core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -38,16 +37,16 @@ define('ELIS_TASKS_CRONSECS', 10 * 60); // TBD: 10 min max total runtime (save 1
  *
  * uses  $CFG, $DB
  */
-function elis_cron() {
+function local_eliscore_cron() {
     global $CFG, $DB;
 
-    require($CFG->dirroot.'/elis/core/lib/tasklib.php');
+    require($CFG->dirroot.'/local/eliscore/lib/tasklib.php');
 
     $timenow = time();
     // get all tasks that are (over-)due
     $params = array('timenow' => $timenow);
-    $tasks = $DB->get_recordset_select('elis_scheduled_tasks', 'nextruntime <= :timenow', $params, 'nextruntime ASC');
-    $numtasks = $DB->count_records_select('elis_scheduled_tasks', 'nextruntime <= :timenow', $params);
+    $tasks = $DB->get_recordset_select('local_eliscore_sched_tasks', 'nextruntime <= :timenow', $params, 'nextruntime ASC');
+    $numtasks = $DB->count_records_select('local_eliscore_sched_tasks', 'nextruntime <= :timenow', $params);
 
     // Check if the maximum cron run time is overridden
     $remtime = ELIS_TASKS_CRONSECS;
@@ -65,7 +64,7 @@ function elis_cron() {
 
         if ($task->enddate !== null && $task->enddate < $timenow) {
             mtrace('* Cancelling task: past end date');
-            $DB->delete_records('elis_scheduled_tasks', array('id' => $task->id));
+            $DB->delete_records('local_eliscore_sched_tasks', array('id' => $task->id));
             --$numtasks;
             continue;
         }
@@ -81,7 +80,7 @@ function elis_cron() {
 
         // See if some other cron has already run the function while we were
         // doing something else -- if so, skip it.
-        $nextrun = $DB->get_field('elis_scheduled_tasks', 'nextruntime', array('id' => $task->id));
+        $nextrun = $DB->get_field('local_eliscore_sched_tasks', 'nextruntime', array('id' => $task->id));
         if ($nextrun > $timenow) {
             mtrace('* Skipped (someone else already ran it)');
             --$numtasks;
@@ -98,12 +97,12 @@ function elis_cron() {
             $newtask->runsremaining = $task->runsremaining - 1;
             if ($newtask->runsremaining <= 0) {
                 mtrace('* Cancelling task: no runs left');
-                $DB->delete_records('elis_scheduled_tasks', array('id' => $task->id));
+                $DB->delete_records('local_eliscore_sched_tasks', array('id' => $task->id));
             } else {
-                $DB->update_record('elis_scheduled_tasks', $newtask);
+                $DB->update_record('local_eliscore_sched_tasks', $newtask);
             }
         } else {
-            $DB->update_record('elis_scheduled_tasks', $newtask);
+            $DB->update_record('local_eliscore_sched_tasks', $newtask);
         }
 
         // load the file and call the function

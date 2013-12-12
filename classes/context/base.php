@@ -19,13 +19,20 @@
  * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
  *
  */
 
+namespace local_eliscore\context;
+
 defined('MOODLE_INTERNAL') || die();
 
-$subplugins = array(
-    'elisfields' => 'local/eliscore/fields',
-    'eliscore' => 'local/eliscore/plugins',
-);
+/**
+ * This class will allow for further changes in how ELIS custom contexts are implemented
+ */
+class base extends \context {
+    /**
+     * @var array An array mapping ELIS context names to their context levels
+     */
+    public static $namelevelmap = array();
+}

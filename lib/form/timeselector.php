@@ -285,7 +285,7 @@ class elis_time_selector extends MoodleQuickForm_group {
                                    0,
                                    $this->_options['timezone'],
                                    $this->_options['applydst']);
-            //error_log("/elis/core/lib/form/timeselector.php::exportValue(): calling make_timestamp( ..., hour => {$valuearray['hour']}, minute => {$valuearray['minute']} [, timezone => {$this->_options['timezone']}, applydst => {$this->_options['applydst']} ]) = {$value[$this->getName()]}");
+            //error_log("/local/eliscore/lib/form/timeselector.php::exportValue(): calling make_timestamp( ..., hour => {$valuearray['hour']}, minute => {$valuearray['minute']} [, timezone => {$this->_options['timezone']}, applydst => {$this->_options['applydst']} ]) = {$value[$this->getName()]}");
             return $value;
         } else {
             return null;
@@ -295,4 +295,4 @@ class elis_time_selector extends MoodleQuickForm_group {
     // }}}
 }
 
-MoodleQuickForm::registerElementType('time_selector', "{$CFG->dirroot}/elis/core/lib/form/timeselector.php", 'elis_time_selector');
+MoodleQuickForm::registerElementType('time_selector', "{$CFG->dirroot}/local/eliscore/lib/form/timeselector.php", 'elis_time_selector');

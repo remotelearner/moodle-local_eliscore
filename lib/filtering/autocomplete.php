@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis-core
- * @subpackage filtering
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -32,12 +31,12 @@ class generalized_filter_autocomplete extends generalized_filter_autocomplete_ba
 
         //required options
         if (empty($options['table'])) {
-            print_error('autocomplete_notable', 'elis_core');
+            print_error('autocomplete_notable', 'local_eliscore');
         }
         $this->_table = $options['table'];
 
         if (empty($options['search_fields']) || !is_array($options['search_fields'])) {
-            print_error('autocomplete_nofields', 'elis_core');
+            print_error('autocomplete_nofields', 'local_eliscore');
         }
         $this->_fields = $options['search_fields'];
 

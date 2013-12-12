@@ -4,7 +4,7 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-  <TABLE NAME="elis_scheduled_tasks" COMMENT="Scheduled tasks" NEXT="elis_workflow_instances">
+  <TABLE NAME="local_eliscore_sched_tasks" COMMENT="Scheduled tasks" NEXT="local_eliscore_wkflow_inst">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="plugin"/>
         <FIELD NAME="plugin" TYPE="char" LENGTH="166" NOTNULL="true" SEQUENCE="false"  COMMENT="e.g. moodle, mod/forum, block/rss_client" PREVIOUS="id" NEXT="taskname"/>
@@ -34,7 +34,7 @@
         <INDEX NAME="nextruntime_idx" UNIQUE="false" FIELDS="nextruntime" PREVIOUS="plugin_idx"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="elis_workflow_instances" COMMENT="Data about in-progress workflows" PREVIOUS="elis_scheduled_tasks" NEXT="elis_field">
+    <TABLE NAME="local_eliscore_wkflow_inst" COMMENT="Data about in-progress workflows" PREVIOUS="local_eliscore_sched_tasks" NEXT="local_eliscore_field">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="type"/>
         <FIELD NAME="type" TYPE="char" LENGTH="127" NOTNULL="true" SEQUENCE="false"  COMMENT="The type of workflow" PREVIOUS="id" NEXT="subtype"/>
@@ -50,7 +50,7 @@
         <INDEX NAME="usertype_idx" UNIQUE="false" FIELDS="userid, type, subtype" COMMENT="Index by user and type"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="elis_field" COMMENT="Custom field definitions" PREVIOUS="elis_workflow_instances" NEXT="elis_field_categories">
+    <TABLE NAME="local_eliscore_field" COMMENT="Custom field definitions" PREVIOUS="local_eliscore_wkflow_inst" NEXT="local_eliscore_field_cats">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="shortname"/>
         <FIELD NAME="shortname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"  PREVIOUS="id" NEXT="name"/>
@@ -70,7 +70,7 @@
         <INDEX NAME="shortname_idx" UNIQUE="false" FIELDS="shortname"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="elis_field_categories" COMMENT="Custom field category definitions" PREVIOUS="elis_field" NEXT="elis_field_contextlevels">
+    <TABLE NAME="local_eliscore_field_cats" COMMENT="Custom field category definitions" PREVIOUS="local_eliscore_field" NEXT="local_eliscore_field_clevels">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="name"/>
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"  PREVIOUS="id" NEXT="sortorder"/>
@@ -80,7 +80,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="elis_field_contextlevels" COMMENT="Which context levels a custom field applies to" PREVIOUS="elis_field_categories" NEXT="elis_field_category_contexts">
+    <TABLE NAME="local_eliscore_field_clevels" COMMENT="Which context levels a custom field applies to" PREVIOUS="local_eliscore_field_cats" NEXT="local_eliscore_fld_cat_ctx">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="fieldid"/>
         <FIELD NAME="fieldid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="id" NEXT="contextlevel"/>
@@ -90,7 +90,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="elis_field_category_contexts" COMMENT="Which context levels a custom field category applies to" PREVIOUS="elis_field_contextlevels" NEXT="elis_field_data_text">
+    <TABLE NAME="local_eliscore_fld_cat_ctx" COMMENT="Which context levels a custom field category applies to" PREVIOUS="local_eliscore_field_clevels" NEXT="local_eliscore_fld_data_text">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="categoryid"/>
         <FIELD NAME="categoryid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="id" NEXT="contextlevel"/>
@@ -104,7 +104,7 @@
         <INDEX NAME="category_idx" UNIQUE="false" FIELDS="categoryid" PREVIOUS="contextlevel_idx"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="elis_field_data_text" COMMENT="Custom field data for (long) textual data types" PREVIOUS="elis_field_category_contexts" NEXT="elis_field_data_int">
+    <TABLE NAME="local_eliscore_fld_data_text" COMMENT="Custom field data for (long) textual data types" PREVIOUS="local_eliscore_fld_cat_ctx" NEXT="local_eliscore_fld_data_int">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="contextid"/>
         <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="id" NEXT="fieldid"/>
@@ -119,7 +119,7 @@
         <INDEX NAME="field_idx" UNIQUE="false" FIELDS="fieldid" PREVIOUS="context_idx"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="elis_field_data_int" COMMENT="Custom field data for integer data types" PREVIOUS="elis_field_data_text" NEXT="elis_field_data_num">
+    <TABLE NAME="local_eliscore_fld_data_int" COMMENT="Custom field data for integer data types" PREVIOUS="local_eliscore_fld_data_text" NEXT="local_eliscore_fld_data_num">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="contextid"/>
         <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="id" NEXT="fieldid"/>
@@ -134,7 +134,7 @@
         <INDEX NAME="field_idx" UNIQUE="false" FIELDS="fieldid" PREVIOUS="context_idx"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="elis_field_data_num" COMMENT="Custom field data for integer data types" PREVIOUS="elis_field_data_int" NEXT="elis_field_data_char">
+    <TABLE NAME="local_eliscore_fld_data_num" COMMENT="Custom field data for integer data types" PREVIOUS="local_eliscore_fld_data_int" NEXT="local_eliscore_fld_data_char">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="contextid"/>
         <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="id" NEXT="fieldid"/>
@@ -149,7 +149,7 @@
         <INDEX NAME="field_idx" UNIQUE="false" FIELDS="fieldid" PREVIOUS="context_idx"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="elis_field_data_char" COMMENT="Custom field data for integer data types" PREVIOUS="elis_field_data_num" NEXT="elis_field_owner">
+    <TABLE NAME="local_eliscore_fld_data_char" COMMENT="Custom field data for integer data types" PREVIOUS="local_eliscore_fld_data_num" NEXT="local_eliscore_field_owner">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="contextid"/>
         <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="id" NEXT="fieldid"/>
@@ -164,7 +164,7 @@
         <INDEX NAME="field_idx" UNIQUE="false" FIELDS="fieldid" PREVIOUS="context_idx"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="elis_field_owner" COMMENT="Custom field data owners" PREVIOUS="elis_field_data_char">
+    <TABLE NAME="local_eliscore_field_owner" COMMENT="Custom field data owners" PREVIOUS="local_eliscore_fld_data_char">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"  NEXT="fieldid"/>
         <FIELD NAME="fieldid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"  PREVIOUS="id" NEXT="plugin"/>

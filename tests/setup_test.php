@@ -16,22 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis_core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 require_once(dirname(__FILE__).'/../test_config.php');
 global $CFG;
-require_once($CFG->dirroot.'/elis/core/lib/setup.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
 require_once(elis::lib('data/data_object.class.php'));
 require_once('PHPUnit/Extensions/Database/DataSet/CsvDataSet.php');
 
 /**
  * Class to test config setup.
- * @group elis_core
+ * @group local_eliscore
  */
 class setup_testcase extends elis_database_test {
     /**
@@ -39,7 +39,7 @@ class setup_testcase extends elis_database_test {
      */
     public function test_elis_config() {
         $dataset = $this->createCsvDataSet(array(
-            'config_plugins' => elis::component_file('core', 'tests/fixtures/config_plugins.csv')
+            'config_plugins' => elis::component_file('eliscore', 'tests/fixtures/config_plugins.csv')
         ));
         $this->loadDataSet($dataset);
 

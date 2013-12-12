@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis
- * @subpackage core
+ * @package    elisfields_manual
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -43,7 +42,7 @@ define('MANUAL_FIELD_EDITABLE', 1);
  */
 function manual_field_edit_form_definition($form, $attrs = array()) {
     global $CFG;
-    require_once($CFG->dirroot . '/elis/core/lib/setup.php');
+    require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
 
     $attrfields = array('manual_field_edit_capability',
                         'manual_field_view_capability',
@@ -329,11 +328,11 @@ function manual_field_is_view_or_editable($field, $context, $contexteditcap = NU
     }
 
     // Check if ELIS PM exists and if the given entity exists within PM
-    if (file_exists($CFG->dirroot.'/elis/program/lib/setup.php')) {
+    if (file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
         if (empty($entityid)) {
             if ($entity !== 'system') {
                 // Validate entity.
-                context_elis_helper::get_level_from_name($entity);
+                \local_eliscore\context\helper::get_level_from_name($entity);
 
                 $contextset = pm_context_set::for_user_with_capability($entity, $editcap, $USER->id);
                 $canedit = !$contextset->is_empty();
@@ -343,7 +342,7 @@ function manual_field_is_view_or_editable($field, $context, $contexteditcap = NU
             }
         } else {
             // Validate entity.
-            context_elis_helper::get_level_from_name($entity);
+            \local_eliscore\context\helper::get_level_from_name($entity);
 
             // Check ELIS contexts for the user's capability in an entity.
             $contextset = pm_context_set::for_user_with_capability($entity, $editcap, $USER->id);
@@ -471,9 +470,8 @@ function manual_field_add_help_button($mform, $elementname, $field) {
         $ajax = ''; // TBD
         $id = html_writer::random_id('helpicon'); // 'helpicon'. dechex(mt_rand(286331153, 4294967295));
         $heading = get_string('helpprefix2', '', $field->name);
-        $url = $CFG->wwwroot .'/elis/program/help.php?heading='.
-               urlencode($heading) .'&helptext='.
-               urlencode($field->description) . $ajax;
+        $url = $CFG->wwwroot.'/local/elisprogram/help.php?heading='.urlencode($heading).'&helptext='.urlencode($field->description)
+                .$ajax;
         // help using custom_field->description
         $divclass = 'fitem';
         if (array_key_exists($elementname, $mform->_advancedElements)) {

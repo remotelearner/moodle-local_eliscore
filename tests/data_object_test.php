@@ -16,16 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis_core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 require_once(dirname(__FILE__).'/../test_config.php');
 global $CFG;
-require_once($CFG->dirroot.'/elis/core/lib/setup.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
 require_once(elis::lib('data/data_object.class.php'));
 require_once('PHPUnit/Extensions/Database/DataSet/CsvDataSet.php');
 
@@ -81,7 +81,7 @@ class role_assignment_object extends elis_data_object {
 
 /**
  * Class for testing data objects.
- * @group elis_core
+ * @group local_eliscore
  */
 class data_object_testcase extends elis_database_test {
     /**
@@ -167,7 +167,7 @@ class data_object_testcase extends elis_database_test {
         $basecount = count($baseconfigs->to_array());
 
         $dataset = $this->createCsvDataSet(array(
-            'config' => elis::component_file('core', 'tests/fixtures/phpunit_data_object_test.csv')
+            'config' => elis::component_file('eliscore', 'tests/fixtures/phpunit_data_object_test.csv')
         ));
 
         $this->loadDataSet($dataset);
@@ -202,7 +202,7 @@ class data_object_testcase extends elis_database_test {
         $basecount = count($baseconfigs->to_array());
 
         $dataset = $this->createCsvDataSet(array(
-            'config' => elis::component_file('core', 'tests/fixtures/phpunit_data_object_test.csv')
+            'config' => elis::component_file('eliscore', 'tests/fixtures/phpunit_data_object_test.csv')
         ));
 
         $this->loadDataSet($dataset);
@@ -223,7 +223,7 @@ class data_object_testcase extends elis_database_test {
         global $DB;
         require_once(elis::lib('data/data_filter.class.php'));
         $dataset = $this->createCsvDataSet(array(
-            'config' => elis::component_file('core', 'tests/fixtures/phpunit_data_object_test.csv')
+            'config' => elis::component_file('eliscore', 'tests/fixtures/phpunit_data_object_test.csv')
         ));
 
         $this->loadDataSet($dataset);
@@ -232,7 +232,7 @@ class data_object_testcase extends elis_database_test {
 
         $result = new moodle_recordset_phpunit_datatable('config', config_object::find(new field_filter('id', 10000, field_filter::GE), array(), 0, 0, $DB));
         $dataset = $this->createCsvDataSet(array(
-            'config' => elis::component_file('core', 'tests/fixtures/phpunit_data_object_delete_test_result.csv')
+            'config' => elis::component_file('eliscore', 'tests/fixtures/phpunit_data_object_delete_test_result.csv')
         ));
         $this->assertTablesEqual($dataset->getTable('config'), $result);
     }
@@ -245,7 +245,7 @@ class data_object_testcase extends elis_database_test {
         global $DB;
         require_once(elis::lib('data/data_filter.class.php'));
         $dataset = $this->createCsvDataSet(array(
-            'config' => elis::component_file('core', 'tests/fixtures/phpunit_data_object_test.csv')
+            'config' => elis::component_file('eliscore', 'tests/fixtures/phpunit_data_object_test.csv')
         ));
 
         $this->loadDataSet($dataset);
@@ -261,7 +261,7 @@ class data_object_testcase extends elis_database_test {
     public function test_can_load_records_by_id() {
         global $DB;
         $dataset = $this->createCsvDataSet(array(
-            'config' => elis::component_file('core', 'tests/fixtures/phpunit_data_object_test.csv')
+            'config' => elis::component_file('eliscore', 'tests/fixtures/phpunit_data_object_test.csv')
         ));
 
         $this->loadDataSet($dataset);
@@ -318,7 +318,7 @@ class data_object_testcase extends elis_database_test {
         global $DB;
         require_once(elis::lib('data/data_filter.class.php'));
         $dataset = $this->createCsvDataSet(array(
-            'config' => elis::component_file('core', 'tests/fixtures/phpunit_data_object_test.csv')
+            'config' => elis::component_file('eliscore', 'tests/fixtures/phpunit_data_object_test.csv')
         ));
 
         $this->loadDataSet($dataset);
@@ -329,7 +329,7 @@ class data_object_testcase extends elis_database_test {
 
         $result = new moodle_recordset_phpunit_datatable('config', config_object::find(new field_filter('id', 10000, field_filter::GE), array(), 0, 0, $DB));
         $dataset = $this->createCsvDataSet(array(
-            'config' => elis::component_file('core', 'tests/fixtures/phpunit_data_object_delete_test_result.csv')
+            'config' => elis::component_file('eliscore', 'tests/fixtures/phpunit_data_object_delete_test_result.csv')
         ));
         $this->assertTablesEqual($dataset->getTable('config'), $result);
     }
@@ -347,7 +347,7 @@ class data_object_testcase extends elis_database_test {
         // Get some random role.
         $role = $DB->get_record('role', array(), '*', IGNORE_MULTIPLE);
         // Add a role assignment.
-        $syscontext = get_context_instance(CONTEXT_SYSTEM);
+        $syscontext = context_system::instance();
         // Create a new role assignment.
         $ra = new stdClass;
         $ra->userid = $user->id;
@@ -396,7 +396,7 @@ class data_object_testcase extends elis_database_test {
         global $DB;
 
         $dataset = $this->createCsvDataSet(array(
-            'config' => elis::component_file('core', 'tests/fixtures/phpunit_data_object_test.csv')
+            'config' => elis::component_file('eliscore', 'tests/fixtures/phpunit_data_object_test.csv')
         ));
 
         $this->loadDataSet($dataset);

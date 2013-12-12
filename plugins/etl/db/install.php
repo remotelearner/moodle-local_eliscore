@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,23 +16,50 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis
- * @subpackage user_activity
+ * @package    eliscore_etl
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Install for eliscoreplugins_user_activity
+ * Install for eliscore_etl
  * @return boolean
  */
-function xmldb_eliscoreplugins_user_activity_install() {
-	global $DB;
-	$DB->delete_records('elis_scheduled_tasks', array('plugin' => 'crlm/user_activity'));
-	return true;
-}
+function xmldb_eliscore_etl_install() {
+    global $CFG, $DB;
+    $dbman = $DB->get_manager();
 
+    // Run upgrade steps from old plugin
+
+    // Convert old tables to new
+    static $tablemap = array(
+        'etl_user_activity' => 'eliscore_etl_useractivity',
+        'etl_user_module_activity' => 'eliscore_etl_modactivity'
+    );
+    foreach ($tablemap as $oldtable => $newtable) {
+        $oldtableobj = new xmldb_table($oldtable);
+        if ($dbman->table_exists($oldtableobj)) {
+            $newtableobj = new xmldb_table($newtable);
+            $dbman->drop_table($newtableobj);
+            $dbman->rename_table($oldtableobj, $newtable);
+        }
+    }
+
+    // Copy any settings from old plugin
+    $oldconfig = get_config('eliscoreplugins_user_activity');
+    foreach ($oldconfig as $name => $value) {
+        set_config($name, $value, 'eliscore_etl');
+    }
+    unset_all_config_for_plugin('eliscoreplugins_user_activity');
+
+    // Ensure ELIS scheduled tasks is initialized.
+    require_once($CFG->dirroot.'/local/eliscore/lib/tasklib.php');
+    $DB->delete_records('local_eliscore_sched_tasks', array('plugin' => 'eliscoreplugins_user_activity'));
+    elis_tasks_update_definition('eliscore_etl');
+
+    return true;
+}

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis_core
+ * @package    eliscore_etl
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
@@ -30,7 +30,7 @@ $string['cli_error_max_time_exceeded'] = 'You have specified a duration that exc
 $string['cli_error_minutes'] = 'An invalid minute number was entered';
 $string['cli_error_no_pcntl'] = 'Missing Process Control extension for PHP - pcntl_signal function not available!';
 $string['cli_error_zero_duration'] = 'An ETL duration of zero means nothing to do.  Exiting script.';
-$string['cli_help'] = "Run ELIS ETL cron with a defined period of time.\n\nFor example: '\$sudo -u www-data /usr/bin/php elis/core/plugins/user_activity/cli/run_etl_cron.php -m=55 -H=44' will run the ETL process for 55 minutes and 44 hours.  If you include -m and -H with no numbers then the process will run for 1 hour and 1 minute.\n\nThere are no security checks here because anybody who is able to execute this file may execute any PHP too.\n\nOptions:\n-h, --help          Print out this help.\n-m=minutes          The number of minutes to run the process for.\n-H=hours            The number of hours to run the process for.\n";
+$string['cli_help'] = "Run ELIS ETL cron with a defined period of time.\n\nFor example: '\$sudo -u www-data /usr/bin/php local/eliscore/plugins/user_activity/cli/run_etl_cron.php -m=55 -H=44' will run the ETL process for 55 minutes and 44 hours.  If you include -m and -H with no numbers then the process will run for 1 hour and 1 minute.\n\nThere are no security checks here because anybody who is able to execute this file may execute any PHP too.\n\nOptions:\n-h, --help          Print out this help.\n-m=minutes          The number of minutes to run the process for.\n-H=hours            The number of hours to run the process for.\n";
 $string['cli_run_etl_cron_heading'] = 'Execute ETL cron for {$a->minutes} minutes and {$a->hours} hours';
-$string['eliscoreplugins_user_activity'] = 'User Activity ETL';
+$string['eliscore_etl'] = 'User Activity ETL';
 $string['pluginname'] = 'User Activity ETL';

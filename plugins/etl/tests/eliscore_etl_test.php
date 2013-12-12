@@ -16,51 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    eliscoreplugins_user_activity
+ * @package    eliscore_etl
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 require_once(dirname(__FILE__).'/../../../test_config.php');
 global $CFG;
-require_once($CFG->dirroot.'/elis/core/lib/setup.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
 require_once($CFG->libdir.'/upgradelib.php');
-require_once(elis::plugin_file('eliscoreplugins_user_activity', 'db/upgrade.php'));
-require_once(elis::plugin_file('eliscoreplugins_user_activity', 'etl.php'));
-require_once(elis::plugin_file('eliscoreplugins_user_activity', 'lib.php'));
+require_once(elis::plugin_file('eliscore_etl', 'db/upgrade.php'));
+require_once(elis::plugin_file('eliscore_etl', 'etl.php'));
+require_once(elis::plugin_file('eliscore_etl', 'lib.php'));
 
 /**
  * Testing the user_activity plugin.
  *
- * @group elis_core
- * @group eliscoreplugins_user_activity
+ * @group local_eliscore
+ * @group eliscore_etl
  */
-class eliscoreplugins_user_activity_testcase extends elis_database_test {
-    /**
-     * Test the user_activity upgrade.
-     */
-    public function test_etl_upgrade() {
-        global $DB;
-
-        $datatables = array(
-            'etl_user_activity' => elis::plugin_file('eliscoreplugins_user_activity', 'tests/fixtures/etl_user_activity.csv'),
-            'etl_user_module_activity' => elis::plugin_file('eliscoreplugins_user_activity', 'tests/fixtures/etl_user_module_activity.csv')
-        );
-
-        $dataset = $this->createCsvDataSet($datatables);
-        $this->loadDataSet($dataset);
-
-        // Ensure we can run our upgrade steps.
-        $DB->set_field('config_plugins', 'value', 2011101700, array('plugin' => 'eliscoreplugins_user_activity'));
-
-        xmldb_eliscoreplugins_user_activity_upgrade(2011101800);
-
-        $this->assertFalse($DB->record_exists_select('etl_user_activity', 'duration > 3600'));
-        $this->assertFalse($DB->record_exists_select('etl_user_module_activity', 'duration > 3600'));
-    }
-
+class eliscore_etl_testcase extends elis_database_test {
     /**
      * This is a data provider for test_validate_parameter_with_valid_parameters()
      * @return array An array with arrays of data
@@ -174,14 +151,14 @@ class eliscoreplugins_user_activity_testcase extends elis_database_test {
 
         $now = time();
 
-        $etlobj = new etl_user_activity;
+        $etlobj = new eliscore_etl_useractivity;
 
         $etlobj->set_etl_task_blocked($now);
-        $blocked = $DB->get_field('elis_scheduled_tasks', 'blocked', array('plugin' => 'eliscoreplugins_user_activity'));
+        $blocked = $DB->get_field('local_eliscore_sched_tasks', 'blocked', array('plugin' => 'eliscore_etl'));
         $this->assertEquals($blocked, $now);
 
         $etlobj->set_etl_task_blocked(0);
-        $blocked = $DB->get_field('elis_scheduled_tasks', 'blocked', array('plugin' => 'eliscoreplugins_user_activity'));
+        $blocked = $DB->get_field('local_eliscore_sched_tasks', 'blocked', array('plugin' => 'eliscore_etl'));
         $this->assertEquals($blocked, 0);
     }
 }

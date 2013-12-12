@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis
- * @subpackage programmanagement
+ * @package    elisfields_moodleprofile
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -328,14 +327,14 @@ function moodle_profile_field_edit_form_definition($form) {
         return;
     }
 
-    $form->addElement('header', 'moodlesyncsettings', get_string('field_moodlesync', 'elisfields_moodle_profile'));
+    $form->addElement('header', 'moodlesyncsettings', get_string('field_moodlesync', 'elisfields_moodleprofile'));
 
     $choices = array(
-        -1 => get_string('field_no_sync', 'elisfields_moodle_profile'),
-        pm_moodle_profile::sync_to_moodle => get_string('field_sync_to_moodle', 'elisfields_moodle_profile'),
-        pm_moodle_profile::sync_from_moodle => get_string('field_sync_from_moodle', 'elisfields_moodle_profile')
+        -1 => get_string('field_no_sync', 'elisfields_moodleprofile'),
+        pm_moodle_profile::sync_to_moodle => get_string('field_sync_to_moodle', 'elisfields_moodleprofile'),
+        pm_moodle_profile::sync_from_moodle => get_string('field_sync_from_moodle', 'elisfields_moodleprofile')
         );
-    $form->addElement('select', 'moodle_profile_exclusive', get_string('field_syncwithmoodle', 'elisfields_moodle_profile'), $choices);
+    $form->addElement('select', 'moodle_profile_exclusive', get_string('field_syncwithmoodle', 'elisfields_moodleprofile'), $choices);
     $form->setType('moodle_profile_exclusive', PARAM_INT);
 }
 

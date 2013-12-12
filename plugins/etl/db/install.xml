@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="elis/core/plugins/user_activity/db" VERSION="20110502" COMMENT="User activity session data"
+<XMLDB PATH="local/eliscore/plugins/etl/db" VERSION="20110502" COMMENT="User activity session data"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="etl_user_activity" COMMENT="User activity sesssion data" NEXT="etl_user_module_activity">
+    <TABLE NAME="eliscore_etl_useractivity" COMMENT="User activity sesssion data" NEXT="eliscore_etl_modactivity">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="userid"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="courseid"/>
@@ -21,7 +21,7 @@
         <INDEX NAME="hour_idx" UNIQUE="false" FIELDS="hour" PREVIOUS="course_idx"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="etl_user_module_activity" COMMENT="User activity session data per activity module" PREVIOUS="etl_user_activity">
+    <TABLE NAME="eliscore_etl_modactivity" COMMENT="User activity session data per activity module" PREVIOUS="eliscore_etl_useractivity">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="userid"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="courseid"/>

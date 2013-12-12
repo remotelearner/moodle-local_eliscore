@@ -6,7 +6,7 @@
  * array.
  *
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis
- * @subpackage curriculummanagement
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @copyright  2013 onwards Remote-Learner {@link http://www.remote-learner.ca/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

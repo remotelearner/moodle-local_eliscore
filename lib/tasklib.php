@@ -3,7 +3,7 @@
  * Task management functions.  Based heavily on /lib/eventslib.php
  *
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +18,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis
- * @subpackage core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -47,7 +46,7 @@ function elis_tasks_load_def($component) {
 
     } else {
         $defpath = get_component_directory($component) .'/db/tasks.php';
-        //error_log("/elis/core/lib/tasklib.php::elis_tasks_load_def('{$component}') looking for: {$defpath}");
+        //error_log("/local/eliscore/lib/tasklib.php::elis_tasks_load_def('{$component}') looking for: {$defpath}");
     }
 
     $tasks = array();
@@ -74,12 +73,8 @@ function elis_tasks_get_cached($component) {
     $dbman = $DB->get_manager();
 
     //check needed during install
-    if ($dbman->table_exists('elis_scheduled_tasks')) {
-        $storedtasks = $DB->get_recordset_select(
-                'elis_scheduled_tasks',
-                "plugin = ? AND taskname IS NULL",
-                array($component)
-        );
+    if ($dbman->table_exists('local_eliscore_sched_tasks')) {
+        $storedtasks = $DB->get_recordset_select('local_eliscore_sched_tasks', 'plugin = ? AND taskname IS NULL', array($component));
         foreach ($storedtasks as $task) {
             $cachedtasks[$task->callfunction] = (array)$task;
         }
@@ -153,7 +148,7 @@ function elis_tasks_update_definition($component='moodle') {
                 $task->month        = $filetask['month'];
                 $task->dayofweek    = $filetask['dayofweek'];
 
-                $DB->update_record('elis_scheduled_tasks', $task);
+                $DB->update_record('local_eliscore_sched_tasks', $task);
 
                 unset($cachedtasks[$callfunction]);
                 continue;
@@ -175,7 +170,7 @@ function elis_tasks_update_definition($component='moodle') {
             $task->timezone     = 99;
             $task->nextruntime  = cron_next_run_time(time(), (array)$task);
 
-            $DB->insert_record('elis_scheduled_tasks', $task);
+            $DB->insert_record('local_eliscore_sched_tasks', $task);
         }
     }
 
@@ -207,8 +202,7 @@ function elis_tasks_cleanup($component, $cachedtasks) {
     global $DB;
     $deletecount = 0;
     foreach ($cachedtasks as $cachedtask) {
-        if ($DB->delete_records('elis_scheduled_tasks',
-                                array('id' => $cachedtask['id']))) {
+        if ($DB->delete_records('local_eliscore_sched_tasks', array('id' => $cachedtask['id']))) {
             $deletecount++;
         }
     }
@@ -222,7 +216,7 @@ function elis_tasks_cleanup($component, $cachedtasks) {
  * - take into account the task's timezone field
  *
  * Mahara: Electronic portfolio, weblog, resume builder and social networking
- * Copyright (C) 2006-2009 Catalyst IT Ltd and others; see:
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *                         http://wiki.mahara.org/Contributors
  *
  * This program is free software: you can redistribute it and/or modify

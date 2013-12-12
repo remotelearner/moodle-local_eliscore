@@ -16,17 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis_core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 require_once(dirname(__FILE__).'/../test_config.php');
 global $CFG;
-require_once($CFG->dirroot.'/elis/core/lib/setup.php');
-require_once($CFG->dirroot.'/elis/core/accesslib.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
+require_once($CFG->dirroot.'/local/eliscore/accesslib.php');
 require_once(elis::lib('data/customfield.class.php'));
 
 // Needed as we will create a user field.
@@ -36,7 +36,7 @@ if (!defined('CONTEXT_ELIS_USER')) {
 
 /**
  * Test the make_from_moodle_field function in field
- * @group elis_core
+ * @group local_eliscore
  */
 class custom_field_makefromoodlefield_testcase extends elis_database_test {
 
@@ -254,8 +254,8 @@ class custom_field_makefromoodlefield_testcase extends elis_database_test {
      * @param array $expectedmanualownerdata Expected field_owner data created.
      */
     public function test_make_from_moodle_field($mfielddata, $expectedfielddata, $expectedmanualownerdata) {
-        require_once(elis::file('core/lib/data/customfield.class.php'));
-        require_once(elis::file('core/fields/moodle_profile/custom_fields.php'));
+        require_once(elis::file('eliscore/lib/data/customfield.class.php'));
+        require_once(elis::file('eliscore/fields/moodleprofile/custom_fields.php'));
 
         global $DB;
         $mfieldid = $DB->insert_record('user_info_field', $mfielddata);

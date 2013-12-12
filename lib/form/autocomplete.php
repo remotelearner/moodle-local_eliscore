@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis-core
- * @subpackage form
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -37,13 +36,13 @@ $mode = optional_param('mode','ui',PARAM_CLEAN);
 //instantiate the report
 $report = php_report::get_default_instance($requested_report);
 if (empty($report)) {
-    echo get_string('autocomplete_noreport', 'elis_core'), ' (Error0)';
+    echo get_string('autocomplete_noreport', 'local_eliscore'), ' (Error0)';
     die();
 }
 
 //authenticate ability to view this report
 if (!$report->is_available() || !$report->can_view_report()) {
-    echo get_string('autocomplete_reportunavail', 'elis_core'), ' (Error1)';
+    echo get_string('autocomplete_reportunavail', 'local_eliscore'), ' (Error1)';
     die();
 }
 
@@ -57,13 +56,13 @@ foreach ($filters as $i => $filter) {
     }
 }
 if (empty($found_filter) || strpos($found_filter->type,'autocomplete') !== 0) {
-    echo get_string('autocomplete_nofilterfound', 'elis_core'), ' (Error2)';
+    echo get_string('autocomplete_nofilterfound', 'local_eliscore'), ' (Error2)';
     die();
 }
 
 $filter_class = 'generalized_filter_'.$found_filter->type;
 
-require_once($CFG->dirroot .'/elis/program/lib/filtering/'. $found_filter->type .'.php');
+require_once($CFG->dirroot .'/local/elisprogram/lib/filtering/'. $found_filter->type .'.php');
 
 $filter = new $filter_class(
         $found_filter->uniqueid,
@@ -76,7 +75,7 @@ $filter = new $filter_class(
 
 
 if ($filter->_selection_enabled !== true) {
-    echo get_string('autocomplete_filterdisabled', 'elis_core'), ' (Error3)';
+    echo get_string('autocomplete_filterdisabled', 'local_eliscore'), ' (Error3)';
     die();
 }
 
@@ -98,7 +97,7 @@ if ($mode === 'search') {
     }
 
     if (empty($results)) {
-        echo '<span class="no_results">'.get_string('filt_autoc_noresults','elis_core').'</span>';
+        echo '<span class="no_results">'.get_string('filt_autoc_noresults','local_eliscore').'</span>';
         die();
     }
 
@@ -149,7 +148,7 @@ if ($mode === 'search') {
         ?>
         <html>
         <head>
-            <script src="<?php echo $CFG->wwwroot.'/elis/core/js/jquery-1.7.1.min.js'; ?>"></script>
+            <script src="<?php echo $CFG->wwwroot.'/local/eliscore/js/jquery-1.7.1.min.js'; ?>"></script>
             <link rel="stylesheet" type="text/css" href="<?php echo $CFG->wwwroot,'/theme/styles.php?theme='.$CFG->theme?>" />
             <style>
                 tr:hover{background-color:#efe;}
@@ -159,10 +158,10 @@ if ($mode === 'search') {
             </style>
         </head>
         <body>
-            <h2><?php echo get_string('filt_autoc_wcf_config_title','elis_core'); ?></h2>
+            <h2><?php echo get_string('filt_autoc_wcf_config_title','local_eliscore'); ?></h2>
             <?php
             if ($saved == '1') {
-                echo '<h3 class="saved">'.get_string('filt_autoc_settings_saved','elis_core').'</h3>';
+                echo '<h3 class="saved">'.get_string('filt_autoc_settings_saved','local_eliscore').'</h3>';
             }
             ?>
             <?php $configform->display(); ?>
@@ -179,31 +178,31 @@ if ($mode === 'search') {
 } else {
 
     //show the interface
-    $search_url = $CFG->wwwroot.'/elis/core/lib/form/autocomplete.php?report='.$requested_report.'&filter='.$requested_filter.'&mode=search&q=';
+    $search_url = $CFG->wwwroot.'/local/eliscore/lib/form/autocomplete.php?report='.$requested_report.'&filter='.$requested_filter.'&mode=search&q=';
     ?>
     <html>
     <head>
-        <script src="<?php echo $CFG->wwwroot.'/elis/core/js/jquery-1.7.1.min.js'; ?>"></script>
-        <script src="<?php echo $CFG->wwwroot.'/elis/core/lib/form/autocomplete.js'; ?>"></script>
+        <script src="<?php echo $CFG->wwwroot.'/local/eliscore/js/jquery-1.7.1.min.js'; ?>"></script>
+        <script src="<?php echo $CFG->wwwroot.'/local/eliscore/lib/form/autocomplete.js'; ?>"></script>
         <style>
             h2{padding:5px;margin-bottom:10px;}
             #search {width:60%;margin-left:5px;background-color:#fff;padding:5px;font-size:1.5em;border:1px solid #bbb;}
             form {margin:0;padding:0}
         </style>
         <link rel="stylesheet" type="text/css" href="<?php echo $CFG->wwwroot,'/theme/styles.php?theme='.$CFG->theme?>" />
-        <link rel="stylesheet" type="text/css" href="<?php echo $CFG->wwwroot.'/elis/core/lib/form/autocomplete.css'; ?>" />
+        <link rel="stylesheet" type="text/css" href="<?php echo $CFG->wwwroot.'/local/eliscore/lib/form/autocomplete.css'; ?>" />
     </head>
     <body>
         <h2>
             <?php echo $filter->_popup_title; ?>
         </h2>
         <form>
-            <b><?php echo get_string('filt_autoc_search','elis_core'); ?></b> <input type="text" id="search">
+            <b><?php echo get_string('filt_autoc_search','local_eliscore'); ?></b> <input type="text" id="search">
         </form>
-        <h3><?php echo get_string('filt_autoc_results','elis_core'); ?></h3>
+        <h3><?php echo get_string('filt_autoc_results','local_eliscore'); ?></h3>
         <span id="search_status">&nbsp;</span>
         <div id="results" class="filt_ac_res filt_ac_res_popup">
-            <?php echo get_string('filt_autoc_typetosearch','elis_core'); ?>
+            <?php echo get_string('filt_autoc_typetosearch','local_eliscore'); ?>
         </div>
         <script>
             var autocomplete = new autocomplete_ui('search','results','search_status','<?php echo $search_url; ?>');

@@ -16,18 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis_core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 require_once(dirname(__FILE__).'/../test_config.php');
 global $CFG;
-require_once($CFG->dirroot.'/elis/core/lib/setup.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
 require_once(elis::lib('data/customfield.class.php'));
-require_once(elis::file('core/fields/manual/custom_fields.php'));
+require_once(elis::file('eliscore/fields/manual/custom_fields.php'));
 require_once($CFG->dirroot.'/lib/formslib.php');
 require_once($CFG->dirroot.'/course/lib.php');
 require_once($CFG->dirroot.'/user/lib.php');
@@ -55,7 +55,7 @@ class custom_field_permissions_form extends moodleform {
 
 /**
  * Class for test case for testing permissions related to viewing and editing ELIS custom fields.
- * @group elis_core
+ * @group local_eliscore
  */
 class custom_field_permissions_testcase extends elis_database_test {
     /**
@@ -369,14 +369,14 @@ class custom_field_permissions_testcase extends elis_database_test {
 
     /**
      * Test using an invalid entity id
-     * This test only rund when elis/program/setuplib.php exists.
+     * This test only rund when local/elisprogram/setuplib.php exists.
      */
     public function test_manual_field_is_view_or_editable_with_pm_using_invalid_entity_id() {
         global $DB, $CFG;
 
-        // Skip test if elis/program doesn't exist.
-        if (!file_exists($CFG->dirroot.'/elis/program/lib/setup.php')) {
-            $this->markTestSkipped('Requires elis/program to be installed.');
+        // Skip test if local/elisprogram doesn't exist.
+        if (!file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
+            $this->markTestSkipped('Requires local/elisprogram to be installed.');
         }
 
         $this->resetAfterTest(true);
@@ -385,15 +385,15 @@ class custom_field_permissions_testcase extends elis_database_test {
         $this->load_csv_data();
 
         // Setup place holders for capabilities.
-        $editcap = 'elis/program:user_edit';
-        $viewcap = 'elis/program:user_view';
+        $editcap = 'local/elisprogram:user_edit';
+        $viewcap = 'local/elisprogram:user_view';
 
         // Retrieve the PM user id to be assigned to a userset.
         $param = array('id' => 103);
         $pmuserinusersetid = $DB->get_field('crlm_user', 'id', $param);
 
         // Get the userset context.
-        $usersetcontext = context_elis_userset::instance(1);
+        $usersetcontext = local_elisprogram_context_userset::instance(1);
         // System context.
         $syscontext = context_system::instance();
 
@@ -407,15 +407,15 @@ class custom_field_permissions_testcase extends elis_database_test {
 
     /**
      * Test using an invalid entity type.
-     * This test only rund when elis/program/setuplib.php exists.
+     * This test only rund when local/elisprogram/setuplib.php exists.
      * @expectedException coding_exception
      */
     public function test_manual_field_is_view_or_editable_with_pm_using_invalid_entity() {
         global $DB, $CFG;
 
-        // Skip test if elis/program doesn't exist.
-        if (!file_exists($CFG->dirroot.'/elis/program/lib/setup.php')) {
-            $this->markTestSkipped('Requires elis/program to be installed.');
+        // Skip test if local/elisprogram doesn't exist.
+        if (!file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
+            $this->markTestSkipped('Requires local/elisprogram to be installed.');
         }
 
         $this->resetAfterTest(true);
@@ -424,15 +424,15 @@ class custom_field_permissions_testcase extends elis_database_test {
         $this->load_csv_data();
 
         // Setup place holders for capabilities.
-        $editcap = 'elis/program:user_edit';
-        $viewcap = 'elis/program:user_view';
+        $editcap = 'local/elisprogram:user_edit';
+        $viewcap = 'local/elisprogram:user_view';
 
         // Retrieve the PM user id to be assigned to a userset.
         $param = array('id' => 103);
         $pmuserinusersetid = $DB->get_field('crlm_user', 'id', $param);
 
         // Get the userset context.
-        $usersetcontext = context_elis_userset::instance(1);
+        $usersetcontext = local_elisprogram_context_userset::instance(1);
         // System context.
         $syscontext = context_system::instance();
 
@@ -446,14 +446,14 @@ class custom_field_permissions_testcase extends elis_database_test {
 
     /**
      * Test user with only edit permission on userset.
-     * This test only rund when elis/program/setuplib.php exists.
+     * This test only rund when local/elisprogram/setuplib.php exists.
      */
     public function test_manual_field_is_view_or_editable_with_no_permissions_on_userset() {
         global $DB, $CFG;
 
-        // Skip test if elis/program doesn't exist.
-        if (!file_exists($CFG->dirroot.'/elis/program/lib/setup.php')) {
-            $this->markTestSkipped('Requires elis/program to be installed.');
+        // Skip test if local/elisprogram doesn't exist.
+        if (!file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
+            $this->markTestSkipped('Requires local/elisprogram to be installed.');
         }
 
         $this->resetAfterTest(true);
@@ -462,8 +462,8 @@ class custom_field_permissions_testcase extends elis_database_test {
         $this->load_csv_data();
 
         // Setup place holders for capabilities.
-        $editcap = 'elis/program:user_edit';
-        $viewcap = 'elis/program:user_view';
+        $editcap = 'local/elisprogram:user_edit';
+        $viewcap = 'local/elisprogram:user_view';
 
         // Retrieve the PM user id to be assigned to a userset.
         $param = array('id' => 103);
@@ -476,7 +476,7 @@ class custom_field_permissions_testcase extends elis_database_test {
         $this->setUser($userroleinuserset);
 
         // Get the userset context.
-        $usersetcontext = context_elis_userset::instance(1);
+        $usersetcontext = local_elisprogram_context_userset::instance(1);
         // System context.
         $syscontext = context_system::instance();
 
@@ -500,14 +500,14 @@ class custom_field_permissions_testcase extends elis_database_test {
 
     /**
      * Test user with only edit permission on userset.
-     * This test only rund when elis/program/setuplib.php exists.
+     * This test only rund when local/elisprogram/setuplib.php exists.
      */
     public function test_manual_field_is_view_or_editable_with_edit_permissions_on_userset() {
         global $DB, $CFG;
 
-        // Skip test if elis/program doesn't exist.
-        if (!file_exists($CFG->dirroot.'/elis/program/lib/setup.php')) {
-            $this->markTestSkipped('Requires elis/program to be installed.');
+        // Skip test if local/elisprogram doesn't exist.
+        if (!file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
+            $this->markTestSkipped('Requires local/elisprogram to be installed.');
         }
 
         $this->resetAfterTest(true);
@@ -516,8 +516,8 @@ class custom_field_permissions_testcase extends elis_database_test {
         $this->load_csv_data();
 
         // Setup place holders for capabilities.
-        $editcap = 'elis/program:user_edit';
-        $viewcap = 'elis/program:user_view';
+        $editcap = 'local/elisprogram:user_edit';
+        $viewcap = 'local/elisprogram:user_view';
 
         // Retrieve the PM user id to be assigned to a userset.
         $param = array('id' => 103);
@@ -530,7 +530,7 @@ class custom_field_permissions_testcase extends elis_database_test {
         $this->setUser($userroleinuserset);
 
         // Get the userset context.
-        $usersetcontext = context_elis_userset::instance(1);
+        $usersetcontext = local_elisprogram_context_userset::instance(1);
         // System context.
         $syscontext = context_system::instance();
 
@@ -555,14 +555,14 @@ class custom_field_permissions_testcase extends elis_database_test {
 
     /**
      * Test user with only view permission on userset.
-     * This test only rund when elis/program/setuplib.php exists.
+     * This test only rund when local/elisprogram/setuplib.php exists.
      */
     public function test_manual_field_is_view_or_editable_with_view_permissions_on_userset() {
         global $DB, $CFG;
 
-        // Skip test if elis/program doesn't exist.
-        if (!file_exists($CFG->dirroot.'/elis/program/lib/setup.php')) {
-            $this->markTestSkipped('Requires elis/program to be installed.');
+        // Skip test if local/elisprogram doesn't exist.
+        if (!file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
+            $this->markTestSkipped('Requires local/elisprogram to be installed.');
         }
 
         $this->resetAfterTest(true);
@@ -571,8 +571,8 @@ class custom_field_permissions_testcase extends elis_database_test {
         $this->load_csv_data();
 
         // Setup place holders for capabilities.
-        $editcap = 'elis/program:user_edit';
-        $viewcap = 'elis/program:user_view';
+        $editcap = 'local/elisprogram:user_edit';
+        $viewcap = 'local/elisprogram:user_view';
 
         // Retrieve the PM user id to be assigned to a userset.
         $param = array('id' => 103);
@@ -585,7 +585,7 @@ class custom_field_permissions_testcase extends elis_database_test {
         $this->setUser($userroleinuserset);
 
         // Get the userset context.
-        $usersetcontext = context_elis_userset::instance(1);
+        $usersetcontext = local_elisprogram_context_userset::instance(1);
         // System context.
         $syscontext = context_system::instance();
 
@@ -610,14 +610,14 @@ class custom_field_permissions_testcase extends elis_database_test {
 
     /**
      * Test user with view and edit permissions on a userset.
-     * This test only rund when elis/program/setuplib.php exists.
+     * This test only rund when local/elisprogram/setuplib.php exists.
      */
     public function test_manual_field_is_view_or_editable_with_view_edit_permissions_on_userset() {
         global $DB, $CFG;
 
-        // Skip test if elis/program doesn't exist.
-        if (!file_exists($CFG->dirroot.'/elis/program/lib/setup.php')) {
-            $this->markTestSkipped('Requires elis/program to be installed.');
+        // Skip test if local/elisprogram doesn't exist.
+        if (!file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
+            $this->markTestSkipped('Requires local/elisprogram to be installed.');
         }
 
         $this->resetAfterTest(true);
@@ -626,8 +626,8 @@ class custom_field_permissions_testcase extends elis_database_test {
         $this->load_csv_data();
 
         // Setup place holders for capabilities.
-        $editcap = 'elis/program:user_edit';
-        $viewcap = 'elis/program:user_view';
+        $editcap = 'local/elisprogram:user_edit';
+        $viewcap = 'local/elisprogram:user_view';
 
         // Retrieve the PM user id to be assigned to a userset
         $param = array('id' => 103);
@@ -640,7 +640,7 @@ class custom_field_permissions_testcase extends elis_database_test {
         $this->setUser($userroleinuserset);
 
         // Get the userset context.
-        $usersetcontext = context_elis_userset::instance(1);
+        $usersetcontext = local_elisprogram_context_userset::instance(1);
         // System context.
         $syscontext = context_system::instance();
 
@@ -670,7 +670,7 @@ class custom_field_permissions_testcase extends elis_database_test {
     protected function load_libraries_for_additional_tests() {
         global $CFG;
 
-        require_once($CFG->dirroot.'/elis/program/lib/setup.php');
+        require_once($CFG->dirroot.'/local/elisprogram/lib/setup.php');
         require_once(elispm::lib('data/userset.class.php'));
         require_once(elispm::lib('data/user.class.php'));
         require_once(elispm::lib('data/usermoodle.class.php'));
@@ -682,14 +682,14 @@ class custom_field_permissions_testcase extends elis_database_test {
      */
     protected function load_csv_data() {
         $dataset = $this->createCsvDataSet(array(
-            'user'             => elis::component_file('program', 'tests/fixtures/mdluser.csv'),
-            'user_info_field'  => elis::component_file('program', 'tests/fixtures/user_info_field.csv'),
-            'user_info_data'   => elis::component_file('program', 'tests/fixtures/user_info_data.csv'),
-            user::TABLE        => elis::component_file('program', 'tests/fixtures/pmuser.csv'),
-            usermoodle::TABLE  => elis::component_file('program', 'tests/fixtures/usermoodle.csv'),
-            field::TABLE       => elis::component_file('program', 'tests/fixtures/user_field.csv'),
-            field_owner::TABLE => elis::component_file('program', 'tests/fixtures/user_field_owner.csv'),
-            userset::TABLE     => elis::component_file('program', 'tests/fixtures/userset.csv')
+            'user'             => elis::component_file('elisprogram', 'tests/fixtures/mdluser.csv'),
+            'user_info_field'  => elis::component_file('elisprogram', 'tests/fixtures/user_info_field.csv'),
+            'user_info_data'   => elis::component_file('elisprogram', 'tests/fixtures/user_info_data.csv'),
+            user::TABLE        => elis::component_file('elisprogram', 'tests/fixtures/pmuser.csv'),
+            usermoodle::TABLE  => elis::component_file('elisprogram', 'tests/fixtures/usermoodle.csv'),
+            field::TABLE       => elis::component_file('elisprogram', 'tests/fixtures/user_field.csv'),
+            field_owner::TABLE => elis::component_file('elisprogram', 'tests/fixtures/user_field_owner.csv'),
+            userset::TABLE     => elis::component_file('elisprogram', 'tests/fixtures/userset.csv')
         ));
         $dataset = new PHPUnit_Extensions_Database_DataSet_ReplacementDataSet($dataset);
         $dataset->addSubStrReplacement('\n', "\n");

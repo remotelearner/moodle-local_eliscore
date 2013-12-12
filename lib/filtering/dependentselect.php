@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,16 +18,15 @@
  *
  * @author     Remote-Learner.net Inc
  * @author     Brent Boghosian <brent.boghosian@remote-learner.net>
- * @package    elis-core
- * @subpackage filtering
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @package    local_eliscore
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot .'/elis/core/lib/filtering/lib.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/filtering/lib.php');
 
 /**
  * Generic filter based on a list of values.
@@ -67,7 +66,7 @@ class generalized_filter_dependentselect extends generalized_filter_type {
         parent::generalized_filter_type($uniqueid, $alias, $name, $label, $advanced,
                                         !empty($options['help'])
                                         ? $options['help']
-                                        : array('simpleselect', $label, 'elis_core'));
+                                        : array('simpleselect', $label, 'local_eliscore'));
         $this->_field = $field;
 
         $extrafields = array(
@@ -158,7 +157,7 @@ class generalized_filter_dependentselect extends generalized_filter_type {
      * @return array List of options keyed on id
      */
     function get_main_options() {
-        return array('0' => get_string('select_option', 'elis_core'));
+        return array('0' => get_string('select_option', 'local_eliscore'));
     }
 
     /**

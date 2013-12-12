@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
  * ['notadvanced'] => array, DB user fields which are NOT advanced form elements
  *   --- (use only one of keys 'advanced' or 'notadvanced')
  *
- * ['langfile'] => string optional language file, default: 'elis_core'
+ * ['langfile'] => string optional language file, default: 'local_eliscore'
  *
  *   ['tables'] => optional array of tables as key, table alias as value
  *
@@ -42,17 +42,16 @@
  *                 values are arrays to pass to setHelpButton($helpbuttonargs)
  *  --- not implemented in all sub-filters!
  *
- * @package    elis-core
- * @subpackage filtering
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot .'/elis/core/lib/filtering/lib.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/filtering/lib.php');
 
 // Include the simple filter types that will be returned by an object of this type.
 require_once(elis::lib('filtering/simpleselect.php'));
@@ -149,7 +148,7 @@ class generalized_filter_multifilter {
     );
 
     // Language file (can't be constant because it's an optional parameter)
-    protected $languagefile = 'elis_core';
+    protected $languagefile = 'local_eliscore';
 
     // Wether to display empty selects - useful for cascading/dependent selects
     protected $allowempty = false;
@@ -382,7 +381,7 @@ class generalized_filter_multifilter {
             // UPM filter uses Moodle profile, we should obey 'extra' option
             // Generate a list of custom fields
             foreach ($this->sections as $group => $section) {
-                $ctxtlvl = context_elis_helper::get_level_from_name($section['name']);
+                $ctxtlvl = \local_eliscore\context\helper::get_level_from_name($section['name']);
 
                 $this->sections[$group]['contextlevel'] = $ctxtlvl;
 

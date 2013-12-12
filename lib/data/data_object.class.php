@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis_core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/elis/core/lib/setup.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
 
 /**
  * Represents a database record as an object.  Fields are identified as
@@ -203,7 +203,7 @@ class elis_data_object {
         } else if (is_array($src)) {
             $this->_load_data_from_record((object)$src, false, $field_map, $from_db, $extradatafields);
         } else {
-            throw new data_object_exception('data_object_construct_invalid_source', 'elis_core');
+            throw new data_object_exception('data_object_construct_invalid_source', 'local_eliscore');
         }
 
         $this->_associated_objects = $associations;
@@ -625,7 +625,7 @@ class elis_data_object {
             $a = new stdClass;
             $a->classname = get_class($this);
             $a->name = $name;
-            throw new data_object_exception('set_nonexistent_member', 'elis_core', '', $a);
+            throw new data_object_exception('set_nonexistent_member', 'local_eliscore', '', $a);
         }
     }
 
@@ -847,13 +847,13 @@ class elis_data_object {
         }
 
         $allfields = implode(', ', $dbfields);
-        // error_log("/elis/core/lib/data/data_object.class.php::_test_dbfields(): '{$allfields}' for class: {$objclass}");
+        // error_log("/local/eliscore/lib/data/data_object.class.php::_test_dbfields(): '{$allfields}' for class: {$objclass}");
         // Test that all data_object's fields are in the database table.
         $ret = true;
         foreach ($dbfields as $dbfield) {
             if (!$this->_db->get_manager()->field_exists($this::TABLE, $dbfield)) {
                 $ret = false;
-                // error_log("/elis/core/lib/data/data_object.class.php::_test_dbfields(): Error class: {$objclass}  has invalid '\$_dbfield_{$dbfield}' property or TABLE spec.");
+                // error_log("/local/eliscore/lib/data/data_object.class.php::_test_dbfields(): Error class: {$objclass}  has invalid '\$_dbfield_{$dbfield}' property or TABLE spec.");
             }
         }
 
@@ -863,7 +863,7 @@ class elis_data_object {
             foreach ($recs as $rec) {
                 foreach ($rec as $key => $value) {
                     if (!in_array($key, $dbfields)) {
-                        // error_log("/elis/core/lib/data/data_object.class.php::_test_dbfields(): Error class: {$objclass}  missing dbfield: {$key} (\$_dbfield_{$key})");
+                        // error_log("/local/eliscore/lib/data/data_object.class.php::_test_dbfields(): Error class: {$objclass}  missing dbfield: {$key} (\$_dbfield_{$key})");
                         $ret = false;
                     }
                 }
@@ -874,12 +874,12 @@ class elis_data_object {
                 $recs = $this->_db->get_recordset_sql($sql);
                 foreach ($recs as $rec) {
                     if (!in_array($rec->field, $dbfields)) {
-                        // error_log("/elis/core/lib/data/data_object.class.php::_test_dbfields(): Error class: {$objclass}  missing dbfield: {$rec->field} (\$_dbfield_{$rec->field})");
+                        // error_log("/local/eliscore/lib/data/data_object.class.php::_test_dbfields(): Error class: {$objclass}  missing dbfield: {$rec->field} (\$_dbfield_{$rec->field})");
                         $ret = false;
                     }
                 }
             } else {
-                // error_log("/elis/core/lib/data/data_object.class.php::_test_dbfields(): WARNING '". $this::TABLE ."' table empty, could not test dbfields complete.");
+                // error_log("/local/eliscore/lib/data/data_object.class.php::_test_dbfields(): WARNING '". $this::TABLE ."' table empty, could not test dbfields complete.");
             }
         }
         unset($recs);
@@ -898,27 +898,27 @@ class elis_data_object {
         foreach ($this::$associations as $key => $val) {
             if (!is_array($val)) {
                 $ret = false;
-                error_log("/elis/core/lib/data/data_object.class.php::_test_associations(): Error for class: {$objclass}  association '{$key}' - array expected, scalar found!.");
+                error_log("/local/eliscore/lib/data/data_object.class.php::_test_associations(): Error for class: {$objclass}  association '{$key}' - array expected, scalar found!.");
                 continue;
             }
             if (!array_key_exists('class', $val)) {
                 $ret = false;
-                error_log("/elis/core/lib/data/data_object.class.php::_test_associations(): Error for class: {$objclass}  association '{$key}' - missing 'class' index!.");
+                error_log("/local/eliscore/lib/data/data_object.class.php::_test_associations(): Error for class: {$objclass}  association '{$key}' - missing 'class' index!.");
             }
             if (array_key_exists('idfield', $val)) {
                 if (!property_exists(get_class($this), self::FIELD_PREFIX . $val['idfield'])) {
                     $ret = false;
-                    error_log("/elis/core/lib/data/data_object.class.php::_test_associations(): Error for class: {$objclass}  association '{$key}' - 'idfield' => '{$val['idfield']}' not property of class: ". get_class($this));
+                    error_log("/local/eliscore/lib/data/data_object.class.php::_test_associations(): Error for class: {$objclass}  association '{$key}' - 'idfield' => '{$val['idfield']}' not property of class: ". get_class($this));
                 }
             }
             if (array_key_exists('foreignidfield', $val)) {
                 if (array_key_exists('idfield', $val)) {
                     $ret = false;
-                    error_log("/elis/core/lib/data/data_object.class.php::_test_associations(): Error for class: {$objclass}  association '{$key}' - cannot have both 'idfield' and 'foreignidfield' defined!.");
+                    error_log("/local/eliscore/lib/data/data_object.class.php::_test_associations(): Error for class: {$objclass}  association '{$key}' - cannot have both 'idfield' and 'foreignidfield' defined!.");
                 }
                 if (!property_exists($val['class'], self::FIELD_PREFIX . $val['foreignidfield'])) {
                     $ret = false;
-                    error_log("/elis/core/lib/data/data_object.class.php::_test_associations(): Error for class: {$objclass}  association '{$key}' - 'foreignidfield' => '{$val['foreignidfield']}' not property of class: {$val['class']}");
+                    error_log("/local/eliscore/lib/data/data_object.class.php::_test_associations(): Error for class: {$objclass}  association '{$key}' - 'foreignidfield' => '{$val['foreignidfield']}' not property of class: {$val['class']}");
                 }
             }
         }
@@ -1016,7 +1016,7 @@ function validate_is_unique(elis_data_object $record, array $fields) {
         $a = new stdClass;
         $a->tablename = $tablename;
         $a->fields = implode(',', $fields);
-        throw new data_object_validation_exception('data_object_validation_unique', 'elis_core', '', $a);
+        throw new data_object_validation_exception('data_object_validation_unique', 'local_eliscore', '', $a);
     }
 }
 
@@ -1032,7 +1032,7 @@ function validate_not_empty(elis_data_object $record, $field) {
         $classname = get_class($record);
         $a->tablename = $classname::TABLE;
         $a->field = $field;
-        throw new data_object_validation_exception('data_object_validation_not_empty', 'elis_core', '', $a);
+        throw new data_object_validation_exception('data_object_validation_not_empty', 'local_eliscore', '', $a);
     }
 }
 

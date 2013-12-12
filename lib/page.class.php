@@ -3,7 +3,7 @@
  * Base ELIS page class
  *
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,18 +18,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis
- * @subpackage core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/elis/core/lib/setup.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
 
 /**
  * Base ELIS page class.  Provides a framework for displaying a standard page
@@ -269,7 +268,7 @@ abstract class elis_page extends moodle_page {
     }
 
     public function get_page_title_default() {
-        return get_string('elis', 'elis_core');
+        return get_string('elis', 'local_eliscore');
     }
 
     /**
@@ -312,7 +311,7 @@ abstract class elis_page extends moodle_page {
             } else if (method_exists($this, 'display_' . $action)) {
                 $this->display($action);
             } else {
-                print_error('unknown_action', 'elis_core', '', $action);
+                print_error('unknown_action', 'local_eliscore', '', $action);
             }
         } else {
             print_error('nopermissions', '', '', $action);

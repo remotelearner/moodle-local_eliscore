@@ -16,19 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis_core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 require_once(dirname(__FILE__).'/../test_config.php');
 global $CFG;
-require_once($CFG->dirroot.'/elis/core/lib/setup.php');
-require_once($CFG->dirroot.'/elis/core/accesslib.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
+require_once($CFG->dirroot.'/local/eliscore/accesslib.php');
 require_once(elis::lib('data/customfield.class.php'));
-require_once(elis::plugin_file('elisfields_moodle_profile', 'custom_fields.php'));
+require_once(elis::plugin_file('elisfields_moodleprofile', 'custom_fields.php'));
 
 // NOTE: needed because this is used in customfield.class.php :-(.
 if (!defined('CONTEXT_ELIS_USER')) {
@@ -38,7 +38,7 @@ if (!defined('CONTEXT_ELIS_USER')) {
 /**
  * Class for testing the syncing of custom field settings.
  *
- * @group elis_core
+ * @group local_eliscore
  */
 class custom_field_sync_testcase extends elis_database_test {
     /**

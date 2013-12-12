@@ -16,23 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis_core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 require_once(dirname(__FILE__).'/../test_config.php');
 global $CFG;
-require_once($CFG->dirroot.'/elis/core/lib/setup.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
 require_once(elis::lib('data/data_object.class.php'));
 require_once('PHPUnit/Extensions/Database/DataSet/CsvDataSet.php');
 require_once(elis::lib('tasklib.php'));
 
 /**
  * Class to test scheduled tasks.
- * @group elis_core
+ * @group local_eliscore
  */
 class scheduled_tasks_testcase extends elis_database_test {
     /**
@@ -40,7 +40,7 @@ class scheduled_tasks_testcase extends elis_database_test {
      */
     public function test_elis_tasks_get_cached() {
         $dataset = $this->createCsvDataSet(array(
-            'elis_scheduled_tasks' => elis::component_file('core', 'tests/fixtures/elis_scheduled_tasks.csv')
+            'local_eliscore_sched_tasks' => elis::component_file('eliscore', 'tests/fixtures/elis_scheduled_tasks.csv')
         ));
         $this->loadDataSet($dataset);
 

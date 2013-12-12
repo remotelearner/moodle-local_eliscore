@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis
- * @subpackage curriculummanagement
+ * @package    eliscore_etl
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -32,8 +31,8 @@ $user_activity_health_checks = array(
 class user_activity_health_empty extends crlm_health_check_base {
     function __construct() {
         global $CURMAN;
-        $this->lastrun = isset(elis::$config->eliscoreplugins_user_activity->last_run) ? (int)elis::$config->eliscoreplugins_user_activity->last_run : 0;
-        $this->inprogress = !empty(elis::$config->eliscoreplugins_user_activity->state);
+        $this->lastrun = isset(elis::$config->eliscore_etl->last_run) ? (int)elis::$config->eliscore_etl->last_run : 0;
+        $this->inprogress = !empty(elis::$config->eliscore_etl->state);
     }
 
     function exists() {
@@ -43,7 +42,7 @@ class user_activity_health_empty extends crlm_health_check_base {
             return true;
         }
         require_once(dirname(__FILE__) .'/etl.php');
-        $etlobj = new etl_user_activity(0, false);
+        $etlobj = new eliscore_etl_useractivity(0, false);
         $last_time = (int)$etlobj->state['starttime'];
         return($DB->count_records_select('log', "time >= $last_time") > 0 &&
                (time() - (7 * DAYSECS)) > $last_time);
@@ -70,11 +69,11 @@ class user_activity_health_empty extends crlm_health_check_base {
 
         if ($this->inprogress) {
             require_once(dirname(__FILE__) .'/etl.php');
-            $etlobj = new etl_user_activity(0, false);
+            $etlobj = new eliscore_etl_useractivity(0, false);
             $lasttime = (int)$etlobj->state['starttime'];
             $lastprocessed = !empty($etlobj->state['recs_last_processed']) ? (int)$etlobj->state['recs_last_processed'] : 0;
-            $etlminhour = $DB->get_field('etl_user_activity', 'MIN(hour)', array());
-            $etlmaxhour = $DB->get_field('etl_user_activity', 'MAX(hour)', array());
+            $etlminhour = $DB->get_field('eliscore_etl_useractivity', 'MIN(hour)', array());
+            $etlmaxhour = $DB->get_field('eliscore_etl_useractivity', 'MAX(hour)', array());
             $logendtime = $DB->get_field('log', 'MAX(time)', array());
             if (empty($logendtime) || $logendtime < $etlmaxhour) {
                 $logendtime = time();
@@ -126,9 +125,9 @@ class user_activity_health_log_prune extends crlm_health_check_base {
      * user_activity_health_log_prune class constructor
      */
     function __construct() {
-        $this->lastrun = isset(elis::$config->eliscoreplugins_user_activity->last_run)
-                ? (int)elis::$config->eliscoreplugins_user_activity->last_run : 0;
-        $this->inprogress = !empty(elis::$config->eliscoreplugins_user_activity->state);
+        $this->lastrun = isset(elis::$config->eliscore_etl->last_run)
+                ? (int)elis::$config->eliscore_etl->last_run : 0;
+        $this->inprogress = !empty(elis::$config->eliscore_etl->state);
     }
 
     /**
@@ -150,7 +149,7 @@ class user_activity_health_log_prune extends crlm_health_check_base {
      * @return string the health check title string
      */
     public function title() {
-        return get_string('health_etl_prune_log_title', 'elis_core');
+        return get_string('health_etl_prune_log_title', 'local_eliscore');
     }
 
     /**
@@ -171,7 +170,7 @@ class user_activity_health_log_prune extends crlm_health_check_base {
      */
     public function description() {
         $loglifetime = get_config('moodle', 'loglifetime');
-        return get_string('health_etl_prune_log_desc', 'elis_core', $loglifetime);
+        return get_string('health_etl_prune_log_desc', 'local_eliscore', $loglifetime);
     }
 
     /**
@@ -179,6 +178,6 @@ class user_activity_health_log_prune extends crlm_health_check_base {
      * @return string the health check solution
      */
     public function solution() {
-        return get_string('health_etl_prune_log_soln', 'elis_core');
+        return get_string('health_etl_prune_log_soln', 'local_eliscore');
     }
 }

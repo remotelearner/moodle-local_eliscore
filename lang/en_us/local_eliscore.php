@@ -16,11 +16,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'elis_core', language 'en_us', branch 'ELIS_2.0.0'
+ * Strings for component 'local_eliscore', language 'en_us'
  *
- * @package   elis_core
- * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @package   local_eliscore
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright (C) 2008-2013 Remote Learner.net Inc (http://www.remote-learner.net)
  */
 
 $string['workflow_cancelled'] = 'Canceled';

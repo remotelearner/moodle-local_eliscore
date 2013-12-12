@@ -16,16 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis_core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 require_once(dirname(__FILE__).'/../test_config.php');
 global $CFG;
-require_once($CFG->dirroot.'/elis/core/lib/data/data_filter.class.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/data/data_filter.class.php');
 
 /**
  * Helpers for testing filters
@@ -56,7 +56,7 @@ abstract class filter_testcase extends PHPUnit_Framework_TestCase {
 
 /**
  * Class to test the field filter.
- * @group elis_core
+ * @group local_eliscore
  */
 class data_filter_testcase extends filter_testcase {
     /**

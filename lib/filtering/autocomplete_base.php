@@ -2,7 +2,7 @@
 
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis_core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @author     James McQuillan <james.mcquillan@remote-learner.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
-require_once($CFG->dirroot.'/elis/core/lib/filtering/lib.php');
-require_once($CFG->dirroot.'/elis/core/lib/form/autocompletelib.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/filtering/lib.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/form/autocompletelib.php');
 
 /**
  * Autocomplete Filter
@@ -51,7 +51,7 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
     public $_required = false;
     public $_useid = false;
     public $results_fields = array();
-    public $perm_req_for_config = 'elis/program:config';
+    public $perm_req_for_config = 'local/elisprogram:config';
 
     /**
      * Constructor
@@ -75,7 +75,7 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
         $this->_field = $field;
 
         if (!isset($options['report'])) {
-            print_error('autocomplete_noreport', 'elis_core');
+            print_error('autocomplete_noreport', 'local_eliscore');
         }
         $this->_parent_report = $options['report'];
         $this->parent_report_instance = php_report::get_default_instance($options['report']);
@@ -147,7 +147,7 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
             window.ac_show_panel = ac_show_panel;'
         );
 
-        $filt_action_url_base = $CFG->wwwroot.'/elis/core/lib/form/autocomplete.php?report='.$report.'&filter='.$filter;
+        $filt_action_url_base = $CFG->wwwroot.'/local/eliscore/lib/form/autocomplete.php?report='.$report.'&filter='.$filter;
 
         if ($this->_ui === 'inline') {
             $mform->addElement('hidden', $this->_uniqueid, $this->get_default(), array('id' => 'id_'.$this->_uniqueid));
@@ -156,13 +156,13 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
             $search_url = $filt_action_url_base.'&mode=search&q=';
             $config_url = $filt_action_url_base.'&mode=config';
 
-            $main_input_ph = ($this->_selection_enabled === true) ? get_string('filt_autoc_typetosearch','elis_core') : '';
+            $main_input_ph = ($this->_selection_enabled === true) ? get_string('filt_autoc_typetosearch','local_eliscore') : '';
 
             $text_input = array($mform->createElement('text', $this->_uniqueid, $this->_label, array('placeholder' => $main_input_ph)));
             if ($this->config_allowed() === true) {
                 $text_input[] = $mform->createElement('static', 'configlink', '',
                         '<a onclick="ac_show_panel(\''.$config_url.'\');" href="#">'
-                            .'<img src='.$CFG->wwwroot.'/elis/program/pix/configuration.png>'
+                            .'<img src='.$CFG->wwwroot.'/local/elisprogram/pix/configuration.png>'
                         .'</a>');
             }
             $text_input[] = $mform->createElement('html',
@@ -183,9 +183,9 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
                     }
                 }
 
-                $mform->addElement('html',"<link rel='stylesheet' type='text/css' href='{$CFG->wwwroot}/elis/core/lib/form/autocomplete.css' />");
-                $mform->addElement('html',"<script src='{$CFG->wwwroot}/elis/core/js/jquery-1.7.1.min.js'></script>");
-                $mform->addElement('html',"<script src='{$CFG->wwwroot}/elis/core/lib/form/autocomplete.js'></script>");
+                $mform->addElement('html',"<link rel='stylesheet' type='text/css' href='{$CFG->wwwroot}/local/eliscore/lib/form/autocomplete.css' />");
+                $mform->addElement('html',"<script src='{$CFG->wwwroot}/local/eliscore/js/jquery-1.7.1.min.js'></script>");
+                $mform->addElement('html',"<script src='{$CFG->wwwroot}/local/eliscore/lib/form/autocomplete.js'></script>");
 
                 $filter_js[] =
                         "var search_textbox = 'id_grp_{$this->_uniqueid}';
@@ -194,8 +194,8 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
                         var search_results_outer = 'search_results_outer';
 
                         var autocomplete = new autocomplete_ui(search_textbox,search_results,search_status,'{$search_url}','search_results_outer');
-                        autocomplete.str_searching = '".get_string('filt_autoc_searching','elis_core')."';
-                        autocomplete.str_typetosearch = '".get_string('filt_autoc_typetosearch','elis_core')."';
+                        autocomplete.str_searching = '".get_string('filt_autoc_searching','local_eliscore')."';
+                        autocomplete.str_typetosearch = '".get_string('filt_autoc_typetosearch','local_eliscore')."';
 
                         $('#'+search_textbox).focus().click(function(e){e.stopPropagation();}).keyup(function(e) {
                             if (e.keyCode != 13) {
@@ -217,7 +217,7 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
 
             $popup_link = '<span id="id_'.$this->_uniqueid.'_label"></span> ';
             if ($this->_selection_enabled === true) {
-                $popup_link .= '<a onclick="ac_show_panel(\''.$filt_action_url_base.'\');" href="#">'.get_string('filt_autoc_select','elis_core').'</a>';
+                $popup_link .= '<a onclick="ac_show_panel(\''.$filt_action_url_base.'\');" href="#">'.get_string('filt_autoc_select','local_eliscore').'</a>';
             }
 
             $mform->addElement('static', 'selector', $this->_label,$popup_link);

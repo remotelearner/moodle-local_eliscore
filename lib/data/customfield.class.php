@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis
- * @subpackage core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -28,13 +27,13 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(elis::lib('data/data_object.class.php'));
 require_once(elis::lib('data/data_filter.class.php'));
-require_once($CFG->dirroot . '/elis/core/accesslib.php');
+require_once($CFG->dirroot.'/local/eliscore/accesslib.php');
 
 /**
  * Custom fields.
  */
 class field extends elis_data_object {
-    const TABLE = 'elis_field';
+    const TABLE = 'local_eliscore_field';
 
     protected $_dbfield_shortname;
     protected $_dbfield_name;
@@ -196,7 +195,7 @@ class field extends elis_data_object {
             return array();
         }
         if (!is_numeric($contextlevel)) {
-            $contextlevel = context_elis_helper::get_level_from_name($contextlevel);
+            $contextlevel = \local_eliscore\context\helper::get_level_from_name($contextlevel);
         }
         if ($contextlevel == CONTEXT_ELIS_USER) {
             // need to include extra fields for PM users
@@ -232,7 +231,7 @@ class field extends elis_data_object {
             return false;
         }
         if (!is_numeric($contextlevel)) {
-            $contextlevel = context_elis_helper::get_level_from_name($contextlevel);
+            $contextlevel = \local_eliscore\context\helper::get_level_from_name($contextlevel);
         }
         $select = 'id IN (SELECT fctx.fieldid
                             FROM {'.field_contextlevel::TABLE."} fctx
@@ -340,7 +339,7 @@ class field extends elis_data_object {
      */
     public static function ensure_field_exists_for_context_level(field $field, $contextlevel, field_category $category) {
         if (!is_numeric($contextlevel)) {
-            $contextlevel = context_elis_helper::get_level_from_name($contextlevel);
+            $contextlevel = \local_eliscore\context\helper::get_level_from_name($contextlevel);
         }
 
         // see if we need to create a new field
@@ -419,8 +418,8 @@ class field extends elis_data_object {
      * @return field The new field object.
      */
     public static function make_from_moodle_field($mfieldid, field_category $category, $syncdir = false) {
-        require_once(elis::file('core/fields/manual/custom_fields.php'));
-        require_once(elis::file('core/fields/moodle_profile/custom_fields.php'));
+        require_once(elis::file('eliscore/fields/manual/custom_fields.php'));
+        require_once(elis::file('eliscore/fields/moodleprofile/custom_fields.php'));
 
         global $DB;
 
@@ -579,7 +578,7 @@ class elis_field_filter extends field_filter {
  * Field owners.
  */
 class field_owner extends elis_data_object {
-    const TABLE = 'elis_field_owner';
+    const TABLE = 'local_eliscore_field_owner';
 
     protected $_dbfield_fieldid;
     protected $_dbfield_plugin;
@@ -722,7 +721,7 @@ class field_owner extends elis_data_object {
  * Field categories.
  */
 class field_category extends elis_data_object {
-    const TABLE = 'elis_field_categories';
+    const TABLE = 'local_eliscore_field_cats';
 
     protected $_dbfield_name;
     protected $_dbfield_sortorder;
@@ -739,7 +738,7 @@ class field_category extends elis_data_object {
             return array();
         }
         if (!is_numeric($contextlevel)) {
-            $contextlevel = context_elis_helper::get_level_from_name($contextlevel);
+            $contextlevel = \local_eliscore\context\helper::get_level_from_name($contextlevel);
         }
         return self::find(new join_filter('id',
                                           field_category_contextlevel::TABLE, 'categoryid',
@@ -807,7 +806,7 @@ class field_category extends elis_data_object {
  * Base class for field data.
  */
 abstract class field_data extends elis_data_object {
-    const TABLE = 'elis_field_data';
+    const TABLE = 'local_eliscore_fld_data';
 
     protected $_dbfield_contextid;
     protected $_dbfield_fieldid;
@@ -1023,7 +1022,7 @@ abstract class field_data extends elis_data_object {
      */
     public static function set_for_context_from_datarecord($contextlevel, $record) {
         if (!is_numeric($contextlevel)) {
-            $contextlevel = context_elis_helper::get_level_from_name($contextlevel);
+            $contextlevel = \local_eliscore\context\helper::get_level_from_name($contextlevel);
             if (!$contextlevel) {
                 // context levels not set up -- we must be in initial installation,
                 // so no fields set up
@@ -1031,7 +1030,7 @@ abstract class field_data extends elis_data_object {
             }
         }
 
-        $ctxclass = context_elis_helper::get_class_for_level($contextlevel);
+        $ctxclass = \local_eliscore\context\helper::get_class_for_level($contextlevel);
         $context = $ctxclass::instance($record->id);
         $fields = field::get_for_context_level($contextlevel);
         $fields = $fields ? $fields : array();
@@ -1050,35 +1049,35 @@ abstract class field_data extends elis_data_object {
  * Integer field data.
  */
 class field_data_int extends field_data {
-    const TABLE = 'elis_field_data_int';
+    const TABLE = 'local_eliscore_fld_data_int';
 }
 
 /**
  * Floating point field data.
  */
 class field_data_num extends field_data {
-    const TABLE = 'elis_field_data_num';
+    const TABLE = 'local_eliscore_fld_data_num';
 }
 
 /**
  * Character field data.
  */
 class field_data_char extends field_data {
-    const TABLE = 'elis_field_data_char';
+    const TABLE = 'local_eliscore_fld_data_char';
 }
 
 /**
  * Text field data.
  */
 class field_data_text extends field_data {
-    const TABLE = 'elis_field_data_text';
+    const TABLE = 'local_eliscore_fld_data_text';
 }
 
 /**
  * Which contexts a field applies to.
  */
 class field_contextlevel extends elis_data_object {
-    const TABLE = 'elis_field_contextlevels';
+    const TABLE = 'local_eliscore_field_clevels';
 
     protected $_dbfield_fieldid;
     protected $_dbfield_contextlevel;
@@ -1088,7 +1087,7 @@ class field_contextlevel extends elis_data_object {
  * Which contexts a field category applies to.
  */
 class field_category_contextlevel extends elis_data_object {
-    const TABLE = 'elis_field_category_contexts';
+    const TABLE = 'local_eliscore_fld_cat_ctx';
 
     protected $_dbfield_categoryid;
     protected $_dbfield_contextlevel;

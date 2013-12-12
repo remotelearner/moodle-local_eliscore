@@ -16,16 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    elis_core
+ * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/elis/core/lib/filtering/lib.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/filtering/lib.php');
 
 /**
  * Generic filter for text fields.
@@ -55,7 +55,7 @@ class generalized_filter_text extends generalized_filter_type {
     function generalized_filter_text($uniqueid, $alias, $name, $label, $advanced, $field, $options = array()) {
         parent::generalized_filter_type($uniqueid, $alias, $name, $label, $advanced,
                     !empty($options['help'])
-                    ? $options['help'] : array('text', $label, 'elis_core'));
+                    ? $options['help'] : array('text', $label, 'local_eliscore'));
         $this->_field = $field;
         if (isset($options['casesensitive'])) {
             $this->_casesensitive = $options['casesensitive'];
@@ -210,7 +210,7 @@ class generalized_filter_text extends generalized_filter_type {
                 break;
             default:
                 //error call
-                print_error('invalidoperator', 'elis_core'); // TBD
+                print_error('invalidoperator', 'local_eliscore'); // TBD
         }
         return array($sql, $params);
     }

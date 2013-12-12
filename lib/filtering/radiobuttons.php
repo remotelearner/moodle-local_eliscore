@@ -16,7 +16,7 @@
  *                             false (the default) -> string
  *
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,10 +34,9 @@
  * @author     Remote-Learner.net Inc
  * @author     Brent Boghosian <brent.boghosian@remote-learner.net>
  * @version    $Id$
- * @package    elis-core
- * @subpackage filtering
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 2008-2012 Remote Learner.net Inc http://www.remote-learner.net
+ * @package    local_eliscore
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * radiobuttons.php - filter
  *
@@ -58,8 +57,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot .'/elis/core/lib/filtering/lib.php');
-require_once($CFG->dirroot .'/user/filters/lib.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/filtering/lib.php');
+require_once($CFG->dirroot.'/user/filters/lib.php');
 
 /**
  * Generic radio button filter
