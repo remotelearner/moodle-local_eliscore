@@ -38,6 +38,11 @@ class helper extends \context_helper {
     public static $namelevelmap = array();
 
     /**
+     * @var array A public version of parent's private $alllevels
+     */
+    public static $puballlevels = array();
+
+    /**
      * Returns a context level given a context 'name'
      *
      * @static
@@ -46,12 +51,15 @@ class helper extends \context_helper {
      * @return int context level
      */
     public static function get_level_from_name($ctxname) {
+        if (empty(self::$puballlevels)) {
+            self::$puballlevels = parent::get_all_levels();
+        }
         if (isset(self::$namelevelmap[$ctxname])) {
             return self::$namelevelmap[$ctxname];
-        } else if (empty(parent::$alllevels)) {
+        } else if (empty(self::$puballlevels)) {
             return CONTEXT_SYSTEM;
         } else {
-            throw new coding_exception('Invalid context level specified');
+            throw new \coding_exception('Invalid context level specified');
         }
     }
 
@@ -72,14 +80,16 @@ class helper extends \context_helper {
      * @return int context level for given class name
      */
     public static function get_level_from_class_name($classname) {
-        parent::init_levels();
+        if (empty(self::$puballlevels)) {
+            self::$puballlevels = parent::get_all_levels();
+        }
 
-        $contextlevel = array_search($classname, parent::$alllevels);
+        $contextlevel = array_search($classname, self::$puballlevels);
 
         if (false !== $contextlevel) {
             return $contextlevel;
         }
 
-        throw new coding_exception('Context class name not found in defined custom contexts.');
+        throw new \coding_exception('Context class name not found in defined custom contexts.');
     }
 }

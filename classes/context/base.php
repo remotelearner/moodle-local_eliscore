@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * This class will allow for further changes in how ELIS custom contexts are implemented
  */
-class base extends \context {
+abstract class base extends \context {
     /**
      * @var array An array mapping ELIS context names to their context levels
      */
