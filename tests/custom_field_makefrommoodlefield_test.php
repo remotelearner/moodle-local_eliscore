@@ -31,7 +31,7 @@ require_once(elis::lib('data/customfield.class.php'));
 
 // Needed as we will create a user field.
 if (!defined('CONTEXT_ELIS_USER')) {
-    define('CONTEXT_ELIS_USER', 1005);
+    define('CONTEXT_ELIS_USER', 15);
 }
 
 /**

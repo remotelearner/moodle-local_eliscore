@@ -448,8 +448,8 @@ class generalized_filter_multifilter {
             $options['tables'] = $this->tables[$group];
             // ELIS-5295: elisuserprofile filter requires talias & contextlevel
             $options['talias'] = 'u'; // TBD: default?
-            if (!empty($this->tables[$group]['crlm_user'])) {
-                $options['talias'] = $this->tables[$group]['crlm_user'];
+            if (!empty($this->tables[$group]['local_elisprogram_usr'])) {
+                $options['talias'] = $this->tables[$group]['local_elisprogram_usr'];
             }
             $options['contextlevel'] = $this->sections[$group]['contextlevel'];
 

@@ -390,10 +390,10 @@ class custom_field_permissions_testcase extends elis_database_test {
 
         // Retrieve the PM user id to be assigned to a userset.
         $param = array('id' => 103);
-        $pmuserinusersetid = $DB->get_field('crlm_user', 'id', $param);
+        $pmuserinusersetid = $DB->get_field('local_elisprogram_usr', 'id', $param);
 
         // Get the userset context.
-        $usersetcontext = local_elisprogram_context_userset::instance(1);
+        $usersetcontext = \local_elisprogram\context\userset::instance(1);
         // System context.
         $syscontext = context_system::instance();
 
@@ -429,10 +429,10 @@ class custom_field_permissions_testcase extends elis_database_test {
 
         // Retrieve the PM user id to be assigned to a userset.
         $param = array('id' => 103);
-        $pmuserinusersetid = $DB->get_field('crlm_user', 'id', $param);
+        $pmuserinusersetid = $DB->get_field('local_elisprogram_usr', 'id', $param);
 
         // Get the userset context.
-        $usersetcontext = local_elisprogram_context_userset::instance(1);
+        $usersetcontext = \local_elisprogram\context\userset::instance(1);
         // System context.
         $syscontext = context_system::instance();
 
@@ -467,7 +467,7 @@ class custom_field_permissions_testcase extends elis_database_test {
 
         // Retrieve the PM user id to be assigned to a userset.
         $param = array('id' => 103);
-        $pmuserinusersetid = $DB->get_field('crlm_user', 'id', $param);
+        $pmuserinusersetid = $DB->get_field('local_elisprogram_usr', 'id', $param);
 
         // Retrieve the user who will be assigned a role in the user set.
         $param = array('id' => 101);
@@ -476,7 +476,7 @@ class custom_field_permissions_testcase extends elis_database_test {
         $this->setUser($userroleinuserset);
 
         // Get the userset context.
-        $usersetcontext = local_elisprogram_context_userset::instance(1);
+        $usersetcontext = \local_elisprogram\context\userset::instance(1);
         // System context.
         $syscontext = context_system::instance();
 
@@ -521,7 +521,7 @@ class custom_field_permissions_testcase extends elis_database_test {
 
         // Retrieve the PM user id to be assigned to a userset.
         $param = array('id' => 103);
-        $pmuserinusersetid = $DB->get_field('crlm_user', 'id', $param);
+        $pmuserinusersetid = $DB->get_field('local_elisprogram_usr', 'id', $param);
 
         // Retrieve the user who will be assigned a role in the user set.
         $param = array('id' => 101);
@@ -530,7 +530,7 @@ class custom_field_permissions_testcase extends elis_database_test {
         $this->setUser($userroleinuserset);
 
         // Get the userset context.
-        $usersetcontext = local_elisprogram_context_userset::instance(1);
+        $usersetcontext = \local_elisprogram\context\userset::instance(1);
         // System context.
         $syscontext = context_system::instance();
 
@@ -576,7 +576,7 @@ class custom_field_permissions_testcase extends elis_database_test {
 
         // Retrieve the PM user id to be assigned to a userset.
         $param = array('id' => 103);
-        $pmuserinusersetid = $DB->get_field('crlm_user', 'id', $param);
+        $pmuserinusersetid = $DB->get_field('local_elisprogram_usr', 'id', $param);
 
         // Retrieve the user who will be assigned a role in the user set.
         $param = array('id' => 101);
@@ -585,7 +585,7 @@ class custom_field_permissions_testcase extends elis_database_test {
         $this->setUser($userroleinuserset);
 
         // Get the userset context.
-        $usersetcontext = local_elisprogram_context_userset::instance(1);
+        $usersetcontext = \local_elisprogram\context\userset::instance(1);
         // System context.
         $syscontext = context_system::instance();
 
@@ -631,7 +631,7 @@ class custom_field_permissions_testcase extends elis_database_test {
 
         // Retrieve the PM user id to be assigned to a userset
         $param = array('id' => 103);
-        $pmuserinusersetid = $DB->get_field('crlm_user', 'id', $param);
+        $pmuserinusersetid = $DB->get_field('local_elisprogram_usr', 'id', $param);
 
         // Retrieve the user who will be assigned a role in the user set.
         $param = array('id' => 101);
@@ -640,7 +640,7 @@ class custom_field_permissions_testcase extends elis_database_test {
         $this->setUser($userroleinuserset);
 
         // Get the userset context.
-        $usersetcontext = local_elisprogram_context_userset::instance(1);
+        $usersetcontext = \local_elisprogram\context\userset::instance(1);
         // System context.
         $syscontext = context_system::instance();
 

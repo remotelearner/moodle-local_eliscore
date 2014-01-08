@@ -32,7 +32,7 @@ require_once(elis::plugin_file('elisfields_moodleprofile', 'custom_fields.php'))
 
 // NOTE: needed because this is used in customfield.class.php :-(.
 if (!defined('CONTEXT_ELIS_USER')) {
-    define('CONTEXT_ELIS_USER', 1005);
+    define('CONTEXT_ELIS_USER', 15);
 }
 
 /**

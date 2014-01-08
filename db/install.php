@@ -389,56 +389,6 @@ function xmldb_local_eliscore_install() {
             $dbman->change_field_precision($table, $field);
         }
 
-        if ($result && $oldversion < 2012032100) {
-            // ELIS-4089 -- Attempt to detect if somehow this site had the 'context_levels' table populated out-of-order
-
-            // Is the ELIS PM code present? -- ELIS-6717
-            if (file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
-                require_once($CFG->dirroot.'/local/elisprogram/lib/setup.php');
-
-                $ctxmap = array(); // An array of 'correct_context_id' => 'invalid_context_id' to be used for cleanup purposes
-
-                $ctxlvls = $DB->get_recordset('context_levels');
-                if ($ctxlvls->valid()) {
-                    foreach ($ctxlvls as $ctxlvl) {
-                        $level = context_elis_helper::get_level_from_name($ctxlvl->name);
-                    }
-                }
-                unset($ctxlvls);
-
-                // Do we have bad contexts that we need to remap
-                if (!empty($ctxmap)) {
-                    // Initial pass, change all context levels to avoid collitions when resetting to "correct" values
-                    foreach ($ctxmap as $level_good => $level_bad) {
-                        $tmp_level = $level_bad + 1000;
-                        if ($DB->record_exists('context', array('contextlevel' => $tmp_level))) {
-                            throw new coding_exception('Context level '.$tmp_level.' exists but really should not');
-                        }
-
-                        $sql = "UPDATE {context} SET contextlevel = ? WHERE contextlevel = ?";
-
-                        $DB->execute($sql, array($tmp_level, $level_bad));
-                    }
-
-                    reset($ctxmap);
-
-                    // Second pass, reset the temp context levels to the good values now
-                    foreach ($ctxmap as $level_good => $level_bad) {
-                        $tmp_level = $level_bad + 1000;
-                        $sql = "UPDATE {context} SET contextlevel = ? WHERE contextlevel = ?";
-
-                        $DB->execute($sql, array($level_good, $tmp_level));
-                    }
-                }
-            }
-
-            // Get rid of the 'context_levels' table as it's no longer needed
-            $table = new xmldb_table('context_levels');
-            if ($dbman->table_exists($table)) {
-                $dbman->drop_table($table);
-            }
-        }
-
         if ($result && $oldversion < 2013022700) {
             // ELIS-8295: install missing message processors
             if ($dbman->table_exists('message_processors')) {

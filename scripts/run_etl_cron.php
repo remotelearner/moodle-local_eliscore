@@ -96,7 +96,7 @@ if (!empty($task->blocked) && $timenow < $task->blocked) {
     cli_error(get_string('cli_error_blocked', 'eliscore_etl'));
 }
 
-$etlobj = new etl_user_activity($durationinseconds);
+$etlobj = new eliscore_etl_useractivity($durationinseconds);
 
 // Set callback method incase the script is terminated.
 if (function_exists('pcntl_signal')) {

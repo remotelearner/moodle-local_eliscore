@@ -367,7 +367,7 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
      * @return boolean Whether the user can configure the filter.
      */
     public function config_allowed() {
-        return (has_capability($this->perm_req_for_config, get_context_instance(CONTEXT_SYSTEM))) ? true : false;
+        return has_capability($this->perm_req_for_config, context_system::instance()) ? true : false;
     }
 
     /**

@@ -44,7 +44,7 @@ class manual_options_learning_objectives extends manual_options_base_class {
         } else {
             // just get ALL completion elements (LOs)
             global $DB;
-            $compelems = $DB->get_recordset('crlm_course_completion', null, '', 'id, name, idnumber');
+            $compelems = $DB->get_recordset('local_elisprogram_crs_cmp', null, '', 'id, name, idnumber');
         }
         $result = array('' => get_string('anyvalue', 'filters'));
         foreach ($compelems as $compelem) {

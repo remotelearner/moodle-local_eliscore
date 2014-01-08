@@ -29,7 +29,7 @@ class manual_options_userset_classifications extends manual_options_base_class {
     function get_options($dataobject) {
         global $DB;
 
-        require_once elispm::file('plugins/userset_classification/usersetclassification.class.php');
+        require_once elispm::file('plugins/usetclassify/usersetclassification.class.php');
         $result = array();
         $recs = $DB->get_recordset(usersetclassification::TABLE, null, 'name ASC', 'shortname, name');
         foreach ($recs as $rec) {
@@ -41,6 +41,6 @@ class manual_options_userset_classifications extends manual_options_base_class {
     }
 
     function is_applicable($contextlevel) {
-        return $contextlevel === 'cluster' && is_readable(elis::plugin_file('pmplugins_userset_classification','usersetclassification.class.php'));
+        return $contextlevel === 'cluster' && is_readable(elis::plugin_file('elisprogram_usetclassify','usersetclassification.class.php'));
     }
 }

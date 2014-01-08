@@ -32,7 +32,7 @@ require_once(elis::lib('data/customfield.class.php'));
 // NOTE: needed because this is used in customfield.class.php :-(
 // Not actually setting anything on the PM user context.
 if (!defined('CONTEXT_ELIS_USER')) {
-    define('CONTEXT_ELIS_USER', 1005);
+    define('CONTEXT_ELIS_USER', 15);
 }
 
 /**
