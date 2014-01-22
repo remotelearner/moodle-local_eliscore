@@ -98,7 +98,7 @@ class generalized_filter_dependentselect extends generalized_filter_type {
         $fullpath = $this->_report_path . $this->_filename;
         $parent   = $this->_uniqueid .'_parent';
 
-        $PAGE->requires->yui_module('moodle-elis_core-dependentselect', 'M.elis_core.init_dependentselect', array($parent, $this->_uniqueid, $fullpath));
+        $PAGE->requires->yui_module('moodle-local_eliscore-dependentselect', 'M.local_eliscore.init_dependentselect', array($parent, $this->_uniqueid, $fullpath));
 
         $objs = array();
         $objs[] =& $mform->createElement('select', $this->_uniqueid.'_parent', null, $options_array);

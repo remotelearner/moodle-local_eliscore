@@ -27,7 +27,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-YUI.add('moodle-elis_core-associateclass', function(Y) {
+YUI.add('moodle-local_eliscore-associateclass', function(Y) {
     /**
      * Module name
      * @property ASSOCIATECLASSNAME
@@ -45,7 +45,7 @@ YUI.add('moodle-elis_core-associateclass', function(Y) {
     };
 
     /**
-     * @class M.elis_core.init_associateclass
+     * @class M.local_eliscore.init_associateclass
      */
     Y.extend(ASSOCIATECLASS, Y.Base, {
         /**
@@ -357,8 +357,8 @@ YUI.add('moodle-elis_core-associateclass', function(Y) {
         }
     });
 
-    M.elis_core = M.elis_core || {};
-    M.elis_core.init_associateclass = function(params) {
+    M.local_eliscore = M.local_eliscore || {};
+    M.local_eliscore.init_associateclass = function(params) {
         return new ASSOCIATECLASS(params);
     }
 }, '@VERSION@', {

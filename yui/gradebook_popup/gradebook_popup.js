@@ -22,14 +22,14 @@
  *
  */
 
-YUI.add('moodle-elis_core-gradebook_popup', function(Y) {
+YUI.add('moodle-local_eliscore-gradebook_popup', function(Y) {
 
-    M.elis_core = M.elis_core || {};
+    M.local_eliscore = M.local_eliscore || {};
 
     /**
      * Set the value of an element.
      */
-    M.elis_core.set_value = function(itemid, value) {
+    M.local_eliscore.set_value = function(itemid, value) {
         var item = document.getElementById(itemid);
         item.value = value;
         return false;
@@ -38,7 +38,7 @@ YUI.add('moodle-elis_core-gradebook_popup', function(Y) {
     /**
      * Create and manage the gradebook idnumber selector popup.
      */
-    M.elis_core.init_gradebook_popup = function(options) {
+    M.local_eliscore.init_gradebook_popup = function(options) {
         var textelem = Y.one('#'+options.textelemid);
 
         // Add the Browse button after the text element

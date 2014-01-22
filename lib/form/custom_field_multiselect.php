@@ -117,7 +117,7 @@ class elis_custom_field_multiselect extends MoodleQuickForm_group {
 
         $PAGE->requires->string_for_js('add', 'moodle');
         $PAGE->requires->strings_for_js(array('allitemsselected', 'field_category', 'field_name', 'nofieldsselected'), 'local_eliscore');
-        $PAGE->requires->yui_module('moodle-elis_core-custom_field_multiselect', 'M.elis_core.init_custom_field_multiselect', array($options));
+        $PAGE->requires->yui_module('moodle-local_eliscore-custom_field_multiselect', 'M.local_eliscore.init_custom_field_multiselect', array($options));
 
         foreach ($this->_elements as $element){
             if (method_exists($element, 'setHiddenLabel')){

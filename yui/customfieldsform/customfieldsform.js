@@ -22,7 +22,7 @@
  *
  */
 
-YUI.add('moodle-elis_core-customfieldsform', function(Y) {
+YUI.add('moodle-local_eliscore-customfieldsform', function(Y) {
 
     /**
      * The module name
@@ -41,7 +41,7 @@ YUI.add('moodle-elis_core-customfieldsform', function(Y) {
     }
 
     /**
-     * @class M.elis_core.customfieldsform
+     * @class M.local_eliscore.customfieldsform
      */
     Y.extend(MODULEBASE, Y.Base, {
         /**
@@ -407,15 +407,15 @@ YUI.add('moodle-elis_core-customfieldsform', function(Y) {
     }
     );
 
-    // Ensure that M.elis_core exists and is initialized correctly
-    M.elis_core = M.elis_core || {};
+    // Ensure that M.local_eliscore exists and is initialized correctly
+    M.local_eliscore = M.local_eliscore || {};
 
     /**
      * Entry point for customfields form module
      * @param string profiledefaultdatastring the language string profiledefaultdata
      * @return object the customfieldsform object
      */
-    M.elis_core.init_customfieldsform = function(profiledefaultdatastring) {
+    M.local_eliscore.init_customfieldsform = function(profiledefaultdatastring) {
         args = {profiledefaultdatastring: profiledefaultdatastring};
         return new MODULEBASE(args);
     }

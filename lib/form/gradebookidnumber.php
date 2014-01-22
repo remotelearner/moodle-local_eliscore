@@ -89,7 +89,7 @@ class elis_gradebook_idnumber_selector extends MoodleQuickForm_text {
             $PAGE->requires->string_for_js('browse', 'editor');
             $PAGE->requires->string_for_js('loading', 'repository');
             $PAGE->requires->strings_for_js(array('activities', 'gradeitems'), 'grades');
-            $PAGE->requires->yui_module('moodle-elis_core-gradebook_popup', 'M.elis_core.init_gradebook_popup', array($options));
+            $PAGE->requires->yui_module('moodle-local_eliscore-gradebook_popup', 'M.local_eliscore.init_gradebook_popup', array($options));
         }
 
         return parent::toHtml();

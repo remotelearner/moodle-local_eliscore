@@ -22,9 +22,9 @@
  *
  */
 
-YUI.add('moodle-elis_core-custom_field_multiselect', function(Y) {
+YUI.add('moodle-local_eliscore-custom_field_multiselect', function(Y) {
 
-    M.elis_core = M.elis_core || {};
+    M.local_eliscore = M.local_eliscore || {};
 
     var customfieldpickerinstance = null;
     var cf_debug = 0; // TBD: BJB - set for debugging only!
@@ -73,7 +73,7 @@ YUI.add('moodle-elis_core-custom_field_multiselect', function(Y) {
     /**
      * Create and manage the custom field multiselector.
      */
-    M.elis_core.init_custom_field_multiselect = function(options) {
+    M.local_eliscore.init_custom_field_multiselect = function(options) {
         var container = Y.one('#'+options.id+'_container');
 
         // Add the selected fields table and button

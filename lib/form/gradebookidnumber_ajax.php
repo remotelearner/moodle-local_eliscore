@@ -82,7 +82,7 @@ function print_item($item) {
 
     echo html_writer::start_tag('li');
     if (!empty($link)) {
-        echo html_writer::start_tag('a', array('onclick' => 'return ' . js_writer::function_call('M.elis_core.set_value', array($textelemid, $item->idnumber)),
+        echo html_writer::start_tag('a', array('onclick' => 'return ' . js_writer::function_call('M.local_eliscore.set_value', array($textelemid, $item->idnumber)),
                                                'href' => ''));
     }
     echo html_writer::empty_tag('img', array('src' => $item->icon));

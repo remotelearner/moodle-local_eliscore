@@ -22,7 +22,7 @@
  *
  */
 
-YUI.add('moodle-elis_core-dependentselect', function(Y) {
+YUI.add('moodle-local_eliscore-dependentselect', function(Y) {
 
     /**
      * The filterbase module
@@ -41,7 +41,7 @@ YUI.add('moodle-elis_core-dependentselect', function(Y) {
     }
 
     /**
-     * @class M.elis_core.filters.dependentselect
+     * @class M.local_eliscore.filters.dependentselect
      */
     Y.extend(FILTERBASE, Y.Base, {
         /**
@@ -181,8 +181,8 @@ YUI.add('moodle-elis_core-dependentselect', function(Y) {
     }
     );
 
-    // Ensure that M.elis_core exists and that filterbase is initialised correctly
-    M.elis_core = M.elis_core || {};
+    // Ensure that M.local_eliscore exists and that filterbase is initialised correctly
+    M.local_eliscore = M.local_eliscore || {};
 
     /**
      * Entry point for dependent select module
@@ -191,7 +191,7 @@ YUI.add('moodle-elis_core-dependentselect', function(Y) {
      * @param string path web path to report instance callback
      * @return object the dependentselect object
      */
-    M.elis_core.init_dependentselect = function(pid, id, path) {
+    M.local_eliscore.init_dependentselect = function(pid, id, path) {
         var args = [pid, id, path];
         return new FILTERBASE(args);
     }
