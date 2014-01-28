@@ -24,7 +24,7 @@
  */
 
 require_once(dirname(__FILE__).'/../../../../config.php');
-require_once($CFG->dirroot.'/blocks/php_report/php_report_base.php');
+require_once($CFG->dirroot.'/local/elisreports/php_report_base.php');
 require_once(dirname(__FILE__).'/autocompletelib.php');
 
 //require a report and a filter
