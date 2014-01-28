@@ -313,16 +313,19 @@ class display_table {
     }
 
     /**
-     * Display a user's full name using Moodle's fullname function
+     * Display a user's full name using Moodle's fullname function.
+     * @param string $column The column's field name.
+     * @param object $item The current record object.
+     * @return string The users full name.
      */
     public static function display_user_fullname_item($column, $item) {
-        if (method_exists($item, 'fullname')) {
-            return $item->fullname();
+        if (method_exists($item, 'moodle_fullname')) {
+            return $item->moodle_fullname();
         }
         if (method_exists($item, 'to_object')) {
             $item = $item->to_object();
         }
-        return fullname($item);
+        return elis_fullname($item);
     }
 }
 

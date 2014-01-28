@@ -24,6 +24,8 @@
  */
 
 require_once(dirname(__FILE__) . '/../../../config.php');
+global $CFG;
+require_once($CFG->dirroot.'/local/eliscore/lib.php');
 
 /**
  * Global ELIS management object.

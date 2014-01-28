@@ -26,6 +26,7 @@
 require_once(dirname(__FILE__).'/../test_config.php');
 global $CFG;
 require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
+require_once($CFG->dirroot.'/local/eliscore/lib.php');
 require_once(elis::lib('data/data_object.class.php'));
 require_once('PHPUnit/Extensions/Database/DataSet/CsvDataSet.php');
 
@@ -50,5 +51,16 @@ class setup_testcase extends elis_database_test {
         $this->assertInternalType('object', $pluginconfig);
         $this->assertObjectHasAttribute('testconfigkey', $pluginconfig);
         $this->assertEquals('testconfigvalue', $pluginconfig->testconfigkey);
+    }
+
+    /**
+     * Test elis_fullname function.
+     */
+    public function test_elis_fullname() {
+        $user = new stdClass();
+        $user->firstname = 'Firstname';
+        $user->lastname = 'Lastname';
+
+        $this->assertEquals('Firstname Lastname', elis_fullname($user, true));
     }
 }

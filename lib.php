@@ -131,3 +131,30 @@ function local_eliscore_cron() {
         }
     }
 }
+
+/**
+ * Returns a persons full name.
+ *
+ * Wrapper for the Moodle fullname() function that ensures all user fields exist.
+ *
+ * @param stdClass $user A {@link $USER} object to get full name of.
+ * @param bool $override If true then the name will be firstname followed by lastname rather than adhering to fullnamedisplay.
+ * @return string
+ */
+function elis_fullname($user, $override = false) {
+    if ($user instanceof elis_data_object) {
+        $user = $user->to_object();
+    }
+
+    if (!isset($user->firstname) && !isset($user->lastname)) {
+        return '';
+    }
+
+    $allnames = get_all_user_name_fields();
+    foreach ($allnames as $allname) {
+        if (!property_exists($user, $allname)) {
+            $user->$allname = null;
+        }
+    }
+    return fullname($user, $override);
+}
