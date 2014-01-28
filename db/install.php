@@ -97,7 +97,7 @@ function xmldb_local_eliscore_install() {
         }
 
         if ($result && $oldversion < 2011080100) {
-            // create tables that were created by block curr_admin (if upgrading a
+            // create tables that were created by block elisadmin (if upgrading a
             // non-CM site)
 
             // Define table context_levels to be created
