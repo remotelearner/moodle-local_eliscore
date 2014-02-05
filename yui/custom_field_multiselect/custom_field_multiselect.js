@@ -222,7 +222,7 @@ YUI.add('moodle-local_eliscore-custom_field_multiselect', function(Y) {
                         tablecontainer.setContent(table);
                     }
                 } else {
-                    tablecontainer.setContent(document.createTextNode(M.str.elis_core.nofieldsselected));
+                    tablecontainer.setContent(document.createTextNode(M.str.local_eliscore.nofieldsselected));
                 }
             },
 
@@ -252,10 +252,10 @@ YUI.add('moodle-local_eliscore-custom_field_multiselect', function(Y) {
                 var table = document.createElement('table');
                 var row = document.createElement('tr');
                 var cell = document.createElement('th');
-                cell.appendChild(document.createTextNode(M.str.elis_core.field_category));
+                cell.appendChild(document.createTextNode(M.str.local_eliscore.field_category));
                 row.appendChild(cell);
                 cell = document.createElement('th');
-                cell.appendChild(document.createTextNode(M.str.elis_core.field_name));
+                cell.appendChild(document.createTextNode(M.str.local_eliscore.field_name));
                 row.appendChild(cell);
                 table.appendChild(row);
                 var firstincategory = true;
@@ -309,7 +309,7 @@ YUI.add('moodle-local_eliscore-custom_field_multiselect', function(Y) {
                 }
 
                 if (empty) {
-                    listing.setContent(document.createTextNode(M.str.elis_core.allitemsselected));
+                    listing.setContent(document.createTextNode(M.str.local_eliscore.allitemsselected));
                 } else {
                     this.panel.set('bodyContent', '<div id="layout-'+pickerid+'"><table>'+table.innerHTML+'</table></div>');
                 }
