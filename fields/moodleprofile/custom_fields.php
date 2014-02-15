@@ -321,7 +321,7 @@ function sync_profile_field_from_moodle($field) {
 
 // Form functions
 
-function moodle_profile_field_edit_form_definition($form) {
+function moodleprofile_field_edit_form_definition($form) {
     $level = required_param('level', PARAM_ACTION);
     if ($level != 'user') {
         return;
@@ -346,7 +346,7 @@ function moodle_profile_field_edit_form_definition($form) {
  * @param string $shortname   the custom field shortname
  * @uses  $DB
  */
-function moodle_profile_field_edit_form_definition_after_data($form, $level, $shortname) {
+function moodleprofile_field_edit_form_definition_after_data($form, $level, $shortname) {
     global $DB;
     if ($level != 'user') {
         return;
@@ -364,7 +364,7 @@ function moodle_profile_field_edit_form_definition_after_data($form, $level, $sh
     }
 }
 
-function moodle_profile_field_get_form_data($form, $field) {
+function moodleprofile_field_get_form_data($form, $field) {
     $level = required_param('level', PARAM_ACTION);
     if ($level != 'user') {
         return array();
@@ -385,7 +385,7 @@ function moodle_profile_field_get_form_data($form, $field) {
  * @param object $data        the submitted form data to save
  * @uses  $DB
  */
-function moodle_profile_field_save_form_data($form, $field, $data) {
+function moodleprofile_field_save_form_data($form, $field, $data) {
     global $DB;
 
     $level = required_param('level', PARAM_ACTION);
