@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
  * @return boolean
  */
 function xmldb_local_eliscore_install() {
-    global $DB;
+    global $DB, $CFG;
     $result = true;
     $dbman = $DB->get_manager();
 
@@ -392,11 +392,10 @@ function xmldb_local_eliscore_install() {
         if ($result && $oldversion < 2013022700) {
             // ELIS-8295: install missing message processors
             if ($dbman->table_exists('message_processors')) {
-                foreach (get_list_of_plugins('message/output') as $mp) {
-                    // error_log("elis_core::upgrade.php: checking for message processor: '{$mp}'");
-                    if (!$DB->record_exists('message_processors', array('name' => $mp))) {
-                        require_once("{$CFG->dirroot}/message/output/{$mp}/db/install.php");
-                        $installfcn = "xmldb_message_{$mp}_install";
+                foreach (core_component::get_plugin_list('message') as $name => $dir) {
+                    if (!$DB->record_exists('message_processors', array('name' => $name))) {
+                        require_once("{$dir}/db/install.php");
+                        $installfcn = "xmldb_message_{$name}_install";
                         if (function_exists($installfcn)) {
                             $installfcn();
                         }
