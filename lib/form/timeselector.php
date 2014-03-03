@@ -99,12 +99,14 @@ class elis_time_selector extends MoodleQuickForm_group {
             $minutes[$i] = sprintf("%02d",$i);
         }
 
+        $form = new HTML_QuickForm();
+
 		if (right_to_left()) {   // Switch order of elements for Right-to-Left
-			$this->_elements[] =& MoodleQuickForm::createElement('select', 'minute', get_string('minute', 'form'), $minutes, $this->getAttributes(), true);
-			$this->_elements[] =& MoodleQuickForm::createElement('select', 'hour', get_string('hour', 'form'), $hours, $this->getAttributes(), true);
+			$this->_elements[] =& $form->createElement('select', 'minute', get_string('minute', 'form'), $minutes, $this->getAttributes(), true);
+			$this->_elements[] =& $form->createElement('select', 'hour', get_string('hour', 'form'), $hours, $this->getAttributes(), true);
 		} else {
-			$this->_elements[] =& MoodleQuickForm::createElement('select', 'hour', get_string('hour', 'form'), $hours, $this->getAttributes(), true);
-			$this->_elements[] =& MoodleQuickForm::createElement('select', 'minute', get_string('minute', 'form'), $minutes, $this->getAttributes(), true);
+			$this->_elements[] =& $form->createElement('select', 'hour', get_string('hour', 'form'), $hours, $this->getAttributes(), true);
+			$this->_elements[] =& $form->createElement('select', 'minute', get_string('minute', 'form'), $minutes, $this->getAttributes(), true);
 		}
         // If optional we add a checkbox which the user can use to turn if on
         if($this->_options['optional']) {
@@ -113,8 +115,7 @@ class elis_time_selector extends MoodleQuickForm_group {
                 $this->updateAttributes(array('checked'=>'checked'));
             }
 
-            $this->_elements[] =& MoodleQuickForm::createElement('checkbox', 'timeenable',
-                                  'null', get_string('disable'), $this->getAttributes(), true);
+            $this->_elements[] =& $form->createElement('checkbox', 'timeenable', 'null', get_string('disable'), $this->getAttributes(), true);
 
         }
         foreach ($this->_elements as $element){
@@ -214,10 +215,12 @@ class elis_time_selector extends MoodleQuickForm_group {
 
     function accept(&$renderer, $required = false, $error = null)
     {
+        $form = new HTML_QuickForm();
+
         // 2 is the index where the checkbox is located
         if($this->isFrozen() && $this->_options['optional'] && $this->_elements[2]->getChecked()){
             $this->_elements = array();
-            $this->_elements[] =& MoodleQuickForm::createElement('static', 'disabled', '', get_string('disabled', 'filters'));
+            $this->_elements[] =& $form->createElement('static', 'disabled', '', get_string('disabled', 'filters'));
         } else if($this->isFrozen() && isset($this->_elements[2])) {
             // Remove the frozen checkbox when frozen
             unset($this->_elements[2]);
@@ -240,7 +243,7 @@ class elis_time_selector extends MoodleQuickForm_group {
                 $minute = sprintf('%02d', isset($value['minute']) ? current($value['minute']) : 0);
                 $output = "{$hour}:{$minute}";
             }
-            $renderer->renderElement(MoodleQuickForm::createElement('static', $this->getName(), $this->getLabel(), $output), $required, $error);
+            $renderer->renderElement($form->createElement('static', $this->getName(), $this->getLabel(), $output), $required, $error);
             return;
         }
 
