@@ -69,6 +69,13 @@ class custom_field_permissions_testcase extends elis_database_test {
     }
 
     /**
+     * Called once before any tests run.
+     */
+    public static function setUpBeforeClass() {
+        fclose(STDERR); // Suppress error_log() output.
+    }
+
+    /**
      * Initialize a test category and course, including their context records.
      *
      * @return object the course's context object
