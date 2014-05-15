@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    local_eliscore
+ * @package    local_elisprogram
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2014030701;
-$plugin->requires = 2013111801.11;  // Requires this Moodle version
-$plugin->release = '2.6.1.0 (Build: 20140307)';
+function xmldb_local_eliscore_upgrade($oldversion = 0) {
+    global $DB, $CFG;
 
+    $dbman = $DB->get_manager();
+    $result = true;
+
+    // Migrate language strings
+    if ($result && $oldversion < 2014030701) {
+        $migrator = new \local_eliscore\install\migration\migrator('elis_core', 'local_eliscore');
+        $result = $migrator->migrate_language_strings();
+        upgrade_plugin_savepoint($result, 2014030701, 'local', 'eliscore');
+    }
+
+    return $result;
+}

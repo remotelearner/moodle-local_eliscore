@@ -514,6 +514,10 @@ function xmldb_local_eliscore_install() {
         }
     }
 
+    // Migrate language strings
+    $migrator = new \local_eliscore\install\migration\migrator('elis_core', 'local_eliscore');
+    $migrator->migrate_language_strings();
+
     // Copy any settings from old plugin
     $oldconfig = get_config('elis_core');
     foreach ($oldconfig as $name => $value) {
