@@ -50,6 +50,7 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
     public $_popup_title = '';
     public $_required = false;
     public $_useid = false;
+    protected $_formdelim = '_';
     public $results_fields = array();
     public $perm_req_for_config = 'local/elisprogram:config';
 
@@ -119,8 +120,9 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
     }
 
     /**
-     * Get the default value
-     * @return mixed   default values or null if none
+     * Get the default value.
+     *
+     * @return mixed Default values or null if none.
      */
     public function get_default() {
         if ($this->_useid) {
@@ -150,36 +152,39 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
         $filt_action_url_base = $CFG->wwwroot.'/local/eliscore/lib/form/autocomplete.php?report='.$report.'&filter='.$filter;
 
         if ($this->_ui === 'inline') {
-            $mform->addElement('hidden', $this->_uniqueid, $this->get_default(), array('id' => 'id_'.$this->_uniqueid));
-            $mform->setType($this->_uniqueid, PARAM_TEXT);
+            $filterelements = array();
+
+            $idname = $this->_uniqueid.$this->_formdelim.'id';
+            $filterelements[] = $mform->createElement('hidden', $idname, $this->get_default(), array('id' => 'id_'.$idname));
 
             $search_url = $filt_action_url_base.'&mode=search&q=';
             $config_url = $filt_action_url_base.'&mode=config';
 
             $main_input_ph = ($this->_selection_enabled === true) ? get_string('filt_autoc_typetosearch','local_eliscore') : '';
 
-            $text_input = array($mform->createElement('text', $this->_uniqueid, $this->_label, array('placeholder' => $main_input_ph)));
+            $textentryname = $this->_uniqueid.$this->_formdelim.'textentry';
+            $filterelements[] = $mform->createElement('text', $textentryname, $this->_label, array('placeholder' => $main_input_ph));
             if ($this->config_allowed() === true) {
-                $text_input[] = $mform->createElement('static', 'configlink', '',
-                        '<a onclick="ac_show_panel(\''.$config_url.'\');" href="#">'
-                            .'<img src='.$CFG->wwwroot.'/local/elisprogram/pix/configuration.png>'
-                        .'</a>');
+                $configlink = '<a onclick="ac_show_panel(\''.$config_url.'\');" href="#">'.'<img src='.$CFG->wwwroot.'/local/elisprogram/pix/configuration.png>'.'</a>';
+                $configlinkname = $this->_uniqueid.$this->_formdelim.'configlink';
+                $filterelements[] = $mform->createElement('static', $configlinkname, '', $configlink);
             }
-            $text_input[] = $mform->createElement('html',
+            $filterelements[] = $mform->createElement('html',
                     '<div id="search_results_outer" class="filt_ac_res filt_ac_res_inline">
                         <div id="search_status" class="filt_ac_status filt_ac_status_inline"></div>
                         <div id="search_results"></div>
                     </div>');
 
-            $mform->addGroup($text_input, 'grp', $this->_label);
-            $mform->setType($this->_uniqueid, PARAM_RAW);
+            $mform->addElement('group', $this->_uniqueid.'_grp', $this->_label, $filterelements, '', false);
+            //$mform->addGroup($filterelements, $this->_uniqueid.'_grp', $this->_label);
+            $mform->setType($this->_uniqueid.$this->_formdelim.'textentry', PARAM_TEXT);
 
             if ($this->_selection_enabled === true) {
                 if ($this->_required) {
                     // This adds red * & that a required form field exists + validation
-                    $mform->addGroupRule('grp', get_string('required'), 'required', null, 1, 'client');
+                    $mform->addGroupRule($this->_uniqueid.'_grp', get_string('required'), 'required', null, 1, 'client');
                     if ($this->_useid) {
-                        $mform->addRule($this->_uniqueid, get_string('required'), 'required', null, 'client'); // hidden doesn't display
+                        //$mform->addRule($this->_uniqueid.'_grp_'.$this->_uniqueid.$this->_formdelim.'id', get_string('required'), 'required', null, 'client');
                     }
                 }
 
@@ -188,7 +193,7 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
                 $mform->addElement('html',"<script src='{$CFG->wwwroot}/local/eliscore/lib/form/autocomplete.js'></script>");
 
                 $filter_js[] =
-                        "var search_textbox = 'id_grp_{$this->_uniqueid}';
+                        "var search_textbox = 'id_{$this->_uniqueid}_textentry';
                         var search_results = 'search_results';
                         var search_status = 'search_status';
                         var search_results_outer = 'search_results_outer';
@@ -207,11 +212,11 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
                             }
                         });";
             } else {
-                $mform->freeze('grp');
+                $mform->freeze($this->_uniqueid.'_grp');
             }
 
             if (!empty($this->_default_label)) {
-                $mform->setDefault('grp['.$this->_uniqueid.']', $this->_default_label);
+                $mform->setDefault($this->_uniqueid.$this->_formdelim.'textentry', $this->_default_label);
             }
         } else {
 
@@ -249,21 +254,19 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
     }
 
     /**
-     * Retrieves data from the form data
-     * @param   object  $formdata  data submited with the form
-     * @return  mixed              array filter data or false when filter not set
+     * Retrieves data from the form data.
+     *
+     * @param object $formdata Data submited with the form
+     * @return array|false Filter data or false when filter not set
      */
     public function check_data($formdata) {
-        $field = $this->_uniqueid;
+        if ($this->_useid === true) {
+            $field = $this->_uniqueid.$this->_formdelim.'id';
+        } else {
+            $field = $this->_uniqueid.$this->_formdelim.'textentry';
+        }
 
-        if (array_key_exists($field, $formdata) and $formdata->$field !== '') {
-          /*
-            ob_start();
-            var_dump($formdata->$field);
-            $tmp = ob_get_contents();
-            ob_end_clean();
-            error_log("autocomplete_base.php::check_data() setting value => (string) {$tmp}");
-          */
+        if (isset($formdata->$field) && $formdata->$field !== '') {
             return array('value'=>(string)$formdata->$field); // TBD (string)
         }
 
@@ -314,6 +317,33 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
         }
 
         return array($sql, $params);
+    }
+
+    /**
+     * Takes a set of submitted values and retuns this filter's default values
+     * for them in the same structure (used to reset the filtering form),
+     *
+     * @param array $filterdata The submitted filtering data for this filter.
+     */
+    public function get_default_values($filterdata) {
+        // Our data map of field shortnames to values.
+        $defaultvalues = array();
+        $textentryname = $this->_uniqueid.$this->_formdelim.'textentry';
+        $idname = $this->_uniqueid.$this->_formdelim.'id';
+
+        // Set all fields to an empty value.
+        foreach ($filterdata as $key => $value) {
+            if ($key === $textentryname && !empty($this->_default_label)) {
+                $defaultvalues[$key] = $this->_default_label;
+            } else if ($key === $idname && !empty($this->_default_id)) {
+                $defaultvalues[$key] = $this->_default_id;
+            } else {
+                $defaultvalues[$key] = '';
+            }
+        }
+
+        // Return our data mapping.
+        return $defaultvalues;
     }
 
     /* BEGIN autocomplete-specific functions */
