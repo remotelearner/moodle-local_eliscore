@@ -52,6 +52,10 @@ function xmldb_eliscore_etl_install() {
     // Copy any settings from old plugin
     $oldconfig = get_config('eliscoreplugins_user_activity');
     foreach ($oldconfig as $name => $value) {
+        // We don't want version records.
+        if ($name === 'version') {
+            continue;
+        }
         set_config($name, $value, 'eliscore_etl');
     }
     unset_all_config_for_plugin('eliscoreplugins_user_activity');
