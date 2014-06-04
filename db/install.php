@@ -521,6 +521,10 @@ function xmldb_local_eliscore_install() {
     // Copy any settings from old plugin
     $oldconfig = get_config('elis_core');
     foreach ($oldconfig as $name => $value) {
+        // We don't want version records.
+        if ($name === 'version') {
+            continue;
+        }
         set_config($name, $value, 'local_eliscore');
     }
     unset_all_config_for_plugin('elis_core');
