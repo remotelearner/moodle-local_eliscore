@@ -28,7 +28,7 @@ $user_activity_health_checks = array(
         'user_activity_health_log_prune'
 );
 
-class user_activity_health_empty extends crlm_health_check_base {
+class user_activity_health_empty extends \local_elisprogram\lib\health\base {
     function __construct() {
         global $CURMAN;
         $this->lastrun = isset(elis::$config->eliscore_etl->last_run) ? (int)elis::$config->eliscore_etl->last_run : 0;
@@ -56,11 +56,16 @@ class user_activity_health_empty extends crlm_health_check_base {
         }
     }
 
-    function severity() {
+    /**
+     * Get problem severity.
+     *
+     * @return string Severity of the problem.
+     */
+    public function severity() {
         if ($this->inprogress) {
-            return healthpage::SEVERITY_NOTICE;
+            return \local_elisprogram\lib\health\base::SEVERITY_NOTICE;
         } else {
-            return healthpage::SEVERITY_ANNOYANCE;
+            return \local_elisprogram\lib\health\base::SEVERITY_ANNOYANCE;
         }
     }
 
@@ -110,7 +115,7 @@ class user_activity_health_empty extends crlm_health_check_base {
 /**
  * health check class for user activity and log table pruning interactions
  */
-class user_activity_health_log_prune extends crlm_health_check_base {
+class user_activity_health_log_prune extends \local_elisprogram\lib\health\base {
     /**
      * @var int The last run time of the ETL process
      */
@@ -159,9 +164,9 @@ class user_activity_health_log_prune extends crlm_health_check_base {
     public function severity() {
         $loglifetime = get_config('moodle', 'loglifetime');
         if (($this->lastrun + ($loglifetime - 6) * DAYSECS) <= time()) {
-            return healthpage::SEVERITY_SIGNIFICANT;
+            return \local_elisprogram\lib\health\base::SEVERITY_SIGNIFICANT;
         }
-        return healthpage::SEVERITY_NOTICE;
+        return \local_elisprogram\lib\health\base::SEVERITY_NOTICE;
     }
 
     /**
