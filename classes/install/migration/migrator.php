@@ -194,13 +194,15 @@ class migrator {
      * Uninstall the old plugin.
      */
     public function uninstall_old_plugin() {
-        global $CFG;
+        global $CFG, $DB;
 
         // Uninstall old component.
         require_once($CFG->dirroot.'/lib/weblib.php');
         require_once($CFG->dirroot.'/lib/classes/plugin_manager.php');
         $pluginman = \core_plugin_manager::instance();
         $pluginman->uninstall_plugin($this->oldcomponent, new \null_progress_trace());
+        // Delete event handlers for old component not removed by Moodle
+        $DB->delete_records('events_handlers', array('component' => $this->oldcomponent));
     }
 
     /**
