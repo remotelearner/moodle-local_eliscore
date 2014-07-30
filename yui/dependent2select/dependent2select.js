@@ -1,6 +1,6 @@
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,19 +18,19 @@
  * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
-YUI.add('moodle-local_eliscore-dependentselect', function(Y) {
+YUI.add('moodle-local_eliscore-dependent2select', function(Y) {
 
     /**
      * The filterbase module
      * @property FILTERBASENAME
      * @type {String}
-     * @default "core-dependentselect"
+     * @default "core-dependent2select"
      */
-    var FILTERBASENAME = 'core-dependentselect';
+    var FILTERBASENAME = 'core-dependent2select';
 
     /**
      * This method calls the base class constructor
@@ -41,7 +41,7 @@ YUI.add('moodle-local_eliscore-dependentselect', function(Y) {
     }
 
     /**
-     * @class M.local_eliscore.filters.dependentselect
+     * @class M.local_eliscore.filters.dependent2select
      */
     Y.extend(FILTERBASE, Y.Base, {
         /**
@@ -69,14 +69,26 @@ YUI.add('moodle-local_eliscore-dependentselect', function(Y) {
         path : '',
 
         /**
-         * Initialize the dependentselect module
+         * The second optional parent select id
+         * @property pid2
+         * @type {String}
+         * @default ''
+         */
+        pid2 : '',
+
+        /**
+         * Initialize the dependent2select module
          * @param array args function arguments: array(pid, id, path)
          */
         initializer : function(args) {
             this.pid = args[0];
             this.id = args[1];
             this.path = args[2];
+            this.pid2 = args[3];
             Y.on('change', this.updateoptions, '#id_'+this.pid, this);
+            if (this.pid2 != '') {
+                Y.on('change', this.updateoptions, '#id_'+this.pid2, this);
+            }
             this.updateoptions();
         },
 
@@ -86,6 +98,7 @@ YUI.add('moodle-local_eliscore-dependentselect', function(Y) {
          */
         updateoptions : function() {
             var parent = document.getElementById('id_'+this.pid);
+            var parent2 = (this.pid2 == '') ? null : document.getElementById('id_'+this.pid2);
             var child  = document.getElementById('id_'+this.id);
 
             if (!parent || !child) {
@@ -140,13 +153,27 @@ YUI.add('moodle-local_eliscore-dependentselect', function(Y) {
 
             var requestURL = '';
             var selected = new Array();
-            var index = 0;
-            var join = '';
-            for (var i = 0; i < parent.options.length; i += 1) {
-                if (parent.options[i].selected) {
-                    index = selected.length;
-                    requestURL += join + "id[]=" + parent.options[i].value;
-                    join = "&";
+            var i;
+            if (parent2) {
+                for (i = 0; i < parent2.options.length; i += 1) {
+                    if (parent2.options[i].selected) {
+                        selected.push(parent2.options[i].value);
+                    }
+                }
+            }
+            if (selected.length && selected[0] != '') {
+                requestURL = 'parent2=true';
+                for (i = 0; i < selected.length; i += 1) {
+                    requestURL += "&id[]=" + selected[i];
+                }
+            } else {
+                var join = '';
+                for (i = 0; i < parent.options.length; i += 1) {
+                    if (parent.options[i].selected) {
+                        selected.push(parent.options[i].value);
+                        requestURL += join + "id[]=" + parent.options[i].value;
+                        join = "&";
+                    }
                 }
             }
 
@@ -193,10 +220,11 @@ YUI.add('moodle-local_eliscore-dependentselect', function(Y) {
      * @param string pid parent pulldown field id
      * @param int    id pulldown field id
      * @param string path web path to report instance callback
+     * @param string pid2 optional second parent pulldown field id, to use if set
      * @return object the dependentselect object
      */
-    M.local_eliscore.init_dependentselect = function(pid, id, path) {
-        var args = [pid, id, path];
+    M.local_eliscore.init_dependent2select = function(pid, id, path, pid2) {
+        var args = [pid, id, path, pid2];
         return new FILTERBASE(args);
     }
 
