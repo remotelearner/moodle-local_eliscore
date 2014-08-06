@@ -152,34 +152,34 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
         $filt_action_url_base = $CFG->wwwroot.'/local/eliscore/lib/form/autocomplete.php?report='.$report.'&filter='.$filter;
 
         if ($this->_ui === 'inline') {
-            $filterelements = array();
 
+            $filterelements = array();
             $idname = $this->_uniqueid.$this->_formdelim.'id';
             $filterelements[] = $mform->createElement('hidden', $idname, $this->get_default(), array('id' => 'id_'.$idname));
 
-            $search_url = $filt_action_url_base.'&mode=search&q=';
-            $config_url = $filt_action_url_base.'&mode=config';
-
-            $main_input_ph = ($this->_selection_enabled === true) ? get_string('filt_autoc_typetosearch','local_eliscore') : '';
-
-            $textentryname = $this->_uniqueid.$this->_formdelim.'textentry';
-            $filterelements[] = $mform->createElement('text', $textentryname, $this->_label, array('placeholder' => $main_input_ph));
-            if ($this->config_allowed() === true) {
-                $configlink = '<a onclick="ac_show_panel(\''.$config_url.'\');" href="#">'.'<img src='.$CFG->wwwroot.'/local/elisprogram/pix/configuration.png>'.'</a>';
-                $configlinkname = $this->_uniqueid.$this->_formdelim.'configlink';
-                $filterelements[] = $mform->createElement('static', $configlinkname, '', $configlink);
-            }
-            $filterelements[] = $mform->createElement('html',
-                    '<div id="search_results_outer" class="filt_ac_res filt_ac_res_inline">
-                        <div id="search_status" class="filt_ac_status filt_ac_status_inline"></div>
-                        <div id="search_results"></div>
-                    </div>');
-
-            $mform->addElement('group', $this->_uniqueid.'_grp', $this->_label, $filterelements, '', false);
-            //$mform->addGroup($filterelements, $this->_uniqueid.'_grp', $this->_label);
-            $mform->setType($this->_uniqueid.$this->_formdelim.'textentry', PARAM_TEXT);
-
             if ($this->_selection_enabled === true) {
+
+                $search_url = $filt_action_url_base.'&mode=search&q=';
+                $config_url = $filt_action_url_base.'&mode=config';
+
+                $main_input_ph = ($this->_selection_enabled === true) ? get_string('filt_autoc_typetosearch','local_eliscore') : '';
+
+                $textentryname = $this->_uniqueid.$this->_formdelim.'textentry';
+                $filterelements[] = $mform->createElement('text', $textentryname, $this->_label, array('placeholder' => $main_input_ph));
+                if ($this->config_allowed() === true) {
+                    $configlink = '<a onclick="ac_show_panel(\''.$config_url.'\');" href="#">'.'<img src='.$CFG->wwwroot.'/local/elisprogram/pix/configuration.png>'.'</a>';
+                    $configlinkname = $this->_uniqueid.$this->_formdelim.'configlink';
+                    $filterelements[] = $mform->createElement('static', $configlinkname, '', $configlink);
+                }
+                $filterelements[] = $mform->createElement('html',
+                        '<div id="search_results_outer" class="filt_ac_res filt_ac_res_inline">
+                            <div id="search_status" class="filt_ac_status filt_ac_status_inline"></div>
+                            <div id="search_results"></div>
+                        </div>');
+
+                $mform->addElement('group', $this->_uniqueid.'_grp', $this->_label, $filterelements, '', false);
+                $mform->setType($this->_uniqueid.$this->_formdelim.'textentry', PARAM_TEXT);
+
                 if ($this->_required) {
                     // This adds red * & that a required form field exists + validation
                     $mform->addGroupRule($this->_uniqueid.'_grp', get_string('required'), 'required', null, 1, 'client');
@@ -212,7 +212,10 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
                             }
                         });";
             } else {
-                $mform->freeze($this->_uniqueid.'_grp');
+                $textentryname = $this->_uniqueid.$this->_formdelim.'textentry';
+                $filterelements[] = $mform->createElement('text', $textentryname, $this->_label, array('disabled' => 'disabled'));
+                $mform->addElement('group', $this->_uniqueid.'_grp', $this->_label, $filterelements, '', false);
+                $mform->setType($this->_uniqueid.$this->_formdelim.'textentry', PARAM_TEXT);
             }
 
             if (!empty($this->_default_label)) {
