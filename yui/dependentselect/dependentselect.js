@@ -82,11 +82,15 @@ YUI.add('moodle-local_eliscore-dependentselect', function(Y) {
 
         /**
          * Update options on child pulldown for dependent select
-         * @return boolean true
+         * @return boolean true on success, false otherwise
          */
         updateoptions : function() {
             var parent = document.getElementById('id_'+this.pid);
             var child  = document.getElementById('id_'+this.id);
+
+            if (!parent || !child) {
+                return false;
+            }
 
             var option_success = function(transid, o) {
                 var data = Y.JSON.parse(o.responseText);
