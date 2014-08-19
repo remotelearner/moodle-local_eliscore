@@ -211,16 +211,27 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
                                 $('#'+search_results_outer).css('left',pos.left+2).css('top',(pos.top+height+2));
                             }
                         });";
+
+                $defaultval = '';
+                $fval = php_report_filtering_get_active_filter_values($this->_parent_report, $this->_uniqueid.'_textentry');
+                if (!empty($fval)) {
+                    $defaultval = $fval[0]['value'];
+                } else if (!empty($this->_default_label)) {
+                    $defaultval = $this->_default_label;
+                }
+                if (!empty($defaultval)) {
+                    $mform->setDefault($this->_uniqueid.$this->_formdelim.'textentry', $defaultval);
+                }
             } else {
                 $textentryname = $this->_uniqueid.$this->_formdelim.'textentry';
                 $filterelements[] = $mform->createElement('text', $textentryname, $this->_label, array('disabled' => 'disabled'));
                 $mform->addElement('group', $this->_uniqueid.'_grp', $this->_label, $filterelements, '', false);
                 $mform->setType($this->_uniqueid.$this->_formdelim.'textentry', PARAM_TEXT);
+                if (!empty($this->_default_label)) {
+                    $mform->setDefault($this->_uniqueid.$this->_formdelim.'textentry', $this->_default_label);
+                }
             }
 
-            if (!empty($this->_default_label)) {
-                $mform->setDefault($this->_uniqueid.$this->_formdelim.'textentry', $this->_default_label);
-            }
         } else {
 
             $popup_link = '<span id="id_'.$this->_uniqueid.'_label"></span> ';
