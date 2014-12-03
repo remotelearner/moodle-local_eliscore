@@ -419,4 +419,49 @@ class data_object_testcase extends elis_database_test {
         $config = new config_object(false, null, array(), false, array(), $DB);
         $config->save();
     }
+
+    /**
+     * Data provider for test_jsonsafe_to_array().
+     * @return array the test data
+     */
+    public function jsonsafe_to_array_provider() {
+        return array(
+                array(array(
+                    'name' => 'Text',
+                    'value' => 1.0
+                )),
+                array(array(
+                    'name' => 'More Text',
+                    'value' => (float)2
+                )),
+                array(array(
+                    'name' => 'Even More Text',
+                    'value' => (boolean)1
+                )),
+                array(array(
+                    'name' => 10.0,
+                    'value' => (double)10
+                )),
+                array(array(
+                    'name' => (int)10.2,
+                    'value' => '10.2'
+                )),
+                array(array(
+                    'name' => (string)10.2,
+                    'value' => "10.4"
+                )),
+        );
+    }
+
+    /**
+     * Test json safe option for data_object method to_array()
+     * @dataProvider jsonsafe_to_array_provider
+     * @param array $inputdata the object data to use to initialize elis data object
+     */
+    public function test_jsonsafe_to_array($inputdata) {
+        $obj = new config_object($inputdata);
+        $arrayed = $obj->to_array(true); // Set json-safe.
+        $decoded = json_decode(json_encode($arrayed), true);
+        $this->assertTrue($arrayed === $decoded);
+    }
 }

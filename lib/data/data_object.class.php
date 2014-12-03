@@ -521,12 +521,14 @@ class elis_data_object {
      * Converts the data_object a dumb object representation (without
      * associations).  This is required when using the Moodle *_record
      * functions, or get_string.
+     * @param bool $jsonsafe Whether the method should return a json safe object.
+     * @return object The standard PHP object representation of the ELIS data object.
      */
-    public function to_object() {
+    public function to_object($jsonsafe = false) {
         $obj = new object;
         // Add extradata fields first
         foreach ($this->_extradata as $key => $val) {
-            $obj->$key = $val;
+            $obj->$key = ($jsonsafe && gettype($val) == 'double' && strpos((string)$val, '.') === false) ? "{$val}.0" : $val;
         }
         $reflect = new ReflectionClass(get_class($this));
         $prefix_len = strlen(self::FIELD_PREFIX);
@@ -535,7 +537,8 @@ class elis_data_object {
                 $field_name = $prop->getName();
                 $name = substr($field_name, $prefix_len);
                 if ($this->$field_name !== self::$_unset) {
-                    $obj->$name = $this->$field_name;
+                    $obj->$name = ($jsonsafe && gettype($this->$field_name) == 'double' && strpos((string)$this->$field_name, '.') === false)
+                            ? "{$this->$field_name}.0" : $this->$field_name;
                 }
             }
         }
@@ -544,9 +547,11 @@ class elis_data_object {
 
     /**
      * Converts the data_object an array representation (without associations).
+     * @param bool $jsonsafe Whether the method should return a json safe array.
+     * @return array The standard PHP associative array representation of the ELIS data object.
      */
-    public function to_array() {
-        return (array)($this->to_object());
+    public function to_array($jsonsafe = false) {
+        return (array)($this->to_object($jsonsafe));
     }
 
     /***************************************************************************

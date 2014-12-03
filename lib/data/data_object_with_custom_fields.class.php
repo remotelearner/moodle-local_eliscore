@@ -113,13 +113,17 @@ abstract class data_object_with_custom_fields extends elis_data_object {
      * functions, or get_string.
      *
      * Overridden to add custom fields.
+     *
+     * @param bool $jsonsafe Whether the method should return a json safe object.
+     * @return object The standard PHP object representation of the ELIS data object.
      */
-    public function to_object() {
-        $obj = parent::to_object();
+    public function to_object($jsonsafe = false) {
+        $obj = parent::to_object($jsonsafe);
         $this->_load_field_data();
         foreach ($this->_field_data as $name => $value) {
             $fieldname = "field_{$name}";
-            $obj->$fieldname = $value;
+            $obj->$fieldname = ($jsonsafe && gettype($value) == 'double' && strpos((string)$value, '.') === false)
+                    ? "{$value}.0" : $value;
         }
         return $obj;
     }
