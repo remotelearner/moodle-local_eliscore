@@ -1,8 +1,7 @@
 <?php
-
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,12 +20,13 @@
  * @author     Remote-Learner.net Inc
  * @author     James McQuillan <james.mcquillan@remote-learner.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 require_once($CFG->dirroot.'/local/eliscore/lib/filtering/lib.php');
 require_once($CFG->dirroot.'/local/eliscore/lib/form/autocompletelib.php');
+require_once($CFG->dirroot.'/local/eliscore/lib/page.class.php');
 
 /**
  * Autocomplete Filter
@@ -63,7 +63,6 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
      * @param  array    $options   select options
      */
     public function __construct($uniqueid, $alias, $name, $label, $advanced, $field, $options = array()) {
-
         parent::generalized_filter_type(
                 $uniqueid,
                 $alias,
@@ -188,9 +187,12 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
                     }
                 }
 
-                $mform->addElement('html',"<link rel='stylesheet' type='text/css' href='{$CFG->wwwroot}/local/eliscore/lib/form/autocomplete.css' />");
-                $mform->addElement('html',"<script src='{$CFG->wwwroot}/local/eliscore/js/jquery-1.7.1.min.js'></script>");
-                $mform->addElement('html',"<script src='{$CFG->wwwroot}/local/eliscore/lib/form/autocomplete.js'></script>");
+                // Must add jquery lib but too late to use $PAGE->requires->jquery().
+                $pgreqmanager = new elis_pg_reqs_manager();
+                $pgreqmanager->jquery();
+                $mform->addElement('html', $pgreqmanager->get_jquery_headcode());
+                $mform->addElement('html', "<link rel='stylesheet' type='text/css' href='{$CFG->wwwroot}/local/eliscore/lib/form/autocomplete.css' />");
+                $mform->addElement('html', "<script src='{$CFG->wwwroot}/local/eliscore/lib/form/autocomplete.js'></script>");
 
                 $filter_js[] =
                         "var search_textbox = 'id_{$this->_uniqueid}_textentry';

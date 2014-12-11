@@ -3,7 +3,7 @@
  * Base ELIS page class
  *
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -59,6 +59,7 @@ abstract class elis_page extends moodle_page {
         $this->params = $params;
         $this->set_context($this->_get_page_context());
         $this->set_url($this->_get_page_url(), $this->_get_page_params());
+        $this->get_header_requirements();
         //set up a CSS hook for styling all ELIS pages
         $this->add_body_class('elis_page');
     }
@@ -107,6 +108,13 @@ abstract class elis_page extends moodle_page {
      */
     protected function _get_page_layout() {
         return 'standard';
+    }
+
+    /**
+     * Set page header requirements
+     * Overload to set any page header requirements, like jquery, etc...
+     */
+    protected function get_header_requirements() {
     }
 
     /**
@@ -388,5 +396,19 @@ abstract class elis_page extends moodle_page {
     static function get_entity_name($parent_path, $name) {
         //implement in child class if necessary
         return NULL;
+    }
+}
+
+/**
+ * Subclass of Moodle page_manager_requirements class.
+ */
+class elis_pg_reqs_manager extends page_requirements_manager {
+
+    /**
+     * Return jQuery related markup for page start.
+     * @return string
+     */
+    public function get_jquery_headcode() {
+        return parent::get_jquery_headcode();
     }
 }
