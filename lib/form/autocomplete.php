@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@
  * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
 require_once(dirname(__FILE__).'/../../../../config.php');
 require_once($CFG->dirroot.'/local/elisreports/php_report_base.php');
 require_once(dirname(__FILE__).'/autocompletelib.php');
-
+require_once(dirname(__FILE__).'/../page.class.php');
 //require a report and a filter
 $requested_report = required_param('report',PARAM_CLEAN);
 $requested_filter = required_param('filter',PARAM_CLEAN);
@@ -79,6 +79,8 @@ if ($filter->_selection_enabled !== true) {
     die();
 }
 
+$pgreqmanager = new elis_pg_reqs_manager();
+$pgreqmanager->jquery();
 
 if ($mode === 'search') {
 
@@ -148,7 +150,7 @@ if ($mode === 'search') {
         ?>
         <html>
         <head>
-            <script src="<?php echo $CFG->wwwroot.'/local/eliscore/js/jquery-1.7.1.min.js'; ?>"></script>
+            <?php echo $pgreqmanager->get_jquery_headcode(); ?>
             <link rel="stylesheet" type="text/css" href="<?php echo $CFG->wwwroot,'/theme/styles.php?theme='.$CFG->theme?>" />
             <style>
                 tr:hover{background-color:#efe;}
@@ -182,7 +184,7 @@ if ($mode === 'search') {
     ?>
     <html>
     <head>
-        <script src="<?php echo $CFG->wwwroot.'/local/eliscore/js/jquery-1.7.1.min.js'; ?>"></script>
+        <?php echo $pgreqmanager->get_jquery_headcode(); ?>
         <script src="<?php echo $CFG->wwwroot.'/local/eliscore/lib/form/autocomplete.js'; ?>"></script>
         <style>
             h2{padding:5px;margin-bottom:10px;}
@@ -212,5 +214,4 @@ if ($mode === 'search') {
     </html>
     <?php
 }
-
 
