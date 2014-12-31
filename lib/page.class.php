@@ -31,6 +31,33 @@ global $CFG;
 require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
 
 /**
+ * Class casting function.
+ *
+ * @param string|object $destination
+ * @param object $sourceobject
+ * @return object destination object with values of sourceobject
+ */
+function cast_obj($destination, $sourceobject) {
+    if (is_string($destination)) {
+        $destination = new $destination();
+    }
+    $sourcereflection = new ReflectionObject($sourceobject);
+    $destinationreflection = new ReflectionObject($destination);
+    $sourceproperties = $sourcereflection->getProperties();
+    foreach ($sourceproperties as $sourceproperty) {
+        $sourceproperty->setAccessible(true);
+        $name = $sourceproperty->getName();
+        $value = $sourceproperty->getValue($sourceobject);
+        if ($destinationreflection->hasProperty($name)) {
+            $propdest = $destinationreflection->getProperty($name);
+            $propdest->setAccessible(true);
+            $propdest->setValue($destination, $value);
+        } // TBD: don't set any additional properties - else { $destination->$name = $value; }
+    }
+    return $destination;
+}
+
+/**
  * Base ELIS page class.  Provides a framework for displaying a standard page
  * and performing actions.
  *
@@ -397,12 +424,36 @@ abstract class elis_page extends moodle_page {
         //implement in child class if necessary
         return NULL;
     }
+
+    /**
+     * Get page requirements manager of page.
+     * @return object elis_pg_reqs_manager for page.
+     */
+    public function get_pg_req_manager() {
+        return cast_obj('elis_pg_reqs_manager', $this->_requires);
+    }
+}
+
+/**
+ * ELIS core page. Dummy class to provide a class to create instance of
+ * see elis_pg_reqs_manager class, below.
+ */
+class eliscorepage extends elis_page {
 }
 
 /**
  * Subclass of Moodle page_manager_requirements class.
  */
 class elis_pg_reqs_manager extends page_requirements_manager {
+    /** @const jquery base library included bit-mapped */
+    const JQUERY_BASE_INCLUDED = 1;
+    /** @const jquery ui library included */
+    const JQUERY_UI_INCLUDED = 2;
+    /** @const jquery ui-css included */
+    const JQUERY_UICSS_INCLUDED = 4;
+
+    /** @var int included jquery in page */
+    protected $included_jquery = -1;
 
     /**
      * Return jQuery related markup for page start.
@@ -410,5 +461,94 @@ class elis_pg_reqs_manager extends page_requirements_manager {
      */
     public function get_jquery_headcode() {
         return parent::get_jquery_headcode();
+    }
+
+    /**
+     * Method to determine jquery libraries already included in page header.
+     * @param string $jqueryplugin the jquery component to test.
+     * @param object $page the moodle_page object, defaults to $PAGE.
+     * @return bool true if jquery component already installed, false otherwise.
+     */
+    public function jquery_included($jqueryplugin, $page = null) {
+        $pluginmap = array('jquery' => self::JQUERY_BASE_INCLUDED, 'ui' => self::JQUERY_UI_INCLUDED, 'ui-css' => self::JQUERY_UICSS_INCLUDED);
+        if ($this->included_jquery < 0) {
+            global $PAGE;
+            if (is_null($page)) {
+                $page = $PAGE;
+            }
+            $jquery = 0;
+            $elispage = cast_obj('eliscorepage', $page);
+            $pgreqmanager = $elispage->get_pg_req_manager();
+            $pageheadcode = $pgreqmanager->get_jquery_headcode();
+            if (preg_match("/script.*jquery-[1-9].*[.]js/i", $pageheadcode) !== false) {
+                $jquery = $jquery | self::JQUERY_BASE_INCLUDED;
+            }
+            if (preg_match("/script.*jquery-ui[.]js/i", $pageheadcode) !== false) {
+                $jquery = $jquery | self::JQUERY_UI_INCLUDED;
+            }
+            if (preg_match("/jquery-ui[.]css/", $pageheadcode) !== false) {
+                $jquery = $jquery | self::JQUERY_UICSS_INCLUDED;
+            }
+            $this->included_jquery = $jquery;
+        }
+        if (empty($jqueryplugin)) {
+            $jqueryplugin = 'jquery';
+        }
+        return isset($pluginmap[$jqueryplugin]) && ($this->included_jquery & $pluginmap[$jqueryplugin]) != 0;
+    }
+
+    /**
+     * Method to require jquery plugins.
+     * @param array $jqueryplugins jquery plugins string array required for page, 'jquery', 'ui', 'ui-css'.
+     * @param object $page the moodle_page object, defaults to $PAGE.
+     * @param bool $output true to directly output jquery html, false (default) returns html only.
+     * @return string required jquery html or empty string for none.
+     */
+    public function jquery_plugins($jqueryplugins, $page = null, $output = false) {
+        global $PAGE;
+        if (is_null($page)) {
+            $page = $PAGE;
+        }
+        $jqueryhtml = '';
+        $failedplugins = false;
+        foreach ($jqueryplugins as $jqueryplugin) {
+            ob_start(); // TBD - if header already done, method jquery_plugin() currently outputs debugging message and returns false - no exception!
+            try {
+                $success = $page->requires->jquery_plugin($jqueryplugin);
+            } catch (Exception $e) {
+                $success = false;
+            }
+            ob_end_clean();
+            if (!$success && !$this->jquery_included($jqueryplugin, $page)) {
+                $failedplugins = true;
+                $this->jquery_plugin($jqueryplugin);
+            }
+        }
+        if ($failedplugins) {
+            $jqueryhtml = $this->get_jquery_headcode();
+            if ($output) {
+                echo $jqueryhtml;
+            }
+        }
+        return $jqueryhtml;
+    }
+
+    /**
+     * Method to add YUI lib css to page or return required style '@import' directive.
+     * @param object $page the page object to require css file.
+     * @param string $cssfile the required css file with path relative to lib/yuilib/X.Y.Z/
+     * @return string the style directive for the specified css file, or empty if added to page requirements or not found.
+     */
+    public function yui_css_style($page, $cssfile) {
+        global $CFG;
+        $csspath = "/lib/yuilib/{$CFG->yui3version}/{$cssfile}";
+        if (file_exists($CFG->dirroot.$csspath)) {
+            try {
+                $page->requires->css($csspath);
+            } catch (Exception $e) {
+                return "@import url(\"{$this->yui3loader->base}{$cssfile}\");\n";
+            }
+        }
+        return '';
     }
 }
