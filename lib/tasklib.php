@@ -41,7 +41,7 @@ function elis_tasks_load_def($component) {
     if ($component == 'moodle') {
         $defpath = $CFG->libdir.'/db/elistasks.php';
     } else {
-        $defpath = get_component_directory($component).'/db/elistasks.php';
+        $defpath = core_component::get_component_directory($component).'/db/elistasks.php';
         //error_log("/local/eliscore/lib/tasklib.php::elis_tasks_load_def('{$component}') looking for: {$defpath}");
     }
 
