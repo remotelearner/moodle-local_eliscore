@@ -3,7 +3,7 @@
  * Task management functions.  Based heavily on /lib/eventslib.php
  *
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -209,10 +209,11 @@ function elis_tasks_cleanup($component, $cachedtasks) {
 /******************************************************************************
  * The rest of this file was copied from mahara:htdocs/lib/cron.php, with the
  * following modifications:
+ * - support for DataHub's historic 'period' format
  * - take into account the task's timezone field
  *
  * Mahara: Electronic portfolio, weblog, resume builder and social networking
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *                         http://wiki.mahara.org/Contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -230,6 +231,11 @@ function elis_tasks_cleanup($component, $cachedtasks) {
  ******************************************************************************/
 
 function cron_next_run_time($lastrun, $job) {
+    if (!empty($job['period'])) {
+        $period = (int)schedule_period_minutes($job['period']) * 60;
+        $iterations = ceil(($time - $lastrun + 59) / $period);
+        return ($iterations * $period) + $lastrun;
+    }
     //error_log("cron_next_run_time($lastrun, (object)job) job['timezone'] = {$job['timezone']}");
     $run_date = usergetdate($lastrun, $job['timezone']);
 

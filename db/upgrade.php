@@ -25,8 +25,23 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2014082503;
-$plugin->requires = 2014051201.00; // Requires this Moodle version
-$plugin->release = '2.7.5.0 (Build: 20150202)';
-$plugin->maturity = MATURITY_STABLE;
+function xmldb_local_eliscore_upgrade($oldversion = 0) {
+    global $DB, $CFG;
 
+    $dbman = $DB->get_manager();
+    $result = true;
+
+    if ($result && $oldversion < 2014082503) {
+        // Update elis scheduled tasks table with new 'period' column.
+        $table = new xmldb_table('local_eliscore_sched_tasks');
+        if ($dbman->table_exists($table)) {
+            $field = new xmldb_field('period', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'blocked');
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+        upgrade_plugin_savepoint($result, 2014082503, 'local', 'eliscore');
+    }
+
+    return $result;
+}
