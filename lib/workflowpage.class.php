@@ -376,5 +376,13 @@ abstract class workflowpage extends elis_page {
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');
     }
+
+    /**
+     * Gets the scheduling step title.
+     * @return string
+     */
+    public function get_schedule_step_title() {
+        return '';
+    }
 }
 

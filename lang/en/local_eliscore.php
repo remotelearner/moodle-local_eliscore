@@ -25,6 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['advancedscheduling'] = 'Advanced Scheduling';
 $string['allitemsselected'] = 'All items selected';
 $string['autocomplete_filterdisabled'] = 'Autocomplete filter is disabled!';
 $string['autocomplete_nofields'] = 'No valid search_fields option received when constructing autocomplete filter';
@@ -256,6 +257,7 @@ $string['nofieldsselected'] = 'No fields selected';
 $string['nogradeitems'] = 'No grade items found';
 $string['noidnumber'] = 'No ID number';
 $string['or'] = ' or ';
+$string['periodscheduling'] = 'Basic <i>Period</i> Scheduling';
 $string['pluginname'] = 'ELIS Core';
 $string['present'] = 'Present';
 $string['preup_ac_check'] = 'Checking for ELIS Alfresco configuration settings';
@@ -328,3 +330,31 @@ $string['workflow_cancelled'] = 'Cancelled';
 $string['workflow_invalidstep'] = 'Invalid step specified';
 $string['write_to_non_overlay_table'] = 'Attempted write to a non-overlay table: {$a}';
 
+// Calendar Scheduling form:
+$string['start'] = 'Start';
+$string['now'] = 'Now';
+$string['time_on'] = 'On';
+$string['recurrence'] = 'Recurrence';
+$string['recurrencetype'] = 'Recurrence Type';
+$string['simple_recurrence'] = 'Simple';
+$string['calendar_recurrence'] = 'Calendar';
+$string['simple_recurrence_settings'] = 'Simple recurrence settings';
+$string['runtype'] = 'The report runs:';
+$string['indefinitely'] = 'Once per day, every day, indefinitely';
+$string['until'] = 'Once per day, until ';
+$string['times'] = 'time(s)';
+$string['every'] = 'Every:';
+$string['freq_hours'] = 'hour(s)';
+$string['freq_days'] = 'day(s)';
+$string['freq_months'] = 'month(s)';
+$string['calendar_recurrence_settings'] = 'Calendar recurrence settings';
+$string['enddate'] = 'End date';
+$string['startdate'] = 'Start date';
+$string['days'] = 'Days';
+$string['everyday'] = 'Every day';
+$string['weekdays'] = 'Week days';
+$string['monthdays'] = 'Month days';
+$string['months'] = 'Months';
+$string['validmonthdays'] = 'Required: month numbers and commas only e.g. 5,12';
+
+$string['required_field'] = 'Error: {$a} is a required field';
