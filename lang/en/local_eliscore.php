@@ -344,6 +344,7 @@ $string['indefinitely'] = 'Once per day, every day, indefinitely';
 $string['until'] = 'Once per day, until ';
 $string['times'] = 'time(s)';
 $string['every'] = 'Every:';
+$string['freq_minutes'] = 'minutes';
 $string['freq_hours'] = 'hour(s)';
 $string['freq_days'] = 'day(s)';
 $string['freq_months'] = 'month(s)';
@@ -356,5 +357,9 @@ $string['weekdays'] = 'Week days';
 $string['monthdays'] = 'Month days';
 $string['months'] = 'Months';
 $string['validmonthdays'] = 'Required: month numbers and commas only e.g. 5,12';
+$string['form_frequency_error'] = 'Schedule frequency must be greater than or equal 5 minutes!';
+$string['form_period'] = 'Period:';
+$string['form_period_error'] = 'Schedule period must be of form: *d*h*m and greater than 5 minutes!';
+$string['form_period_help'] = 'This setting controls how often the schedule job is run. Values can be entered in the form \*d\*h\*m to represent days, hours, and minutes. Please set this value to five minutes or longer to allow ample time for processing.';
 
 $string['required_field'] = 'Error: {$a} is a required field';

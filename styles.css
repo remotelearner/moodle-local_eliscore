@@ -32,3 +32,19 @@ fieldset.accesshide.custom_field_options_fieldset {
   width: 100%;
 }
 
+.scheduleform .mform .ui-accordion-content .fitem fieldset.felement {
+    width: 100%;
+}
+
+#accordion .ui-icon-collapsed {
+    background-image: url('../../pix/t/collapsed.svg');
+    fill: #000000;
+}
+#accordion .ui-icon-expanded {
+    background-image: url('../../pix/t/expanded.svg');
+    fill: #000000;
+}
+
+#fitem_idperiod .fitemtitle label {
+    background: transparent url('../../pix/req.gif') no-repeat right center;
+}

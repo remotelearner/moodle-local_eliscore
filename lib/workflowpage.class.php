@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -128,7 +128,11 @@ abstract class workflowpage extends elis_page {
      * Gets the current step.
      */
     function get_current_step() {
-        $curr_step = $this->optional_param('_step', null, PARAM_CLEANFILE);
+        $workflowdata = $this->workflow->unserialize_data(array());
+        if (isset($workflowdata['_step'])) {
+            $this->params['_step'] = $workflowdata['_step'];
+        }
+        $curr_step = $this->optional_param('_step', optional_param('_step', null, PARAM_CLEAN), PARAM_CLEANFILE);
         $steps = $this->workflow->get_steps();
         if (empty($curr_step)) {
             // if not specified, default to the first step
@@ -259,21 +263,19 @@ abstract class workflowpage extends elis_page {
     function do_save() {
         $errors = $this->save_submitted_values();
         if ($errors !== null) {
-            $this->print_header();
+            $this->print_header(null);
             $this->display_progress();
             $this->display_step($errors); // show the same step, with an error code
             $this->print_footer();
         } else {
             $next = $this->get_next_step();
             if ($next !== workflow::STEP_FINISH) {
-                $target = $this->get_new_page(array('_wfid' => $this->workflow->id,
-                                                    '_step' => $next));
-                return redirect($target->url);
+                $target = $this->get_new_page(array('_wfid' => $this->workflow->id, '_step' => $next));
             } else {
-                $target = $this->get_new_page(array('_wfid' => $this->workflow->id,
-                                                    'action' => 'finish'));
-                return $target->action_finish();
+                $target = $this->get_new_page(array('_wfid' => $this->workflow->id, 'action' => 'finish'));
+                // return $target->action_finish();
             }
+            return redirect($target->url);
         }
     }
 
@@ -332,8 +334,7 @@ abstract class workflowpage extends elis_page {
     /**
      * Add Previous/Next buttons to a formslib form.
      *
-     * @param MoodleQuickForm $mform the MoodleQuickForm object (that is,
-     * $form->_form) to add the buttons to
+     * @param MoodleQuickForm $moodleform the moodleform object to add the buttons to
      * @param string $prevstep the ID of the previous step
      * @param string $nextstep the ID of the next step.  If null, go to the
      * next step as defined by the workflow.  If it is workflow::STEP_FINISH,
@@ -346,12 +347,11 @@ abstract class workflowpage extends elis_page {
      */
     public static function add_navigation_buttons(MoodleQuickForm $mform, $prevstep = null, $nextstep = null, $nextlabel = null) {
         global $CFG, $FULLME;
-        require_once ($CFG->dirroot.'/local/eliscore/lib/form/xbutton.php');
+        require_once($CFG->dirroot.'/local/eliscore/lib/form/xbutton.php');
         // ELIS-3501: Previous button was broken in IE7, changed to onclick
         $target = null;
         if ($prevstep && ($workflow_id = optional_param('_wfid', 0, PARAM_INT))) {
-            $target = new moodle_url($FULLME, array('_wfid' => $workflow_id,
-                                                    '_step' => $prevstep));
+            $target = new moodle_url($FULLME, array('_wfid' => $workflow_id, '_step' => $prevstep));
             $target = $target->out(false);
         }
         $buttonarray = array();
@@ -378,8 +378,8 @@ abstract class workflowpage extends elis_page {
     }
 
     /**
-     * Gets the scheduling step title.
-     * @return string
+     * Gets the scheduling step titles.
+     * @return array|string string or an array of strings.
      */
     public function get_schedule_step_title() {
         return '';
