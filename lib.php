@@ -244,7 +244,7 @@ function to_gmt($timestamp, $timezone = 99, $dstdate = null) {
  * and output string to web server error log file.
  */
 function debug_error_log($str) {
-    if (debugging('', DEBUG_DEVELOPER)) {
+    if ((!defined('PHPUNIT_TEST') || !PHPUNIT_TEST) && debugging('', DEBUG_DEVELOPER)) {
         error_log($str);
     }
 }

@@ -27,16 +27,24 @@ require_once ($CFG->libdir.'/formslib.php');
 require_once ($CFG->dirroot.'/local/eliscore/lib/schedulingtraits.php');
 require_once ($CFG->dirroot.'/local/eliscore/lib/form/timeselector.php');
 
-// Javascript files required to convert enter from form cancel to next step
+/**
+ * Javascript files required to convert enter from form cancel to next step.
+ */
 function require_js_files() {
     global $PAGE;
     $PAGE->requires->js('/lib/javascript-static.js'); // addonload()
     $PAGE->requires->js('/local/eliscore/js/entertonext.js');
 }
 
+/**
+ * Generic scheduling step form.
+ */
 class scheduling_form_step_schedule extends moodleform {
+    /**
+     * The form definition.
+     */
     function definition() {
-        global $PAGE;
+        global $OUTPUT, $PAGE;
         require_js_files();
         $mform =& $this->_form;
 
@@ -44,7 +52,19 @@ class scheduling_form_step_schedule extends moodleform {
         $workflow = $page->workflow;
         // Get the workflow data for the timezone to keep the time_selector in line
         $workflowdata = $workflow->unserialize_data(array());
-        // $mform->addElement('html', '<div class="scheduleform">');
+        if (!isset($workflowdata['recurrencetype'])) {
+            $workflowdata['recurrencetype'] = empty($workflowdata['period']) ? 'simple' : 'period';
+        }
+
+        $titles = $page->get_schedule_step_title();
+        if (!is_array($titles)) {
+            $titles = array($titles);
+        }
+        foreach ($titles as $title) {
+            $mform->addElement('html', "<h2>$title</h2>");
+        }
+
+        $mform->addElement('html', '<div class="scheduleform">');
         if (!empty($page->schedule_period)) {
             // Accordion implementation
             $mform->addElement('html', '<div id="accordion">');
@@ -54,7 +74,9 @@ class scheduling_form_step_schedule extends moodleform {
             $mform->addElement('html', '</h3>');
         }
 
-        $mform->addElement('html','');
+        $mform->addElement('html', '<div>');
+        $mform->addElement('html', '<div class="advancedcalendar">');
+
         // Add javascript function to toggle the simple/recurring calendar elements
         // Also add a listener to show/hide the simple/calendar elements on page load
         $mform->addElement('html', '<script type="text/javascript">
@@ -102,8 +124,6 @@ class scheduling_form_step_schedule extends moodleform {
         $mform->addElement('hidden', 'action', 'save');
         $mform->setType('action', PARAM_TEXT);
 
-        $mform->addElement('html', '<h2>'.$page->get_schedule_step_title().'</h2>');
-
         $choices = get_list_of_timezones();
         $choices['99'] = get_string('serverlocaltime');
         $mform->addElement('select', 'timezone', get_string('timezone'), $choices);
@@ -118,21 +138,23 @@ class scheduling_form_step_schedule extends moodleform {
         $mform->_attributes['onclick'] = 'switchCalendar();';
         //Set date options: timezone = 0 so it doesn't adjust the time ...
         $date_options = array('timezone' => 0, 'optional' => false, 'startyear' => userdate(time(), '%Y', -13, false), 'stopyear' => 2038, 'applydst' => false);
-        $group[] = $mform->createElement('date_selector', 'startdate', '', $date_options);
+        $group[] = $mform->createElement('date_time_selector', 'startdate', '', $date_options);
         $mform->addGroup($group, 'starttype', get_string('start', 'local_eliscore'), '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', false);
         $mform->setDefault('starttype', 0);
-        $mform->addRule('starttype', get_string('required_field', 'local_eliscore', get_string('start', 'local_eliscore')), 'required', null, 'client');
+        // $mform->addRule('starttype', get_string('required_field', 'local_eliscore', get_string('start', 'local_eliscore')), 'required', null, 'client');
         $mform->disabledIf('startdate', 'starttype', 'neq', 1);
         $mform->disabledIf('startdate[day]', 'starttype', 'neq', 1);
         $mform->disabledIf('startdate[month]', 'starttype', 'neq', 1);
         $mform->disabledIf('startdate[year]', 'starttype', 'neq', 1);
+        $mform->disabledIf('startdate[hour]', 'starttype', 'neq', 1);
+        $mform->disabledIf('startdate[minute]', 'starttype', 'neq', 1);
 
         $group = array();
         $group[] = $mform->createElement('radio', 'recurrencetype', '', get_string('simple_recurrence', 'local_eliscore'), elisschedulingworkflowtrait::$RECURRENCE_SIMPLE);
         $group[] = $mform->createElement('radio', 'recurrencetype', '', get_string('calendar_recurrence', 'local_eliscore'), elisschedulingworkflowtrait::$RECURRENCE_CALENDAR);
         $mform->addGroup($group, 'recurrencetype', get_string('recurrence', 'local_eliscore'), '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', false);
         $mform->setDefault('recurrencetype', elisschedulingworkflowtrait::$RECURRENCE_SIMPLE);
-        $mform->addRule('recurrencetype', get_string('required_field', 'local_eliscore', get_string('recurrence', 'local_eliscore')), 'required', null, 'client');
+        // $mform->addRule('recurrencetype', get_string('required_field', 'local_eliscore', get_string('recurrence', 'local_eliscore')), 'required', null, 'client');
 
         $mform->addElement('header', 'simplerecurrencegroup', get_string('simple_recurrence_settings', 'local_eliscore'));
         $group = array();
@@ -147,6 +169,7 @@ class scheduling_form_step_schedule extends moodleform {
         $group[] = $mform->createElement('static', '', '', '<br />&nbsp;&nbsp;&nbsp;&nbsp;'.get_string('every', 'local_eliscore'));
         $group[] = $mform->createElement('text', 'frequency', '', array('size' => 2));
         $options = array(
+            elisschedulingworkflowtrait::$FREQ_MIN   => get_string('freq_minutes', 'local_eliscore'),
             elisschedulingworkflowtrait::$FREQ_HOUR  => get_string('freq_hours', 'local_eliscore'),
             elisschedulingworkflowtrait::$FREQ_DAY   => get_string('freq_days', 'local_eliscore'),
             elisschedulingworkflowtrait::$FREQ_MONTH => get_string('freq_months', 'local_eliscore'),
@@ -159,7 +182,7 @@ class scheduling_form_step_schedule extends moodleform {
         $mform->disabledIf('enddate[year]', 'runtype', 'neq', 1);
         $mform->disabledIf('runsremaining', 'runtype', 'neq', 2);
         $mform->setType('runsremaining', PARAM_INT);
-        $mform->setDefault('runsremaining', 1);
+        // $mform->setDefault('runsremaining', 1);
         $mform->disabledIf('frequency', 'runtype', 'neq', 2);
         $mform->disabledIf('frequencytype', 'runtype', 'neq', 2);
         $mform->setType('frequency', PARAM_INT);
@@ -222,20 +245,47 @@ class scheduling_form_step_schedule extends moodleform {
             $mform->disabledIf("month[{$i}]", 'allmonths', 'checked');
         }
 
+        $mform->addElement('html', '</fieldset>'); // Moodle/formslib bug!
+        $mform->addElement('html', '</div>'); // advancedcalendar
         if (!empty($page->schedule_period)) {
             $mform->addElement('html', '</div>');
             $mform->addElement('html', '<div>');
             $mform->addElement('html', '<h3>');
             $mform->addElement('html', '<a href="#">'.get_string('periodscheduling', 'local_eliscore').'</a>');
             $mform->addElement('html', '</h3>');
+            $mform->addElement('html', '<div class="periodsection">');
             // Period setting
-            $periodelem = $mform->createElement('text', 'period', get_string('rlip_form_period', 'local_datahub'));
+            $periodlabel = get_string('form_period', 'local_eliscore').'&nbsp;&nbsp;'; // Must leave room for psuedo-required image.
+            $periodelem = $mform->createElement('text', 'period', $periodlabel, array('id' => 'idperiod'));
             $mform->addElement($periodelem);
             $mform->setType('period', PARAM_TEXT);
-            $mform->addElement('html', '</div>');
+            $mform->addHelpButton('period', 'form_period', 'local_eliscore');
             $mform->addElement('html', '</div>'); // Class: accordion.
+            $mform->addElement('html', '<script type="text/javascript">
+                    $(function() {
+                        // Accordion
+                        $("#accordion").accordion({ header: "h3",
+                                icons: {
+                                    header: "ui-icon-collapsed",
+                                    activeHeader: "ui-icon-expanded"
+                                },
+                                active: (document.getElementById("idperiod").value != "") ? 1 : '.
+                                        ((empty($workflowdata['period']) && $workflowdata['recurrencetype'] != 'period') ? '0' : '1').',
+                                heightStyle: "content",
+                                activate: function(event, ui) {
+                                    var active = $("#accordion").accordion("option", "active");
+                                    if (active != "1") {
+                                        document.getElementById("idperiod").value = "";
+                                    } else if (document.getElementById("idperiod").value == "") {
+                                        document.getElementById("idperiod").value = "dhm";
+                                    }
+                                }
+                        });
+                    });
+                </script>');
+            $mform->addElement('html', '</div>'); // Class: periodsection.
         }
-        // $mform->addElement('html', '</div>'); // Class: scheduleform.
+        $mform->addElement('html', '</div>'); // Class: scheduleform.
 
         $steps = $workflow->get_steps();
         $prevstep = null;
@@ -245,7 +295,13 @@ class scheduling_form_step_schedule extends moodleform {
             }
             $prevstep = $key;
         }
-        workflowpage::add_navigation_buttons($mform, $prevstep);
+        if (($nextstep = next($steps))) {
+            $nextstep = key(current($steps));
+        }
+        if ($nextstep === false) {
+            $nextstep = workflow::STEP_FINISH;
+        }
+        workflowpage::add_navigation_buttons($mform, $prevstep, workflow::STEP_NEXT, ($nextstep == workflow::STEP_FINISH) ? get_string('save', 'repository') : null);
     }
 
     /**

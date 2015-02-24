@@ -65,6 +65,12 @@ class scheduled_tasks_testcase extends elis_database_test {
                     'lastruntime' => array(2012, 2, 19, 13, 13)), array(2012, 2, 20, 0, 0)),
                 array(array('minute' => '00', 'hour' => '00', 'day' => '*', 'dayofweek' => '*', 'month' => '*', 'timezone' => '99',
                     'lastruntime' => array(2013, 10, 8, 20, 30)), array(2013, 10, 9, 0, 0)),
+                array(array('minute' => '15', 'hour' => '*/12', 'day' => '*', 'dayofweek' => '*', 'month' => '*', 'timezone' => '99',
+                    'lastruntime' => array(2013, 10, 8, 20, 15)), array(2013, 10, 9, 0, 15)),
+                array(array('minute' => '25', 'hour' => '14', 'day' => '*/2', 'dayofweek' => '*', 'month' => '*', 'timezone' => '99',
+                    'lastruntime' => array(2013, 10, 8, 14, 25)), array(2013, 10, 10, 14, 25)),
+                array(array('minute' => '55', 'hour' => '16', 'day' => '*', 'dayofweek' => '*', 'month' => '10', 'timezone' => '99',
+                    'lastruntime' => array(2013, 10, 31, 16, 55)), array(2014, 10, 1, 16, 55)),
         );
     }
 
@@ -114,19 +120,17 @@ class scheduled_tasks_testcase extends elis_database_test {
      */
     public function test_nextruntimeboundry() {
         $targetstarttime = mktime(12, 0, 0, 1, 1, 2012);    // 12:00.
-        $lowerboundtime = mktime(12, 2, 0, 1, 1, 2012);     // 12:02.
-        $middleboundtime = mktime(12, 4, 30, 1, 1, 2012);   // 12:04:30.
-        $upperboundtime = mktime(12, 7, 0, 1, 1, 2012);     // 12:07.
 
         $job = array('period' => '5m');
+        $nextruntime = cron_next_run_time($targetstarttime, $job);
+        $timenow = $nextruntime;
+        $nextruntime = cron_next_run_time($nextruntime, $job);
+        $this->assertLessThan(60, $nextruntime - ($timenow + 5 * 60)); // hh:05:ss.
 
-        $nextruntime =  cron_next_run_time($targetstarttime, $job);
-        $this->assertEquals($nextruntime, $targetstarttime + (60 * 5)); // 12:05.
+        $nextruntime = cron_next_run_time($nextruntime, $job);
+        $this->assertLessThan(60, $nextruntime - ($timenow + 10 * 60)); // hh:10:ss.
 
-        $nextruntime =  cron_next_run_time($targetstarttime, $job);
-        $this->assertEquals($nextruntime, $targetstarttime + (60 * 10)); // 12:10.
-
-        $nextruntime =  cron_next_run_time($targetstarttime, $job);
-        $this->assertEquals($nextruntime, $targetstarttime + (60 * 10)); // 12:10.
+        $nextruntime = cron_next_run_time($nextruntime, $job);
+        $this->assertLessThan(60, $nextruntime - ($timenow + 15 * 60)); // hh:15:ss.
     }
 }

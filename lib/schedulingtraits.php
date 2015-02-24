@@ -33,6 +33,7 @@ trait elisschedulingworkflowtrait {
     public static $RECURRENCE_PERIOD = 'period'; // DataHub historic format.
 
     /** @const Frequency constants */
+    public static $FREQ_MIN = 'minute';
     public static $FREQ_HOUR = 'hour';
     public static $FREQ_DAY = 'day';
     public static $FREQ_MONTH = 'month';
@@ -50,27 +51,39 @@ trait elisschedulingworkflowtrait {
 
     /**
      * Method to save values for step schedule.
+     * @param object $values the form element values.
+     * @return array Form element validation errors.
      */
     public function save_values_for_step_schedule($values) {
         // Common scheduling parameters.
         $schedule = array();
+        $errors = array();
 
         $data = $this->workflowinst->unserialize_data(array());
-        if (!empty($data['period'])) {
+        if (!empty($values->period)) {
+            if (schedule_period_minutes($values->period) < 5) {
+                $errors['period'] = get_string('form_period_error', 'local_eliscore');
+                return $errors;
+            }
             $data['recurrencetype'] = static::$RECURRENCE_PERIOD;
-            $schedule['period'] = $data['period'];
+            $schedule['period'] = $data['period'] = $values->period;
         } else {
+            $data['period'] = '';
             $data['timezone'] = isset($values->timezone) ? $values->timezone : 99;
             // NOTE: CANNOT test $values->timezone using empty, as 0 is a valid timezone!
             $data['startdate'] = empty($values->startdate) ? null : $values->startdate;
-            $data['recurrencetype'] = !empty($values->recurrencetype) && $values->recurrencetype == static::$RECURRENCE_CALENDAR ? static::$RECURRENCE_CALENDAR : static::$RECURRENCE_SIMPLE;
-
-            if ($data['recurrencetype'] == static::$RECURRENCE_SIMPLE) {
+            $data['recurrencetype'] = (!empty($values->recurrencetype) && $values->recurrencetype == static::$RECURRENCE_CALENDAR) ? static::$RECURRENCE_CALENDAR : static::$RECURRENCE_SIMPLE;
+            if ($data['recurrencetype'] != static::$RECURRENCE_CALENDAR) {
                 $schedule['runsremaining'] = empty($values->runsremaining) ? null : $values->runsremaining;
                 $schedule['frequency'] = empty($values->frequency) ? 1 : $values->frequency;
                 $schedule['frequencytype'] = empty($values->frequencytype) ? static::$FREQ_DAY : $values->frequencytype;
                 $schedule['enddate'] = empty($values->enddate) ? null : $values->enddate;
+                if ($schedule['frequencytype'] == static::$FREQ_MIN && $schedule['frequency'] < 5) {
+                    $errors['runtype'] = get_string('form_frequency_error', 'local_eliscore');
+                    return $errors;
+                }
             } else {
+                $schedule['runsremaining'] = null;
                /* ***
                 ob_start();
                 var_dump($values);
@@ -78,7 +91,6 @@ trait elisschedulingworkflowtrait {
                 ob_end_clean();
                 debug_error_log("save_values_for_step_schedule(values) => {$tmp}");
                *** */
-                $errors = array();
                 if (empty($values->dayofweek)) {
                     $errors['dayofweek'] = get_string('required');
                 }
@@ -115,6 +127,7 @@ trait elisschedulingworkflowtrait {
         $data['schedule'] = $schedule;
         $this->workflowinst->set_data($data);
         $this->workflowinst->save();
+        return null;
     }
 
     /**
@@ -124,6 +137,7 @@ trait elisschedulingworkflowtrait {
      * @param string $callfile The call-file where call-function resides.
      * @param string $callfunction The function to call for schedule run.
      * @param array $data The scheduling data.
+     * @return int|bool The local_eliscore_sched_tasks record DB id (> 0) on success, or false on error.
      */
     public function save_elis_scheduled_task($taskname, $component, $callfile, $callfunction, $data) {
         global $CFG, $DB;
@@ -136,15 +150,42 @@ trait elisschedulingworkflowtrait {
         $day       = '*';
         $month     = '*';
         $dayofweek = '*';
-        $tz        = 0;
+        $tz        = 99;
         $startdate = null;
-        $endate    = null;
+        $enddate   = null;
+        if (!empty($data['timemodified'])) {
+            $timenow = $data['timemodified'];
+        } else {
+            $timenow = time();
+        }
         if (empty($data['period'])) {
+            $tz = $data['timezone'];
+            // Thou startdate is checked in runschedule.php, the confirm form
+            // would display an incorrect 'will run next at' time (eg. current time)
+            // if we don't calculate it - see below ...
+            $startdate = empty($data['startdate']) ? $timenow : $data['startdate'];
             $recurrencetype = $data['recurrencetype'];
             if ($recurrencetype == static::$RECURRENCE_SIMPLE) {
                 // Simple - hour/minute are from time modified.
-                $minute    = (int) strftime('%M',$data['timemodified']);
-                $hour      = (int) strftime('%H',$data['timemodified']);
+                $minute = (int)strftime('%M', $startdate);
+                $hour   = (int)strftime('%H', $startdate);
+                $freq   = (!empty($data['schedule']['frequency']) && $data['schedule']['frequency'] > 1) ? '*/'.$data['schedule']['frequency'] : '*';
+                switch ($data['schedule']['frequencytype']) {
+                    case self::$FREQ_MIN:
+                        $minute = $freq;
+                        $hour = '*';
+                        break;
+                    case self::$FREQ_HOUR:
+                        $hour = $freq;
+                        break;
+                    case self::$FREQ_MONTH:
+                        $month = $freq;
+                        $day = (int)strftime('%d', $startdate);
+                        break;
+                    default: // self::$FREQ_DAY.
+                        $day = $freq;
+                        break;
+                }
             } else { // Calendar.
                 $minute    = $data['schedule']['minute'];
                 $hour      = $data['schedule']['hour'];
@@ -153,19 +194,14 @@ trait elisschedulingworkflowtrait {
                 $dayofweek = $data['schedule']['dayofweek'];
             }
             $runsremaining = empty($data['schedule']['runsremaining']) ? null : $data['schedule']['runsremaining'];
-            // thou startdate is checked in runschedule.php, the confirm form
-            // would display an incorrect 'will run next at' time (eg. current time)
-            // if we don't calculate it - see below ...
-            $startdate = empty($data['startdate']) ? $data['timemodified'] : $data['startdate'];
-            $enddate   = empty($data['schedule']['enddate']) ? null : $data['schedule']['enddate'];
-            $tz        = $data['timezone'];
+            $enddate = empty($data['schedule']['enddate']) ? null : $data['schedule']['enddate'];
         }
 
         $task                = new stdClass;
         $task->plugin        = $component;
         $task->taskname      = $taskname;
         $task->callfile      = $callfile;
-        $task->callfunction  = $callfunction;
+        $task->callfunction  = serialize($callfunction);
         $task->period        = '';
         $task->lastruntime   = 0;
         $task->blocking      = 0;
@@ -175,44 +211,27 @@ trait elisschedulingworkflowtrait {
         $task->month         = $month;
         $task->dayofweek     = $dayofweek;
         $task->timezone      = $tz;
+        $task->startdate     = $startdate;
         $task->enddate       = ($enddate != null) ? ($enddate + DAYSECS - 1): null;
-        debug_error_log("schedulelib.php::finish() startdate = {$data['startdate']}; timemodified = {$data['timemodified']}");
-        // NOTE: if startdate not set then it already got set to time()
-        //       in get_submitted_values_for_step_schedule()
-        //       in which case we DO NOT want to add current time of day!
-        //       hence the messy check for: !(from_gmt() % DAYSECS)
-        if (!empty($data['startdate']) &&
-            ($recurrencetype == static::$RECURRENCE_SIMPLE ||
-             $startdate < $data['timemodified']) &&
-            !(($orig_start = from_gmt($data['startdate'], $data['timezone'])) % DAYSECS)) {
-            // they set a startdate, but, we should add current time of day!
-            $time_offset = from_gmt($data['timemodified'], $data['timezone']);
-            debug_error_log("schedulelib.php::finish() : time_offset = {$time_offset} - adjusting startdate = {$startdate} ({$orig_start}) => " . to_gmt($orig_start + ($time_offset % DAYSECS), $data['timezone']));
-            $startdate = to_gmt($orig_start + ($time_offset % DAYSECS), $data['timezone']);
-
-           while ($startdate < $data['timemodified']) {
-               $startdate += DAYSECS;
-               debug_error_log("schedulelib.php::finish() advancing startdate + day => {$startdate}");
-           }
-        }
+        debug_error_log("schedulelib.php::finish() startdate = {$startdate}; timemodified = {$timenow}");
 
         if ($recurrencetype == static::$RECURRENCE_PERIOD) {
             $task->period = $data['period'];
-            $task->nextruntime = cron_next_run_time(time(), (array)$task);
-        } else if ($recurrencetype == static::$RECURRENCE_SIMPLE) {
-            $task->nextruntime = $startdate;
+            $task->nextruntime = $timenow;
+        } else if ($startdate < $timenow) {
+            $inittime = $startdate;
+            do {
+                debug_error_log("schedulelib.php::finish() looping to advance startdate {$inittime} to >= {$timenow}");
+            } while (($inittime = cron_next_run_time($inittime, (array)$task)) < $timenow);
+            $task->nextruntime = $inittime;
         } else {
-            $task->nextruntime = cron_next_run_time($startdate - 100, (array)$task);
-            // minus [arb. value] above from startdate required to not skip
-            // first run! This was probably due to incorrect startdate calc
-            // which is now corrected.
+            $task->nextruntime = ($recurrencetype == static::$RECURRENCE_SIMPLE) ? $startdate : cron_next_run_time($startdate - 61, (array)$task);
         }
         $task->runsremaining = $runsremaining;
 
-        $DB->insert_record('local_eliscore_sched_tasks', $task);
+        return $DB->insert_record('local_eliscore_sched_tasks', $task);
     }
 }
-
 
 /**
  * Trait providing scheduling page methods for scheduled jobs.
@@ -236,7 +255,7 @@ trait elisschedulingpagetrait {
     public function display_step_schedule($errors) {
         $form = new $this->page->schedule_form(null, $this->page);
         if ($errors) {
-            foreach ($errors as $element=>$msg) {
+            foreach ($errors as $element => $msg) {
                 $form->setElementError($element, $msg);
             }
         }
@@ -245,20 +264,17 @@ trait elisschedulingpagetrait {
         // Create appropriate values for forms.
         if (!empty($workflowdata['period'])) {
             $data->period = $workflowdata['period'];
-            if (!isset($workflowdata['recurrencetype']) || $workflowdata['recurrencetype'] != elisschedulingworkflowtrait::$RECURRENCE_PREIOD) {
-                $workflowdata['recurrencetype'] = elisschedulingworkflowtrait::$RECURRENCE_PREIOD;
+            if (!isset($workflowdata['recurrencetype']) || $workflowdata['recurrencetype'] != elisschedulingworkflowtrait::$RECURRENCE_PERIOD) {
+                $workflowdata['recurrencetype'] = elisschedulingworkflowtrait::$RECURRENCE_PERIOD;
             }
         }
         $data->timezone = 99;
         if (isset($workflowdata['timezone'])) {
             $data->timezone = $workflowdata['timezone'];
         }
-        if (isset($workflowdata['startdate']) &&
-            ($workflowdata['startdate'] > time() ||
-            !(from_gmt($workflowdata['startdate'], $data->timezone) % DAYSECS))) {
+        if (isset($workflowdata['startdate'])) {
             $data->starttype = 1;
-            $data->startdate = $workflowdata['startdate'];
-            $data->startdate = from_gmt($data->startdate, $data->timezone);
+            $data->startdate = from_gmt($workflowdata['startdate'], $data->timezone);
             debug_error_log("/lib/schedulelib.php::display_step_schedule() adjusting startdate from {$workflowdata['startdate']} to {$data->startdate}, {$data->timezone}");
         } else {
             $data->starttype = 0;
@@ -277,27 +293,20 @@ trait elisschedulingpagetrait {
         if (isset($workflowdata['schedule']['frequencytype'])) {
             $data->frequencytype = $workflowdata['schedule']['frequencytype'];
         }
-        $hour = isset($workflowdata['schedule']['hour'])
-                ? $workflowdata['schedule']['hour'] : 0;
-        $min = isset($workflowdata['schedule']['minute'])
-               ? $workflowdata['schedule']['minute'] : 0;
+        $hour = isset($workflowdata['schedule']['hour']) ? $workflowdata['schedule']['hour'] : 0;
+        $min = isset($workflowdata['schedule']['minute']) ? $workflowdata['schedule']['minute'] : 0;
         $data->time['hour'] = $hour;
         $data->time['minute'] = $min;
 
         if (isset($data->recurrencetype)) {
             if ($data->recurrencetype == elisschedulingworkflowtrait::$RECURRENCE_SIMPLE) {
                 // Set up runtype, frequencytype, enddate(day, month, year) <= timezone conversion req'd.
-                if ($workflowdata['schedule']['runsremaining'] == null) {
-                    if (!isset($workflowdata['schedule']['enddate'])) {
-                        $data->runtype = 0;
-                    } else {
-                        $data->runtype = 1;
-                        $data->enddate = $workflowdata['schedule']['enddate'];
-                        $data->enddate = from_gmt($data->enddate, $data->timezone);
-                        debug_error_log("/lib/schedulelib.php::display_step_schedule() adjusting enddate from {$workflowdata['schedule']['enddate']} to {$data->enddate}, {$data->timezone}");
-                    }
+                if (isset($workflowdata['schedule']['enddate'])) {
+                    $data->runtype = 1;
+                    $data->enddate = from_gmt($workflowdata['schedule']['enddate'], $data->timezone);
+                    debug_error_log("/lib/schedulelib.php::display_step_schedule() adjusting enddate from {$workflowdata['schedule']['enddate']} to {$data->enddate}, {$data->timezone}");
                 } else {
-                    $data->runtype = 2;
+                    $data->runtype = (!empty($workflowdata['schedule']['runsremaining']) || $data->frequency != 1 || $data->frequencytype != elisschedulingworkflowtrait::$FREQ_DAY) ? 2 : 0;
                 }
             } else if ($data->recurrencetype == elisschedulingworkflowtrait::$RECURRENCE_CALENDAR) {
                 // Get time/day/month and convert to
@@ -352,74 +361,73 @@ trait elisschedulingpagetrait {
     public function get_submitted_values_for_step_schedule() {
         $form = new $this->page->schedule_form(null, $this->page);
         $data = $form->get_data(false);
-        // set the startdate to today if set to start now
-        if (!isset($data->starttype) || $data->starttype == 0) {
-            $data->startdate = time();
-        } else {
-            $data->startdate = to_gmt($data->startdate, $data->timezone);
-        }
-        debug_error_log("get_submitted_values_for_step_schedule(): startdate  = {$data->startdate}");
 
         if (!empty($data->period)) {
             $data->recurrencetype = elisschedulingworkflowtrait::$RECURRENCE_PERIOD;
+            $data->startdate = null;
             $data->enddate = null;
             $data->runsremaining = null;
             return $data;
-        }
-
-        // Process simple calendar workflow
-        if ($data->recurrencetype != elisschedulingworkflowtrait::$RECURRENCE_CALENDAR) {
-            if (!isset($data->runtype) || $data->runtype == 0) {
-                $data->enddate = null;
-                $data->runsremaining = null;
-            } elseif ($data->runtype == 1) {
-                $data->runsremaining = null;
-                debug_error_log("get_submitted_values_for_step_schedule(): adjusting enddate from $data->enddate to " . to_gmt($data->enddate, $data->timezone));
-                $data->enddate = to_gmt($data->enddate, $data->timezone);
-            } else {
-                $data->enddate = null;
-            }
         } else {
-            if ($data->calenddate) {
-                debug_error_log("get_submitted_values_for_step_schedule(): adjusting calenddate from $data->calenddate to " . to_gmt($data->calenddate, $data->timezone));
-                $data->calenddate = to_gmt($data->calenddate, $data->timezone);
-                $data->enddate = $data->calenddate;
+            // set the startdate to today if set to start now
+            if (empty($data->starttype)) {
+                $data->startdate = time();
             } else {
-                $data->enddate = null;
+                $data->startdate = to_gmt($data->startdate, $data->timezone);
             }
-            $data->time = isset($data->time) ? $data->time : 0;
-            //debug_error_log("get_submitted_values_for_step_schedule(): data->time = {$data->time}");
-            $data->hour = floor($data->time / HOURSECS) % 24;
-            $data->minute = floor($data->time / MINSECS) % MINSECS;
-            if (!isset($data->caldaystype) || $data->caldaystype == 0) {
-                $data->dayofweek = '*';
-                $data->day = '*';
-            } elseif ($data->caldaystype == 1) {
-                $dayofweek = empty($data->dayofweek) ? array() : $data->dayofweek;
-                $data->dayofweek = array();
-                foreach ($dayofweek as $day => $dummy) {
-                    $data->dayofweek[] = $day;
+            debug_error_log("get_submitted_values_for_step_schedule(): startdate  = {$data->startdate}");
+            if ($data->recurrencetype == elisschedulingworkflowtrait::$RECURRENCE_SIMPLE) {
+                $data->runsremaining = empty($data->runsremaining) ? null : $data->runsremaining;
+                if (!isset($data->runtype) || $data->runtype == 0) {
+                    $data->enddate = null;
+                } elseif ($data->runtype == 1) {
+                    debug_error_log("get_submitted_values_for_step_schedule(): adjusting enddate from $data->enddate to " . to_gmt($data->enddate, $data->timezone));
+                    $data->enddate = to_gmt($data->enddate, $data->timezone);
+                } else {
+                    $data->enddate = null;
                 }
-                $data->dayofweek = implode(',', $data->dayofweek);
-                $data->day = '*';
-            } elseif ($data->caldaystype == 2) {
-                $data->dayofweek = '*';
-                $days = explode(',',$data->monthdays);
-                $data->day = array();
-                foreach ($days as $day) {
-                    if ((int) $day) {
-                        $data->day[] = (int) $day;
+            } else if ($data->recurrencetype == elisschedulingworkflowtrait::$RECURRENCE_CALENDAR) {
+                if ($data->calenddate) {
+                    debug_error_log("get_submitted_values_for_step_schedule(): adjusting calenddate from $data->calenddate to " . to_gmt($data->calenddate, $data->timezone));
+                    $data->calenddate = to_gmt($data->calenddate, $data->timezone);
+                    $data->enddate = $data->calenddate;
+                } else {
+                    $data->enddate = null;
+                }
+                $data->time = isset($data->time) ? $data->time : 0;
+                //debug_error_log("get_submitted_values_for_step_schedule(): data->time = {$data->time}");
+                $data->hour = floor($data->time / HOURSECS) % 24;
+                $data->minute = floor($data->time / MINSECS) % MINSECS;
+                if (!isset($data->caldaystype) || $data->caldaystype == 0) {
+                    $data->dayofweek = '*';
+                    $data->day = '*';
+                } elseif ($data->caldaystype == 1) {
+                    $dayofweek = empty($data->dayofweek) ? array() : $data->dayofweek;
+                    $data->dayofweek = array();
+                    foreach ($dayofweek as $day => $dummy) {
+                        $data->dayofweek[] = $day;
                     }
+                    $data->dayofweek = implode(',', $data->dayofweek);
+                    $data->day = '*';
+                } elseif ($data->caldaystype == 2) {
+                    $data->dayofweek = '*';
+                    $days = explode(',',$data->monthdays);
+                    $data->day = array();
+                    foreach ($days as $day) {
+                        if ((int) $day) {
+                            $data->day[] = (int) $day;
+                        }
+                    }
+                    $data->day = implode(',', $data->day);
                 }
-                $data->day = implode(',', $data->day);
-            }
 
-            $months = empty($data->month) ? array() : $data->month;
-            $data->month = array();
-            foreach ($months as $month => $dummy) {
-                $data->month[] = $month;
+                $months = empty($data->month) ? array() : $data->month;
+                $data->month = array();
+                foreach ($months as $month => $dummy) {
+                    $data->month[] = $month;
+                }
+                $data->month = implode(',', $data->month);
             }
-            $data->month = implode(',', $data->month);
         }
         return $data;
     }

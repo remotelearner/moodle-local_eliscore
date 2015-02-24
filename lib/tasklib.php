@@ -233,10 +233,9 @@ function elis_tasks_cleanup($component, $cachedtasks) {
 function cron_next_run_time($lastrun, $job) {
     if (!empty($job['period'])) {
         $period = (int)schedule_period_minutes($job['period']) * 60;
-        $iterations = ceil(($time - $lastrun + 59) / $period);
+        $iterations = ceil((time() - $lastrun + 59) / ($period ? $period : 1));
         return ($iterations * $period) + $lastrun;
     }
-    //error_log("cron_next_run_time($lastrun, (object)job) job['timezone'] = {$job['timezone']}");
     $run_date = usergetdate($lastrun, $job['timezone']);
 
     // we don't care about seconds for cron
@@ -256,43 +255,53 @@ function cron_next_run_time($lastrun, $job) {
         $job['minute'] = '0';
     }
 
-    // assert valid month
-    if (!cron_valid_month($job, $run_date)) {
-        cron_next_month($job, $run_date);
+    $reset = -1;
+    while (++$reset < 999999) {
+        // assert valid month
+        if (!cron_valid_month($job, $run_date)) {
+            cron_next_month($job, $run_date);
 
-        cron_first_day($job, $run_date);
-        cron_first_hour($job, $run_date);
-        cron_first_minute($job, $run_date);
+            cron_first_day($job, $run_date);
+            cron_first_hour($job, $run_date);
+            cron_first_minute($job, $run_date);
+            continue;
+        }
 
-        return datearray_to_timestamp($run_date);
+        // assert valid day
+        if (!cron_valid_day($job, $run_date)) {
+            cron_next_day($job, $run_date);
+
+            cron_first_hour($job, $run_date);
+            cron_first_minute($job, $run_date);
+            continue;
+        }
+
+        // assert valid hour
+        if (!cron_valid_hour($job, $run_date)) {
+            cron_next_hour($job, $run_date);
+
+            cron_first_minute($job, $run_date);
+            continue;
+        }
+
+        if ($reset < 1 || !cron_valid_minute($job, $run_date)) {
+            cron_next_minute($job, $run_date);
+            continue;
+        }
+
+        break;
     }
-
-    // assert valid day
-    if (!cron_valid_day($job, $run_date)) {
-        cron_next_day($job, $run_date);
-
-        cron_first_hour($job, $run_date);
-        cron_first_minute($job, $run_date);
-
-        return datearray_to_timestamp($run_date);
-    }
-
-    // assert valid hour
-    if (!cron_valid_hour($job, $run_date)) {
-        cron_next_hour($job, $run_date);
-
-        cron_first_minute($job, $run_date);
-
-        return datearray_to_timestamp($run_date);
-    }
-
-    cron_next_minute($job, $run_date);
 
     return datearray_to_timestamp($run_date);
-
 }
 
 function datearray_to_timestamp($date_array) {
+    /* ***
+    ob_start();
+    var_dump($date_array);
+    $tmp = ob_get_contents();
+    ob_end_clean();
+    *** */
     $ts = make_timestamp(
                   $date_array['year'],
                   $date_array['mon'],
@@ -302,7 +311,7 @@ function datearray_to_timestamp($date_array) {
                   $date_array['seconds'],
                   $date_array['timezone']
           );
-    //error_log("tasklib.php::datearray_to_timestamp(): timezone = {$date_array['timezone']} => {$ts}");
+    // error_log("tasklib.php::datearray_to_timestamp(): data_array[] = {$tmp} => {$ts}");
     return $ts;
 }
 
@@ -394,7 +403,7 @@ function cron_next_field_value($fieldspec, $currentvalue, $ceiling, &$propagate,
 }
 
 function cron_day_of_week($date_array) {
-    return date('w', mktime(0, 0, 0, $date_array['mon'], $date_array['mday'], $date_array['year']));
+    return date('w', make_timestamp($date_array['year'], $date_array['mon'], $date_array['mday'], 0, 0, 0, $date_array['timezone']));
 }
 
 // --------------------------------------------------------

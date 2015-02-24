@@ -40,7 +40,26 @@ function xmldb_local_eliscore_upgrade($oldversion = 0) {
                 $dbman->add_field($table, $field);
             }
         }
-        upgrade_plugin_savepoint($result, 2014082503, 'local', 'eliscore');
+
+        // Update DataHub/elis schedule tasks tables period spec.
+        $table = new xmldb_table('local_datahub_schedule');
+        if ($dbman->table_exists($table)) {
+            $dhjobs = $DB->get_recordset('local_datahub_schedule');
+            if ($dhjobs && $dhjobs->valid()) {
+                foreach ($dhjobs as $dhjob) {
+                    $jobdata = unserialize($dhjob->config);
+                    // Since datahub will upgrade before eliscore must update tasks here.
+                    if ($estrec = $DB->get_record('local_eliscore_sched_tasks', array('taskname' => 'ipjob_'.$dhjob->id))) {
+                        if ($jobdata['period'] != $estrec->period) {
+                            $estrec->period = $jobdata['period'];
+                            $DB->update_record('local_eliscore_sched_tasks', $estrec);
+                        }
+                    }
+                }
+                $dhjobs->close();
+            }
+        }
+        upgrade_plugin_savepoint(true, 2014082503, 'local', 'eliscore');
     }
 
     return $result;
