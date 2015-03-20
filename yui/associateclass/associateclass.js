@@ -315,7 +315,11 @@ YUI.add('moodle-local_eliscore-associateclass', function(Y) {
 
             // If an onclick is being used, let it handle this event ...unless it's our own start_throbber() function
             // Moodle2.5x - make sure not Show-More/Less link or clustertree checkbox
-            if (e.target.hasClass('moreless-toggler') || e.target.hasClass('fheader') || e.target.hasClass('ygtvspacer') || linktarget || (linkclick && linkclick.indexOf('start_throbber') == -1)) {
+            // BJB150513 - added exclusion for date filter calendar links.
+            var targetsrc = e.target.getAttribute('src');
+            // console.debug(e.target);
+            if (e.target.hasClass('moreless-toggler') || e.target.hasClass('fheader') || e.target.hasClass('ygtvspacer') || linktarget ||
+                    (linkclick && linkclick.indexOf('start_throbber') == -1) || (targetsrc && targetsrc.lastIndexOf('calendar') == (targetsrc.length - 8))) {
                 return;
             }
 

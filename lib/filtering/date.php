@@ -207,7 +207,7 @@ class generalized_filter_date extends generalized_filter_type {
         $field  = $this->_field;
 
         $a = new object();
-        $a->label  = $this->_label;
+        $a->label  = get_string('date', 'local_eliscore').':';
         $a->after  = userdate($after, $this->_dateformat, $this->_timezone);
         $a->before = userdate($before, $this->_dateformat, $this->_timezone);
 

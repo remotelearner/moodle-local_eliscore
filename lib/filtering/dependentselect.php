@@ -50,6 +50,9 @@ class generalized_filter_dependentselect extends generalized_filter_type {
 
     var $_isrequired = false;
 
+    /** @var array $_attrs to pass at form element creation */
+    protected $_attrs = array();
+
     /**
      * Constructor
      *
@@ -83,6 +86,9 @@ class generalized_filter_dependentselect extends generalized_filter_type {
                 $this->$var = $options[$extra];
             }
         }
+        if (isset($options['attrs']) && is_array($options['attrs'])) {
+            $this->_attrs = $options['attrs'];
+        }
     }
 
     /**
@@ -101,8 +107,8 @@ class generalized_filter_dependentselect extends generalized_filter_type {
         $PAGE->requires->yui_module('moodle-local_eliscore-dependentselect', 'M.local_eliscore.init_dependentselect', array($parent, $this->_uniqueid, $fullpath));
 
         $objs = array();
-        $objs[] =& $mform->createElement('select', $this->_uniqueid.'_parent', null, $options_array);
-        $objs[] =& $mform->createElement('select', $this->_uniqueid, null, $this->_options);
+        $objs[] =& $mform->createElement('select', $this->_uniqueid.'_parent', null, $options_array, $this->_attrs);
+        $objs[] =& $mform->createElement('select', $this->_uniqueid, null, $this->_options, $this->_attrs);
         $grp =& $mform->addElement('group', $this->_uniqueid.'_grp', $this->_label, $objs, '<br/>', false);
 
         $mform->addHelpButton($this->_uniqueid.'_grp', $this->_filterhelp[0], $this->_filterhelp[2] /* , $this->_filterhelp[1] */); // TBV
@@ -121,9 +127,19 @@ class generalized_filter_dependentselect extends generalized_filter_type {
         $field    = $this->_uniqueid;
 
         if (array_key_exists($field, $formdata)) {
-            return array('value' => (string)$formdata->$field);
-        }
+            $value = $formdata->$field;
 
+            if (is_array($value)) {
+                foreach ($value as $val) {
+                    if ($val === '') {
+                        return false;
+                    }
+                }
+                return array('value' => $value);
+            } else if ($value !== '') {
+                return array('value' => (string)$value);
+            }
+        }
         return false;
     }
 
@@ -146,10 +162,21 @@ class generalized_filter_dependentselect extends generalized_filter_type {
             return null;
         }
 
-        $param_name = 'ex_dependselect'. $counter++;
         $value = $data['value'];
-        return array("{$full_fieldname} = :{$param_name}",
-                     array($param_name => $value));
+        if (is_array($value) && sizeof($value) == 1) {
+            $value = reset($value);
+        }
+
+        $paramname = 'ex_dependselect'.$counter++;
+        if (is_array($value)) {
+            $values = array();
+            foreach ($value as $key => $val) {
+                $name = $paramname.'_'.$key;
+                $values[$name] = $val; // TBD: addslashes($val);
+            }
+            return array("{$full_fieldname} IN ( :". implode(', :', array_keys($values)).')', $values);
+        }
+        return array("{$full_fieldname} = :{$paramname}", array($paramname => $value));
     }
 
     /**
