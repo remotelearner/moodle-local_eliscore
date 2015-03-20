@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['advancedscheduling'] = 'Advanced Scheduling';
+$string['ago'] = 'ago';
 $string['allitemsselected'] = 'All items selected';
 $string['autocomplete_filterdisabled'] = 'Autocomplete filter is disabled!';
 $string['autocomplete_nofields'] = 'No valid search_fields option received when constructing autocomplete filter';
@@ -311,6 +312,7 @@ $string['set_nonexistent_member'] = 'Attempt to set nonexistent member variable 
 $string['simpleselect'] = 'Simple select filter';
 $string['simpleselect_help'] = '<h1>Simple select filter</h1>
 <p>This filter allows you to filter information based on a drop down list. This filter does not have any extra options.</p>';
+$string['strtodatefilter'] = 'String to Date-range';
 $string['subplugintype_eliscoreplugins_plural'] = 'General plugins';
 $string['subplugintype_elisfields_plural'] = 'Custom field types';
 $string['text'] = 'Text filter';
