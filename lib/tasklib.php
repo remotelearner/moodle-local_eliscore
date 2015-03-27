@@ -27,6 +27,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once(dirname(__FILE__).'/../lib.php');
+
 /**
  * Loads the task definitions for the component (from file). If no
  * tasks are defined for the component, we simply return an empty array.
