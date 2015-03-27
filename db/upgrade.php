@@ -31,7 +31,7 @@ function xmldb_local_eliscore_upgrade($oldversion = 0) {
     $dbman = $DB->get_manager();
     $result = true;
 
-    if ($result && $oldversion < 2014082503) {
+    if ($result && $oldversion < 2014082504) {
         // Update elis scheduled tasks table with new 'period' column.
         $table = new xmldb_table('local_eliscore_sched_tasks');
         if ($dbman->table_exists($table)) {
@@ -59,7 +59,7 @@ function xmldb_local_eliscore_upgrade($oldversion = 0) {
                 $dhjobs->close();
             }
         }
-        upgrade_plugin_savepoint(true, 2014082503, 'local', 'eliscore');
+        upgrade_plugin_savepoint(true, 2014082504, 'local', 'eliscore');
     }
 
     return $result;
