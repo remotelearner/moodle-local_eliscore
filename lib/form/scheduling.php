@@ -248,6 +248,7 @@ class scheduling_form_step_schedule extends moodleform {
         $mform->addElement('html', '</fieldset>'); // Moodle/formslib bug!
         $mform->addElement('html', '</div>'); // advancedcalendar
         if (!empty($page->schedule_period)) {
+            $PAGE->requires->js('/local/eliscore/js/verify_jqueryui.js');
             $mform->addElement('html', '</div>');
             $mform->addElement('html', '<div>');
             $mform->addElement('html', '<h3>');
