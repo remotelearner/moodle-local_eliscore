@@ -87,6 +87,15 @@ abstract class elis_page extends moodle_page {
         $this->set_context($this->_get_page_context());
         $this->set_url($this->_get_page_url(), $this->_get_page_params());
         $this->get_header_requirements();
+        // ELIS-9092: If including jquery-ui must make sure not broken by re-loads of jquery(base).
+        if (!empty($this->_requires)) {
+            $elispage = cast_obj('eliscorepage', $this);
+            $pgreqmanager = $elispage->get_pg_req_manager();
+            if ($pgreqmanager->jquery_included('ui', $elispage)) {
+                // $this->requires->js('/local/eliscore/js/solidify_jqueryui.js', true);
+                $this->requires->js('/local/eliscore/js/solidify_jqueryui2.js', true);
+            }
+        }
         //set up a CSS hook for styling all ELIS pages
         $this->add_body_class('elis_page');
     }
