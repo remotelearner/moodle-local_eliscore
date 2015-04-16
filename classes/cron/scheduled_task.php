@@ -23,10 +23,30 @@
  *
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace local_eliscore\cron;
 
-$plugin->version = 2015010404;
-$plugin->requires = 2014111001.00; // Requires this Moodle version
-$plugin->release = '2.8.5.1 (Build: 20150402)';
-$plugin->maturity = MATURITY_STABLE;
+/**
+ * A scheduled task for local_eliscore cron.
+ *
+ */
+class scheduled_task extends \core\task\scheduled_task {
 
+    /**
+     * Get a descriptive name for this task (shown to admins).
+     *
+     * @return string
+     */
+    public function get_name() {
+        return get_string('eliscorecron', 'local_eliscore');
+    }
+
+    /**
+     * Run ELIS cron.
+     */
+    public function execute() {
+        global $CFG;
+        require_once($CFG->dirroot.'/local/eliscore/lib.php');
+        local_eliscore_cron_scheduledtask();
+    }
+
+}
