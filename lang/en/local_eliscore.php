@@ -46,6 +46,7 @@ $string['displaytext_help'] = '<h1>Display Text filter</h1>
 <p>This filter allows you to display a custom text label.</p>';
 $string['done'] = 'done';
 $string['elis'] = 'ELIS';
+$string['eliscorecron'] = 'ELIS scheduled tasks';
 $string['elisversion'] = '<strong>ELIS Version:</strong> {$a}';
 $string['finish'] = 'Finish';
 $string['field_category'] = 'Category';

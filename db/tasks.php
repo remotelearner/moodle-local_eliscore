@@ -25,8 +25,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2014082505;
-$plugin->requires = 2014051201.00; // Requires this Moodle version
-$plugin->release = '2.7.7.1 (Build: 20150402)';
-$plugin->maturity = MATURITY_STABLE;
-
+$tasks = array(
+        array(
+            'classname'   => '\local_eliscore\cron\scheduled_task',
+            'blocking'    => 0,
+            'minute'      => '*',
+            'hour'        => '*',
+            'day'         => '*',
+            'month'       => '*',
+            'dayofweek'   => '*'
+        )
+);

@@ -37,7 +37,7 @@ define('ELIS_TASKS_CRONSECS', 10 * 60); // TBD: 10 min max total runtime (save 1
  *
  * uses  $CFG, $DB
  */
-function local_eliscore_cron() {
+function local_eliscore_cron_scheduledtask() {
     global $CFG, $DB;
 
     require($CFG->dirroot.'/local/eliscore/lib/tasklib.php');
