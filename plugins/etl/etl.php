@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    eliscore_etl
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -30,6 +30,7 @@ require_once(dirname(__FILE__).'/lib.php');
 
 define('ETL_TABLE',     'eliscore_etl_useractivity');
 define('ETL_MOD_TABLE', 'eliscore_etl_modactivity');
+define('MDL_LOG_TABLE', 'logstore_standard_log');
 
 // process 10,000 records at a time
 define ('USERACT_RECORD_CHUNK', 10000);
@@ -47,6 +48,21 @@ class eliscore_etl_useractivity {
     public $state;
     public $duration;
 
+    /** @var array $innerstate the internal processing state. */
+    protected $innnerstate;
+    /**
+     * format of $innerstate array is:
+     * array(
+     *    'userid' => array(
+     *        'course' => array(
+     *            'id'    => courseid,
+     *            'start' => starttime),
+     *        'module' => array( // optional!
+     *            'id'    => moduleid,
+     *            'start' => starttime)
+     *    ));
+     */
+
     /**
      * ETL user activity constructor
      * @param int $duration The amount of time to the run the cron
@@ -62,87 +78,16 @@ class eliscore_etl_useractivity {
      *
      * @param int $userid the user to add the session for
      * @param int $courseid the course to add the session for
-     * @param int $sessionstart the start time of the session
-     * @param int $sessionend the end time of the session
-     * @uses $CFG;
-     * @uses $DB
-     */
-    public function user_activity_add_session($userid, $courseid, $sessionstart, $sessionend) {
-        global $CFG, $DB;
-        if ($userid && $sessionstart && $sessionend) {
-            $length = $sessionend - $sessionstart;
-            if (defined('ETLUA_EXTRA_DEBUG') && $CFG->debug >= DEBUG_DEVELOPER) {
-                mtrace("** adding {$length} second session for user {$userid} in course {$courseid}");
-            }
-            // split the session into hours
-            $starthour = floor($sessionstart / HOURSECS) * HOURSECS;
-            $first = true;
-            while ($sessionend > $starthour + HOURSECS) {
-                $sessionhourduration = $starthour + HOURSECS - $sessionstart;
-                $params = array(
-                    'userid' => $userid,
-                    'courseid' => $courseid,
-                    'hour' => $starthour
-                );
-                if ($rec = $DB->get_record(ETL_TABLE, $params)) {
-                    $rec->duration += $sessionhourduration;
-                    if ($rec->duration <= HOURSECS) {
-                        $DB->update_record(ETL_TABLE, $rec);
-                    } else if ($CFG->debug >= DEBUG_DEVELOPER) {
-                        mtrace("\nuser_activity_add_session(userid = {$userid}, courseid = {$courseid}, session_start = {$sessionstart}, ".
-                                "session_end = {$sessionend}): Warning: duration > 3600\n");
-                    }
-                } else {
-                    $rec = new stdClass;
-                    $rec->userid = $userid;
-                    $rec->courseid = $courseid;
-                    $rec->hour = $starthour;
-                    $rec->duration = $sessionhourduration;
-                    $DB->insert_record(ETL_TABLE, $rec);
-                }
-                $starthour += HOURSECS;
-                $sessionstart = $starthour;
-                $first = false;
-            }
-            $remainder = $sessionend - $sessionstart;
-            $params = array(
-                'userid' => $userid,
-                'courseid' => $courseid,
-                'hour' => $starthour
-            );
-            if ($rec = $DB->get_record(ETL_TABLE, $params)) {
-                $rec->duration += $remainder;
-                if ($rec->duration <= HOURSECS) {
-                    $DB->update_record(ETL_TABLE, $rec);
-                } else if ($CFG->debug >= DEBUG_DEVELOPER) {
-                    mtrace("\nuser_activity_add_session(userid = {$userid}, courseid = {$courseid}, session_start = {$sessionstart}, ".
-                            "session_end = {$sessionend}): Warning: remainder duration > 3600\n");
-                }
-            } else {
-                $rec = new stdClass;
-                $rec->userid = $userid;
-                $rec->courseid = $courseid;
-                $rec->hour = $starthour;
-                $rec->duration = $remainder;
-                $DB->insert_record(ETL_TABLE, $rec);
-            }
-        }
-    }
-
-    /**
-     * Add a session to the user module activity ETL table.
-     *
-     * @param int $userid the user to add the session for
-     * @param int $courseid the course to add the session for
-     * @param int $cmid the course module to add the session for
+     * @param int $cmid the course module to add the session for, 'empty' for none.
      * @param int $session_start the start time of the session
      * @param int $session_end the end time of the session
      * @uses $CFG;
      * @uses $DB;
      */
-    public function user_module_activity_add_session($userid, $courseid, $cmid, $sessionstart, $sessionend) {
+    public function user_activity_add_session($userid, $courseid, $cmid, $sessionstart, $sessionend) {
         global $CFG, $DB;
         if ($userid && $sessionstart && $sessionend) {
+            $tablename = !empty($cmid) ? ETL_MOD_TABLE : ETL_TABLE;
             $length = $sessionend - $sessionstart;
             if (defined('ETLUA_EXTRA_DEBUG') && $CFG->debug >= DEBUG_DEVELOPER) {
                 mtrace("** adding {$length} second session for user {$userid} in course {$courseid}, module {$cmid}");
@@ -154,25 +99,24 @@ class eliscore_etl_useractivity {
                 $sessionhourduration = $starthour + HOURSECS - $sessionstart;
                 $params = array(
                     'userid' => $userid,
-                    'cmid' => $cmid,
                     'hour' => $starthour
                 );
-                if ($rec = $DB->get_record(ETL_MOD_TABLE, $params)) {
+                if (!empty($cmid)) {
+                    $params['cmid'] = $cmid;
+                }
+                if ($rec = $DB->get_record($tablename, $params)) {
                     $rec->duration += $sessionhourduration;
-                    if ($rec->duration <= HOURSECS) {
-                        $DB->update_record(ETL_MOD_TABLE, $rec);
-                    } else if ($CFG->debug >= DEBUG_DEVELOPER) {
-                        mtrace("\nuser_module_activity_add_session(userid = {$userid}, courseid = {$courseid}, cmid = {$cmid}, session_start = {$sessionstart}, ".
-                                "session_end = {$sessionend}): Warning: duration > 3600\n");
-                    }
+                    $DB->update_record($tablename, $rec);
                 } else {
                     $rec = new stdClass;
                     $rec->userid = $userid;
                     $rec->courseid = $courseid;
-                    $rec->cmid = $cmid;
+                    if (!empty($cmid)) {
+                        $rec->cmid = $cmid;
+                    }
                     $rec->hour = $starthour;
                     $rec->duration = $sessionhourduration;
-                    $DB->insert_record(ETL_MOD_TABLE, $rec);
+                    $DB->insert_record($tablename, $rec);
                 }
                 $starthour += HOURSECS;
                 $sessionstart = $starthour;
@@ -181,25 +125,24 @@ class eliscore_etl_useractivity {
             $remainder = $sessionend - $sessionstart;
             $params = array(
                 'userid' => $userid,
-                'cmid' => $cmid,
                 'hour' => $starthour
             );
-            if ($rec = $DB->get_record(ETL_MOD_TABLE, $params)) {
+            if (!empty($cmid)) {
+                $params['cmid'] = $cmid;
+            }
+            if ($rec = $DB->get_record($tablename, $params)) {
                 $rec->duration += $remainder;
-                if ($rec->duration <= HOURSECS) {
-                    $DB->update_record(ETL_MOD_TABLE, $rec);
-                } else if ($CFG->debug >= DEBUG_DEVELOPER) {
-                    mtrace("\nuser_module_activity_add_session(userid = {$userid}, courseid = {$courseid}, cmid = {$cmid}, session_start = {$sessionstart}, ".
-                            "session_end = {$sessionend}): Warning: duration > 3600\n");
-                }
+                $DB->update_record($tablename, $rec);
             } else {
                 $rec = new stdClass;
                 $rec->userid = $userid;
                 $rec->courseid = $courseid;
-                $rec->cmid = $cmid;
+                if (!empty($cmid)) {
+                    $rec->cmid = $cmid;
+                }
                 $rec->hour = $starthour;
                 $rec->duration = $remainder;
-                $DB->insert_record(ETL_MOD_TABLE, $rec);
+                $DB->insert_record($tablename, $rec);
             }
         }
     }
@@ -265,12 +208,71 @@ class eliscore_etl_useractivity {
             $lastrun = isset(elis::$config->eliscore_etl->last_run) ? elis::$config->eliscore_etl->last_run : 0;
             $state['starttime'] = !empty($lastrun) ? (int)$lastrun : 0;
 
-            $startrec = $DB->get_field_select('log', 'MAX(id)', 'time <= ?', array($state['starttime']));
+            $startrec = $DB->get_field_select(MDL_LOG_TABLE, 'MAX(id)', 'timecreated <= ?', array($state['starttime']));
             $startrec = empty($startrec) ? 0 : $startrec;
             $state['startrec'] = $startrec;
 
             $this->state = $state;
         }
+    }
+
+    /**
+     * Get userid method for log table record
+     * @param object $rec the log table record.
+     * @return int the log record userid.
+     */
+    public function get_rec_userid($rec) {
+        return $rec->userid;
+    }
+
+    /**
+     * Get course method for log table record
+     * @param object $rec the log table record.
+     * @return int the log record courseid.
+     */
+    public function get_rec_course($rec) {
+        return $rec->courseid;
+    }
+
+    /**
+     * Get module method for log table record
+     * @param object $rec the log table record.
+     * @return mixed|int the log record moduleid, 'empty' for none.
+     */
+    public function get_rec_module($rec) {
+        return ($rec->contextlevel == CONTEXT_MODULE) ? $rec->contextinstanceid : false; // TBD.
+    }
+
+    /**
+     * Get time method for log table record
+     * @param object $rec the log table record.
+     * @return int the log record timestamp.
+     */
+    public function get_rec_time($rec) {
+        return $rec->timecreated;
+    }
+
+    /**
+     * Method to determine if log table record is a 'start' record.
+     * @param object $rec the log table record.
+     * @return bool true if the log record is a 'start' record, false otherwise.
+     */
+    public function is_start_rec($rec) {
+        return ($rec->contextlevel == CONTEXT_COURSE || $rec->contextlevel == CONTEXT_MODULE);
+    }
+
+    /**
+     * Method to determine if log table record is a 'stop' record.
+     * @param object $rec the log table record.
+     * @return bool true if the log record is a 'stop' record, false otherwise.
+     */
+    public function is_stop_rec($rec) {
+        static $stopactions = array('loggedin', 'loggedout' /* , 'sent' */); // TBD.
+        if (in_array($rec->action, $stopactions)) {
+            return true;
+        }
+        // TBD.
+        return false;
     }
 
     /**
@@ -289,12 +291,12 @@ class eliscore_etl_useractivity {
         $starttime = $this->state['starttime'];
 
         // find the record ID corresponding to our start time
-        $startrec = $DB->get_field_select('log', 'MIN(id)', 'time >= ?', array($starttime));
+        $startrec = $DB->get_field_select(MDL_LOG_TABLE, 'MIN(id)', 'timecreated >= ?', array($starttime));
         $startrec = empty($startrec) ? 0 : $startrec;
 
         // find the last record that's close to our chunk size, without
         // splitting a second between runs
-        $endtime = $DB->get_field_select('log', 'MIN(time)', 'id >= ? AND time > ?', array($startrec + USERACT_RECORD_CHUNK, $starttime));
+        $endtime = $DB->get_field_select(MDL_LOG_TABLE, 'MIN(timecreated)', 'id >= ? AND timecreated > ?', array($startrec + USERACT_RECORD_CHUNK, $starttime));
         if (!$endtime) {
             $endtime = time();
         }
@@ -303,138 +305,75 @@ class eliscore_etl_useractivity {
         // by userid (so all records for a given user are together), and then by
         // time (so that we process a user's logs sequentially).
         $recstarttime = max(0, $starttime - $this->state['sessiontimeout']);
-        $rs = $DB->get_recordset_select('log', 'time >= ? AND time < ? AND userid != 0', array($recstarttime, $endtime), 'userid, time');
+        $rs = $DB->get_recordset_select(MDL_LOG_TABLE, 'timecreated >= ? AND timecreated < ? AND userid != 0', array($recstarttime, $endtime), 'timecreated');
         if ($CFG->debug >= DEBUG_ALL) {
             mtrace("* processing records from time:{$starttime} to time:{$endtime}");
         }
 
-        $curuser = -1;
-        $sessionstart = 0;
-        $lastcourse = -1;
-        $modulesessionstart = 0;
-        $lastmodule = -1;
         $lasttime = 0;
+        $endrec = $startrec;
         if ($rs && $rs->valid()) {
-            foreach ($rs as $rec) { // WAS while($rec = rs_fetch_next_record($rs))
-                if ($rec->userid != $curuser) {
-                    // end of user's record
-                    if ($curuser > 0 && $sessionstart > 0) {
-                        // flush current session data
-                        if ($lasttime > $endtime - $sessiontimeout) {
-                            /* Last record is within the session timeout of our end
-                             * time for this run.  Just use our last logged time as
-                             * the session end time, and the rest will be picked up
-                             * by the next run of the sessionizer. */
-                            $sessionend = $lasttime;
-                        } else {
-                            /* Last record is not within the session timeout of our
-                             * end time for this run, so do our normal session
-                             * ending. */
-                            $sessionend = $lasttime + $sessiontail;
+            $this->innerstate = array();
+            foreach ($rs as $rec) {
+                $endrec = $rec->id;
+                $lasttime = $this->get_rec_time($rec);
+                if ($this->is_start_rec($rec)) {
+                    $userid = $this->get_rec_userid($rec);
+                    if (empty($userid)) {
+                        continue;
+                    }
+                    if (isset($this->innerstate[$userid])) {
+                        $mod = isset($this->innerstate[$userid]['module']) ? $this->innerstate[$userid]['module']['id'] : 0;
+                        if ($mod && ($this->innerstate[$userid]['module']['id'] != $this->get_rec_module($rec) ||
+                               $this->innerstate[$userid]['course']['id'] != $this->get_rec_course($rec))) {
+                            $this->user_activity_add_session($this->get_rec_userid($rec), $this->innerstate[$userid]['course']['id'],
+                                   $mod, $this->innerstate[$userid]['module']['start'], $lasttime);
+                            unset($this->innerstate[$userid]['module']);
                         }
-                        $this->user_activity_add_session($curuser, $lastcourse, $sessionstart, $sessionend);
-                        if ($lastmodule > 0) {
-                            $this->user_module_activity_add_session($curuser, $lastcourse, $lastmodule, $modulesessionstart, $sessionend);
+                        if ($this->innerstate[$userid]['course']['id'] != $this->get_rec_course($rec)) {
+                            $this->user_activity_add_session($userid, $this->innerstate[$userid]['course']['id'], 0,
+                                    $this->innerstate[$userid]['course']['start'], $lasttime);
+                            unset($this->innerstate[$userid]);
                         }
                     }
-                    $curuser = $rec->userid;
-                    $sessionstart = 0;
-                    $lastcourse = -1;
-                    $modulesessionstart = 0;
-                    $lastmodule = -1;
-                    $lasttime = 0;
+                    if (!isset($this->innerstate[$userid]) && ($courseid = $this->get_rec_course($rec))) {
+                        $this->innerstate[$userid] = array('course' => array('id' => $courseid, 'start' => $lasttime));
+                    }
+                    if (!isset($this->innerstate[$userid]['module']) && ($mod = $this->get_rec_module($rec))) {
+                        $this->innerstate[$userid]['module'] = array('id' => $mod, 'start' => $lasttime);
+                    }
                 }
-                if ($rec->time < $starttime) {
-                    // Find the last log for the user before our start time, that's
-                    // within the session timeout, and start the session with that
-                    // record.
-                    $sessionstart = $rec->time;
-                    $lasttime = $rec->time;
-                    $lastcourse = $rec->course;
-                    $modulesessionstart = $rec->time;
-                    $lastmodule = $rec->cmid;
-                } else if ($rec->time > $lasttime + $sessiontimeout) {
-                    if ($lastcourse >= 0) {
-                        // session timed out -- add record
-                        if (defined('ETLUA_EXTRA_DEBUG') && $CFG->debug >= DEBUG_DEVELOPER) {
-                            mtrace('** session timed out');
+                if ($this->is_stop_rec($rec)) {
+                    $userid = $this->get_rec_userid($rec);
+                    if (isset($this->innerstate[$userid])) {
+                        $mod = isset($this->innerstate[$userid]['module']) ? $this->innerstate[$userid]['module']['id'] : 0;
+                        if ($mod) {
+                            $this->user_activity_add_session($userid, $this->innerstate[$userid]['course']['id'], $mod,
+                                    $this->innerstate[$userid]['module']['start'], $lasttime);
                         }
-                        $sessionend = $lasttime + $sessiontail;
-                        $this->user_activity_add_session($curuser, $lastcourse, $sessionstart, $sessionend);
-                        if ($lastmodule > 0) {
-                            $this->user_module_activity_add_session($curuser, $lastcourse, $lastmodule, $modulesessionstart, $sessionend);
-                        }
+                        $this->user_activity_add_session($userid, $this->innerstate[$userid]['course']['id'], 0,
+                                $this->innerstate[$userid]['course']['start'], $lasttime);
+                        unset($this->innerstate[$userid]);
                     }
-                    // start a new session with the current record
-                    $sessionstart = $rec->time;
-                    $lastcourse = $rec->course;
-                    $modulesessionstart = $rec->time;
-                    $lastmodule = $rec->cmid;
-                } else if ($rec->action === 'logout') {
-                    // user logged out -- add record
-                    if (defined('ETLUA_EXTRA_DEBUG') && $CFG->debug >= DEBUG_DEVELOPER) {
-                        mtrace('** user logged out');
-                    }
-                    $sessionend = $rec->time;
-                    $this->user_activity_add_session($curuser, $lastcourse, $sessionstart, $sessionend);
-                    if ($lastmodule > 0) {
-                        $this->user_module_activity_add_session($curuser, $lastcourse, $lastmodule, $modulesessionstart, $sessionend);
-                    }
-                    // clear session info
-                    $sessionstart = 0;
-                    $modulesessionstart = 0;
-                } else if ($rec->course != $lastcourse) {
-                    // user switched to a different course -- start new session record
-                    if ($lastcourse >= 0) {
-                        if (defined('ETLUA_EXTRA_DEBUG') && $CFG->debug >= DEBUG_DEVELOPER) {
-                            mtrace('** user switched courses');
-                        }
-                        $sessionend = $rec->time;
-                        $this->user_activity_add_session($curuser, $lastcourse, $sessionstart, $sessionend);
-                        if ($lastmodule > 0) {
-                            $this->user_module_activity_add_session($curuser, $lastcourse, $lastmodule, $modulesessionstart, $sessionend);
-                        }
-                    }
-                    $sessionstart = $rec->time;
-                    $lastcourse = $rec->course;
-                    $modulesessionstart = $rec->time;
-                    $lastmodule = $rec->cmid;
-                } else if ($rec->cmid != $lastmodule) {
-                    // user switched to a different module -- start new module session
-                    if ($lastmodule > 0) {
-                        if (defined('ETLUA_EXTRA_DEBUG') && $CFG->debug >= DEBUG_DEVELOPER) {
-                            mtrace('** user switched modules');
-                        }
-                        $sessionend = $rec->time;
-                        $this->user_module_activity_add_session($curuser, $lastcourse, $lastmodule, $modulesessionstart, $sessionend);
-                    }
-                    $modulesessionstart = $rec->time;
-                    $lastmodule = $rec->cmid;
                 }
-                $lasttime = $rec->time;
             }
             $rs->close();
         }
 
-        if ($curuser > 0 && $sessionstart > 0) {
-            // flush session data
-            if ($lasttime > $endtime - $sessiontimeout) {
-                $sessionend = $lasttime;
-            } else {
-                $sessionend = $lasttime + $sessiontail;
+        // flush session data
+        foreach ($this->innerstate as $userid => $innerstate) {
+            $mod = isset($innerstate['module']) ? $innerstate['module']['id'] : 0;
+            if ($mod) {
+                $this->user_activity_add_session($userid, $innerstate['course']['id'], $mod, $innerstate['module']['start'], $lasttime);
             }
-            $this->user_activity_add_session($curuser, $lastcourse, $sessionstart, $sessionend);
+            $this->user_activity_add_session($userid, $innerstate['course']['id'], 0, $innerstate['course']['start'], $lasttime);
         }
 
         $this->state['starttime'] = $endtime;
-
-        $endrec = $DB->get_field_select('log', 'MAX(id)', 'time < ?', array($endtime));
-        // possibly skip the last time when calculating the total number of
-        // records, since we are purposely skipping anything less than $endtime
-        $lasttime = $DB->get_field_select('log', 'MAX(time)', 'TRUE');
-        $totalrec = $DB->get_field_select('log', 'MAX(id)', 'time < ?', array($lasttime));
+        $lasttime = $DB->get_field_select(MDL_LOG_TABLE, 'MAX(timecreated)', 'TRUE');
+        $totalrec = $DB->get_field_select(MDL_LOG_TABLE, 'MAX(id)', 'timecreated < ?', array($lasttime));
         $totalrec = max($totalrec, $endrec);
-        return array($endrec ? ($endrec - $this->state['startrec']) : 0, $totalrec ? ($totalrec - $this->state['startrec']) : 0);
+        return array($endrec - $this->state['startrec'], $totalrec ? ($totalrec - $this->state['startrec']) : 0);
     }
 
     /**
@@ -490,6 +429,10 @@ class eliscore_etl_useractivity {
  * @param object $etlobj The ETL user activity object
  */
 function user_activity_etl_cron($taskname = '', $duration = 0, &$etlobj = null) {
+    $etlcrondisabled = get_config('eliscore_etl', 'etl_disabled');
+    if (!empty($etlcrondisabled)) {
+        return;
+    }
     if ($etlobj === null) {
         $etlobj = new eliscore_etl_useractivity($duration);
     }

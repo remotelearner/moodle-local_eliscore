@@ -33,4 +33,6 @@ $string['cli_error_zero_duration'] = 'An ETL duration of zero means nothing to d
 $string['cli_help'] = "Run ELIS ETL cron with a defined period of time.\n\nFor example: '\$sudo -u www-data /usr/bin/php local/eliscore/plugins/user_activity/cli/run_etl_cron.php -m=55 -H=44' will run the ETL process for 55 minutes and 44 hours.  If you include -m and -H with no numbers then the process will run for 1 hour and 1 minute.\n\nThere are no security checks here because anybody who is able to execute this file may execute any PHP too.\n\nOptions:\n-h, --help          Print out this help.\n-m=minutes          The number of minutes to run the process for.\n-H=hours            The number of hours to run the process for.\n";
 $string['cli_run_etl_cron_heading'] = 'Execute ETL cron for {$a->minutes} minutes and {$a->hours} hours';
 $string['eliscore_etl'] = 'User Activity ETL';
+$string['etl_disabled'] = 'Disable ETL';
+$string['etl_disabled_description'] = 'Disabling the ETL will prohibit use of the ELIS Site-Wide Time Summary Report, which requires this data.';
 $string['pluginname'] = 'User Activity ETL';
