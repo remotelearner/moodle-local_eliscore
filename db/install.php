@@ -531,8 +531,8 @@ function xmldb_local_eliscore_install() {
 
     if ($oldversion !== false) {
         require_once(dirname(__FILE__).'/upgrade.php');
-        set_config('version', 2015010400, 'local_eliscore');
-        xmldb_local_eliscore_upgrade(2015010400);
+        set_config('version', 2015051100, 'local_eliscore');
+        xmldb_local_eliscore_upgrade(2015051100);
     }
 
     return $result;
