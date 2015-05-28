@@ -49,7 +49,7 @@ class eliscore_etl_useractivity {
     public $duration;
 
     /** @var array $innerstate the internal processing state. */
-    protected $innnerstate;
+    protected $innerstate;
     /**
      * format of $innerstate array is:
      * array(
@@ -312,8 +312,8 @@ class eliscore_etl_useractivity {
 
         $lasttime = 0;
         $endrec = $startrec;
+        $this->innerstate = array();
         if ($rs && $rs->valid()) {
-            $this->innerstate = array();
             foreach ($rs as $rec) {
                 $endrec = $rec->id;
                 $lasttime = $this->get_rec_time($rec);
