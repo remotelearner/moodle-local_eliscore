@@ -124,7 +124,7 @@ class generalized_filter_date extends generalized_filter_type {
         $objs[] =& $mform->createElement($date_elem, $this->_uniqueid.'_edt', null, $options);
 
         if ($this->_never_included) {
-            $objs[] = & $mform->createElement('advcheckbox', $this->_uniqueid.'_never', null, get_string('includenever', 'filters'));
+            $objs[] = & $mform->createElement('advcheckbox', $this->_uniqueid.'_never', null, get_string('includenever', 'local_eliscore'));
         }
 
         $grp =& $mform->addElement('group', $this->_uniqueid.'_grp', $this->_label, $objs, '', false);
@@ -148,7 +148,7 @@ class generalized_filter_date extends generalized_filter_type {
         }
 
         if ($this->_never_included) {
-            $mform->disabledIf($this->_uniqueid.'_never', $this->_uniqueid.'_eck', '0');
+            $mform->disabledIf($this->_uniqueid.'_never', $this->_uniqueid.'_sck', '0');
         }
     }
 
@@ -212,7 +212,7 @@ class generalized_filter_date extends generalized_filter_type {
         $a->before = userdate($before, $this->_dateformat, $this->_timezone);
 
         if ($never) {
-            $strnever = ' ('. get_string('includenever', 'filters') .')';
+            $strnever = ' ('. get_string('includenever', 'local_eliscore') .')';
         } else {
             $strnever = '';
         }
@@ -242,33 +242,29 @@ class generalized_filter_date extends generalized_filter_type {
             return null;
         }
 
-        if ($this->_never_included) { // TBD
-            if (!empty($data['never'])) {
-                $sql = "{$full_fieldname} >= 0";
-            } else {
-                $sql = "{$full_fieldname} > 0";
-            }
-        } else {
-            $sql = 'TRUE';
-        }
-
+        $sql = array();
         if (!empty($data['after'])) {
             $param_after = 'ex_dateafter'. $counter;
-            $sql .= " AND {$full_fieldname} >= :{$param_after}";
+            $sql[] = "{$full_fieldname} >= :{$param_after}";
             $params[$param_after] = $data['after'];
         }
-
         if (!empty($data['before'])) {
             $param_before = 'ex_datebefore'. $counter;
-            $sql .= " AND {$full_fieldname} <= :{$param_before}";
+            $sql[] = "{$full_fieldname} <= :{$param_before}";
             $params[$param_before] = $data['before'];
         }
-
+        if (!empty($sql)) {
+            $sql = '('.implode(' AND ', $sql).')';
+        }
+        if ($this->_never_included) {
+            if (!empty($data['never'])) {
+                $sql = "{$full_fieldname} = 0".(!empty($sql) ? " OR {$sql}" : '');
+            }
+        }
         if (!empty($params)) {
             $counter++;
         }
-
-        return array($sql, $params);
+        return empty($sql) ? null : array($sql, $params);
     }
 
 }
