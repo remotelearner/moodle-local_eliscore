@@ -248,6 +248,7 @@ $string['health_etl_prune_log_desc'] = 'The ETL process is currently processing 
 $string['health_etl_prune_log_soln'] = 'Set Moodle\'s <i>loglifetime</i> setting to a larger value or <i>Never delete logs</i> until the ETL process can complete.';
 $string['health_etl_prune_log_title'] = 'ETL process is processing log data that maybe prematurely deleted';
 
+$string['includenever'] = 'Include Never';
 $string['invalidid'] = 'Invalid ID';
 $string['invalidoperator'] = 'Invalid Operator';
 
