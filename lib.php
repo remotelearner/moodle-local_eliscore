@@ -188,6 +188,23 @@ function schedule_period_minutes($period) {
 }
 
 /**
+ * Returns a float which represents the user's timezone difference from GMT in hours
+ * Checks various settings and picks the most dominant of those which have a value
+ *
+ * @param float|int|string $tz timezone to calculate GMT time offset for user.
+ * @return float
+ */
+function rl_get_user_timezone_offset($tz = 99) {
+    $tz = get_user_timezone($tz);
+    if (is_float($tz)) {
+        return $tz;
+    } else {
+        $dtz = new DateTimeZone($tz);
+        return (float)$dtz->getOffset(new DateTime('now', new DateTimeZone('UTC'))) / HOURMINS;
+    }
+}
+
+/**
  * This function adjusts a GMT timestamp to timezone
  * @param $timestamp
  * @param $timezone
@@ -197,7 +214,7 @@ function schedule_period_minutes($period) {
  * @return int  timestamp (secs since epoch) in timezone
  */
 function from_gmt($timestamp, $timezone = 99, $dstdate = null) {
-    $tz = get_user_timezone_offset($timezone);
+    $tz = rl_get_user_timezone_offset($timezone);
     $ts = (abs($tz) > 13) ? $timestamp : ($timestamp + ($tz * HOURSECS));
     if ($dstdate === null) {
         $dstdate = $timestamp;
@@ -233,7 +250,7 @@ function to_gmt($timestamp, $timezone = 99, $dstdate = null) {
         $dstoffset = dst_offset_on($dstdate, $strtimezone);
         $ts -= $dstoffset; // or += see to_gmt()
     }
-    $tz = get_user_timezone_offset($timezone);
+    $tz = rl_get_user_timezone_offset($timezone);
     $ts = (abs($tz) > 13) ? $ts : ($ts - ($tz * HOURSECS));
     //debug_error_log("/local/elisreports/sharedlib.php::to_gmt({$timestamp}, {$timezone}): tz = {$tz} dstdate = {$dstdate} dstoffset = {$dstoffset} => $ts");
     return $ts;
