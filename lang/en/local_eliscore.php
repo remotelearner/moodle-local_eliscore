@@ -341,6 +341,12 @@ $string['time_on'] = 'On';
 $string['recurrence'] = 'Recurrence';
 $string['recurrencetype'] = 'Recurrence Type';
 $string['simple_recurrence'] = 'Simple';
+$string['simple_scheduling'] = 'Simple recurrence settings';
+$string['simple_scheduling_help'] = '<ul><li>Once per day, every day, indefinitely (until options are changed or report is deleted) OR</li>
+<li>Once per day, until a particular date OR</li>
+<li>A set number of times:<ul>
+<li>Enter how many times the report will run - this will auto-decrement with each report run and auto-delete when complete.<br/>Leave <i>blank</i> or \'0\' (zero) to run forever.</li>
+<li>Enter how often each run occurs in minutes, hours, days, or months - must be at least 5 minutes.</li></ul></li></ul>';
 $string['calendar_recurrence'] = 'Calendar';
 $string['simple_recurrence_settings'] = 'Simple recurrence settings';
 $string['runtype'] = 'The report runs:';
