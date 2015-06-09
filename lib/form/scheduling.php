@@ -176,6 +176,7 @@ class scheduling_form_step_schedule extends moodleform {
         );
         $group[] = $mform->createElement('select', 'frequencytype', '', $options);
         $mform->addGroup($group, 'runtype', get_string('runtype', 'local_eliscore'), '', false);
+        $mform->addHelpButton('runtype', 'simple_scheduling', 'local_eliscore');
         $mform->disabledIf('enddate', 'runtype', 'neq', 1);
         $mform->disabledIf('enddate[day]', 'runtype', 'neq', 1);
         $mform->disabledIf('enddate[month]', 'runtype', 'neq', 1);
