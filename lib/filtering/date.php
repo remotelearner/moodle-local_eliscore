@@ -100,6 +100,20 @@ class generalized_filter_date extends generalized_filter_type {
     }
 
     /**
+     * Initalize javascript for date type form element.
+     * Required when reloaded into div (as in ELIS reports).
+     * @return string the javascript.
+     */
+    protected function reinit_js() {
+        $jscode = 'YUI().use(\'node\', function(Y) {
+                M.form_moodlecalendar = null;
+                M.form.dateselector = null;
+                Y.all(\'#dateselector-calendar-panel\').remove();
+        });';
+        return html_writer::script($jscode);
+    }
+
+    /**
      * Adds controls specific to this filter in the form.
      * @param object $mform a MoodleForm object to setup
      */
@@ -150,6 +164,8 @@ class generalized_filter_date extends generalized_filter_type {
         if ($this->_never_included) {
             $mform->disabledIf($this->_uniqueid.'_never', $this->_uniqueid.'_sck', '0');
         }
+
+        $mform->addElement('html', $this->reinit_js());
     }
 
     /**
