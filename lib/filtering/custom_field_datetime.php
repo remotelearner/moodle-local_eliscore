@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
  * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -155,7 +155,7 @@ class generalized_filter_custom_field_datetime extends generalized_filter_date {
         static $counter = 0;
 
         $full_fieldname = $this->get_full_fieldname();
-        if (empty($full_fieldname)) {
+        if (empty($full_fieldname) || (empty($data['after']) && empty($data['before']))) {
             return null;
         }
 
@@ -170,27 +170,26 @@ class generalized_filter_custom_field_datetime extends generalized_filter_date {
 
         $check_null = '';
         $join_type  = '';
-        $where = "fieldid = :{$param_id} AND contextid IS NULL ";
+        $where = "fieldid = :{$param_id} AND contextid IS NULL AND ((TRUE ";
         $params[$param_id] = $this->_fieldid;
-        if ($this->_never_included) { // TBD
-            if (!empty($data['never'])) {
-                $where .= 'AND data >= 0 ';
-            } else {
-                $where .= 'AND data > 0 ';
-            }
-        }
-
         if (!empty($data['after'])) {
             $param_after = 'ex_cfdt_after_'. $counter;
             $where .= "AND data >= :{$param_after} ";
             $params[$param_after] = $data['after'];
         }
-
         if (!empty($data['before'])) {
             $param_before = 'ex_cfdt_before'. $counter;
-            $where .= "AND data >= :{$param_before} ";
+            $where .= "AND data <= :{$param_before} ";
             $params[$param_before] = $data['before'];
         }
+        $where .= ') ';
+        if ($this->_never_included) {
+            if (!empty($data['never'])) {
+                $where .= 'OR data = 0 ';
+            }
+        }
+        $where .= ')';
+        $counter++;
 
         if ($DB->record_exists_select($data_table, $where, $params)) {
             //filtering by the default value, so allow for null values
@@ -205,19 +204,18 @@ class generalized_filter_custom_field_datetime extends generalized_filter_date {
                      ON c.id = d.contextid
                     AND d.fieldid = :{$param_id}
                  {$this->_wrapper}
-                  WHERE (TRUE ";
-        if ($this->_never_included) { // TBD
-            if (!empty($data['never'])) {
-                $sql .= 'AND d.data >= 0 ';
-            } else {
-                $sql .= 'AND d.data > 0 ';
-            }
-        }
+                  WHERE ((TRUE ";
         if (!empty($data['after'])) {
             $sql .= "AND d.data >= :{$param_after} ";
         }
         if (!empty($data['before'])) {
             $sql .= "AND d.data <= :{$param_before} ";
+        }
+        $sql .= ') ';
+        if ($this->_never_included) {
+            if (!empty($data['never'])) {
+                $sql .= 'OR d.data = 0 ';
+            }
         }
         $sql .= "{$check_null})
                     AND c.contextlevel = :{$param_clevel}
