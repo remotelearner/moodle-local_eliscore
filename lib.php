@@ -195,13 +195,16 @@ function schedule_period_minutes($period) {
  * @return float
  */
 function rl_get_user_timezone_offset($tz = 99) {
-    $tz = get_user_timezone($tz);
-    if (is_float($tz)) {
-        return $tz;
-    } else {
-        $dtz = new DateTimeZone($tz);
-        return (float)$dtz->getOffset(new DateTime('now', new DateTimeZone('UTC'))) / HOURMINS;
+    if ($tz != 99 && is_numeric($tz)) {
+        return (float)$tz;
     }
+    $tz = core_date::get_user_timezone($tz);
+    if (is_numeric($tz) && abs($tz) <= 13) {
+        return (float)$tz;
+    }
+    $dstoffset = is_numeric($tz) ? 0 : dst_offset_on(time(), $tz);
+    $date = new DateTime('now', new DateTimeZone($tz));
+    return ($date->getOffset() - $dstoffset) / 3600.0;
 }
 
 /**

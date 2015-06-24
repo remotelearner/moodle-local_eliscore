@@ -124,7 +124,7 @@ class scheduling_form_step_schedule extends moodleform {
         $mform->addElement('hidden', 'action', 'save');
         $mform->setType('action', PARAM_TEXT);
 
-        $choices = get_list_of_timezones();
+        $choices = core_date::get_list_of_timezones();
         $choices['99'] = get_string('serverlocaltime');
         $mform->addElement('select', 'timezone', get_string('timezone'), $choices);
         $mform->setDefault('timezone', 99);
