@@ -45,9 +45,11 @@ YUI.add('moodle-local_eliscore-custom_field_multiselect', function(Y) {
      * Move custom field up.
      */
     function cf_up(index) {
-        var tmp = window.customfieldpickerinstance.values[index];
-        window.customfieldpickerinstance.values[index] = window.customfieldpickerinstance.values[index-1];
-        window.customfieldpickerinstance.values[index-1] = tmp;
+        // Cast the index parameter form a string and into an integer.
+        var numindex = parseInt(index);
+        var tmp = window.customfieldpickerinstance.values[numindex];
+        window.customfieldpickerinstance.values[numindex] = window.customfieldpickerinstance.values[numindex-1];
+        window.customfieldpickerinstance.values[numindex-1] = tmp;
         window.customfieldpickerinstance.update_values();
     }
 
@@ -55,9 +57,11 @@ YUI.add('moodle-local_eliscore-custom_field_multiselect', function(Y) {
      * Move custom field down.
      */
     function cf_down(index) {
-        var tmp = window.customfieldpickerinstance.values[index];
-        window.customfieldpickerinstance.values[index] = window.customfieldpickerinstance.values[index+1];
-        window.customfieldpickerinstance.values[index+1] = tmp;
+        // Cast the index parameter form a string and into an integer, because an index value of 0 will turn into 01 when index+1 is used.
+        var numindex = parseInt(index);
+        var tmp = window.customfieldpickerinstance.values[numindex];
+        window.customfieldpickerinstance.values[numindex] = window.customfieldpickerinstance.values[numindex+1];
+        window.customfieldpickerinstance.values[numindex+1] = tmp;
         window.customfieldpickerinstance.update_values();
     }
 
@@ -156,70 +160,72 @@ YUI.add('moodle-local_eliscore-custom_field_multiselect', function(Y) {
                         // Down button
                         cell = document.createElement('td');
                         if (i != values.length - 1) {
-                            var link = document.createElement('a');
-                            link.href = 'javascript: cf_down('+i+');';
-                            var img = document.createElement('img');
-                            img.src = this.options.down;
-                            img.alt = 'down';
-                            link.appendChild(img);
-                            var linkNode = Y.one(link);
-                            linkNode.on('click', function(e, index) {
-                                // Swap with next
-                                var tmp = this.values[index];
-                                this.values[index] = this.values[index + 1];
-                                this.values[index + 1] = tmp;
-                                this.update_values();
-                                e.preventDefault();
-                            }, this, i);
+                            // For IE11 support, create input element to avoid associationclass.js from listenting to the click event and taking control
+                            var link = document.createElement('input');
+                            link.type = 'image';
+                            link.src = this.options.down;
+                            var id = 'customfieldmultiselect_down_'+Date.now()+'_'+i;
+                            link.id = id;
                             cell.appendChild(link);
                         }
                         row.appendChild(cell);
                         // Up button
                         cell = document.createElement('td');
                         if (i != 0) {
-                            var link = document.createElement('a');
-                            link.href = 'javascript: cf_up('+i+');';
-                            var img = document.createElement('img');
-                            img.src = this.options.up;
-                            img.alt = 'up';
-                            link.appendChild(img);
-                            var linkNode = Y.one(link);
-                            linkNode.on('click', function(e, index) {
-                                // swap with previous
-                                var tmp = this.values[index];
-                                this.values[index] = this.values[index-1];
-                                this.values[index-1] = tmp;
-                                this.update_values();
-                                e.preventDefault();
-                            }, this, i);
+                            // For IE11 support, create input element to avoid associationclass.js from listenting to the click event and taking control
+                            var link = document.createElement('input');
+                            link.type = 'image';
+                            link.src = this.options.up;
+                            var id = 'customfieldmultiselect_up_'+Date.now()+'_'+i;
+                            link.id = id;
                             cell.appendChild(link);
                         }
                         row.appendChild(cell);
                         // Delete button
                         cell = document.createElement('td');
-                        var link = document.createElement('a');
-                        link.href = 'javascript: cf_delete('+i+');';
-                        var img = document.createElement('img');
-                        img.src = this.options.del;
-                        img.alt = 'delete';
-                        link.appendChild(img);
-                        var linkNode = Y.one(link);
-                        linkNode.on('click', function(e, index) {
-                            // Remove
-                            this.values.splice(index, 1);
-                            this.update_values();
-                            this.refresh_picker();
-                            e.preventDefault();
-                        }, this, i);
+                        // For IE11 support, create input element to avoid associationclass.js from listenting to the click event and taking control
+                        var link = document.createElement('input');
+                        link.type = 'image';
+                        link.src = this.options.del;
+                        var id = 'customfieldmultiselect_delete_'+Date.now()+'_'+i;
+                        link.id = id;
                         cell.appendChild(link);
                         row.appendChild(cell);
-
                         table.appendChild(row);
                     }
                     if (Y.UA.ie > 0) { // IE (7)
                         tablecontainer.setContent('<table>'+table.innerHTML+'</table>');
                     } else { // Properly working browsers!
                         tablecontainer.setContent(table);
+                    }
+
+                    // Check if there are any existing listeners on the element.
+                    var listeners = Y.Event.getListeners(Y.one('#'+options.id+'_container'), 'click');
+                    if (null === listeners) {
+                        // Add a click event listener and filter elements by tag name and id.  For IE11 compatibility the event listener needed to be added after
+                        // the input elements were added to the DOM.
+                        Y.delegate('click', function(e) {
+                            e.preventDefault();
+                            Y.log('Click event on '+e.target.get('id'), 'note', 'local-eliscore_custom_field_multiselect');
+                            // Retrieve the index of the element.
+                            var res = e.target.get('id').split('_');
+                            if (res.length != 4) {
+                                Y.log('Element id not equal 4 indices using underscore as a token', 'note', 'local-eliscore_custom_field_multiselect');
+                                return;
+                            }
+
+                            if (-1 != e.target.get('id').indexOf('_delete_')) {
+                                // Execute delete function.
+                                cf_delete(res[3]);
+                                Y.log('Deleted '+e.target.get('id'), 'note', 'local-eliscore_custom_field_multiselect');
+                            } else if (-1 != e.target.get('id').indexOf('_up_')) {
+                                cf_up(res[3]);
+                                Y.log('Moved '+e.target.get('id')+' up', 'note', 'local-eliscore_custom_field_multiselect');
+                            } else if (-1 != e.target.get('id').indexOf('_down_')) {
+                                cf_down(res[3]);
+                                Y.log('Moved '+e.target.get('id')+' down', 'note', 'local-eliscore_custom_field_multiselect');
+                            }
+                        }, '#'+options.id+'_container', "input[id^=customfieldmultiselect_]");
                     }
                 } else {
                     tablecontainer.setContent(document.createTextNode(M.str.local_eliscore.nofieldsselected));
