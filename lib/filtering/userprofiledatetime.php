@@ -63,6 +63,7 @@ class generalized_filter_userprofiledatetime extends generalized_filter_date {
      *               or null if the filter is disabled
      */
     function get_sql_filter($data) {
+        global $DB;
         static $counter = 0;
         $params = array();
 
@@ -71,43 +72,64 @@ class generalized_filter_userprofiledatetime extends generalized_filter_date {
             return null;
         }
 
-        $param_id = 'userprofiledateid'. $counter;
-        $params[$param_id] = $this->_fieldid;
-        $sql = "{$this->_tables['user']}.id IN
-                (SELECT userid FROM {user_info_data}
-                 WHERE fieldid = :{$param_id}
-                ";
+        if (empty($data['after']) && empty($data['before'])) {
+            return null;
+        }
 
-        if ($this->_never_included) { // TBD
-            $sql .= 'AND ';
-            if (!empty($data['never'])) {
-                $sql = "{$full_fieldname} >= 0
-                       ";
-            } else {
-                $sql = "{$full_fieldname} > 0
-                       ";
+        $default = $DB->get_field('user_info_field', 'defaultdata', array('id' => $this->_fieldid));
+        $paramid = 'userprofiledateid'.$counter;
+        $params[$paramid] = $this->_fieldid;
+        $sql = "{$this->_tables['user']}.id IN (SELECT userid FROM {user_info_data}
+                                                 WHERE fieldid = :{$paramid} AND ((";
+        if (!empty($data['after'])) {
+            $paramafter = 'userprofiledateafter'.$counter;
+            $sql .= "{$full_fieldname} >= :{$paramafter}";
+            $params[$paramafter] = $data['after'];
+            if (!empty($data['before'])) {
+                $sql .= ' AND ';
             }
         }
-
-        if (!empty($data['after'])) {
-            $param_after = 'userprofiledateafter'. $counter;
-            $sql .= "AND {$full_fieldname} >= :{$param_after}
-                    ";
-            $params[$param_after] = $data['after'];
-        }
-
         if (!empty($data['before'])) {
-            $param_before = 'userprofiledatebefore'. $counter;
-            $sql .= "AND {$full_fieldname} <= :{$param_before}
-                    ";
-            $params[$param_before] = $data['before'];
+            $parambefore = 'userprofiledatebefore'.$counter;
+            $sql .= "{$full_fieldname} <= :{$parambefore}";
+            $params[$parambefore] = $data['before'];
         }
         $sql .= ')';
-
-        if (!empty($params)) {
+        if ($this->_never_included) {
+            if (!empty($data['never'])) {
+                $sql .= " OR {$full_fieldname} = 0";
+            }
+        }
+        $sql .= '))';
+        $counter++;
+        if (is_numeric($default)) {
+            $paramid = 'userprofiledateid'.$counter;
+            $params[$paramid] = $this->_fieldid;
+            $defaultsql = "{$this->_tables['user']}.id NOT IN (SELECT userid FROM {user_info_data}
+                                                                WHERE fieldid = :{$paramid}) AND ((";
+            if (!empty($data['after'])) {
+                $paramafter = 'userprofiledateafter'.$counter;
+                $defaultsql .= "{$default} >= :{$paramafter}";
+                $params[$paramafter] = $data['after'];
+                if (!empty($data['before'])) {
+                    $defaultsql .= ' AND ';
+                }
+            }
+            if (!empty($data['before'])) {
+                $parambefore = 'userprofiledatebefore'.$counter;
+                $defaultsql .= "{$default} <= :{$parambefore}";
+                $params[$parambefore] = $data['before'];
+            }
+            $defaultsql .= ')';
+            if ($this->_never_included) {
+                if (!empty($data['never'])) {
+                    $defaultsql .= " OR {$default} = 0";
+                }
+            }
+            $defaultsql .= ')';
+            $sql = '(('.$sql.') OR ('.$defaultsql.'))';
             $counter++;
         }
-
         return array($sql, $params);
     }
 
