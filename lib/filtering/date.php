@@ -274,7 +274,7 @@ class generalized_filter_date extends generalized_filter_type {
         }
         if ($this->_never_included) {
             if (!empty($data['never'])) {
-                $sql = "{$full_fieldname} = 0".(!empty($sql) ? " OR {$sql}" : '');
+                $sql = "({$full_fieldname} = 0".(!empty($sql) ? " OR {$sql}" : '').')';
             }
         }
         if (!empty($params)) {
