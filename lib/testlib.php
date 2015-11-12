@@ -67,6 +67,24 @@ abstract class elis_database_test extends advanced_testcase {
 
         self::assertThat($actual, $constraint, $message);
     }
+
+    /**
+     * Check arrays for similariry w/o requiring exact equals.
+     *
+     * @param array $expected the expected array.
+     * @param array $actual the actual array.
+     */
+    public function assertArraysSimilar($expected, $actual) {
+        foreach ($expected as $key => $val) {
+            if (is_array($val) || is_object($val)) {
+                $this->assertArraysSimilar((array)$val, (array)$actual[$key]);
+            } else if (is_numeric($val)) {
+                $this->assertEquals((string)$val, (string)$actual[$key]);
+            } else {
+                $this->assertTrue(strpos($actual[$key], $val) !== false);
+            }
+        }
+    }
 }
 
 /**
