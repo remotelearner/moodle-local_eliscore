@@ -333,23 +333,27 @@ function manual_field_is_view_or_editable($field, $context, $contexteditcap = NU
             if ($entity !== 'system') {
                 // Validate entity.
                 \local_eliscore\context\helper::get_level_from_name($entity);
-
-                $contextset = pm_context_set::for_user_with_capability($entity, $editcap, $USER->id);
-                $canedit = !$contextset->is_empty();
-
-                $contextset = pm_context_set::for_user_with_capability($entity, $viewcap, $USER->id);
-                $canview = !$contextset->is_empty();
+                if ($editcap != 'disabled') {
+                    $contextset = pm_context_set::for_user_with_capability($entity, $editcap, $USER->id);
+                    $canedit = !$contextset->is_empty();
+                }
+                if ($viewcap != 'disabled') {
+                    $contextset = pm_context_set::for_user_with_capability($entity, $viewcap, $USER->id);
+                    $canview = !$contextset->is_empty();
+                }
             }
         } else {
             // Validate entity.
             \local_eliscore\context\helper::get_level_from_name($entity);
-
-            // Check ELIS contexts for the user's capability in an entity.
-            $contextset = pm_context_set::for_user_with_capability($entity, $editcap, $USER->id);
-            $canedit = $contextset->context_allowed($entityid, $entity);
-
-            $contextset = pm_context_set::for_user_with_capability($entity, $viewcap, $USER->id);
-            $canview = $contextset->context_allowed($entityid, $entity);
+            if ($editcap != 'disabled') {
+                // Check ELIS contexts for the user's capability in an entity.
+                $contextset = pm_context_set::for_user_with_capability($entity, $editcap, $USER->id);
+                $canedit = $contextset->context_allowed($entityid, $entity);
+            }
+            if ($viewcap != 'disabled') {
+                $contextset = pm_context_set::for_user_with_capability($entity, $viewcap, $USER->id);
+                $canview = $contextset->context_allowed($entityid, $entity);
+            }
         }
     }
 
