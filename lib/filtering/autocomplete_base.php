@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
  * @author     Remote-Learner.net Inc
  * @author     James McQuillan <james.mcquillan@remote-learner.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -63,14 +63,8 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
      * @param  array    $options   select options
      */
     public function __construct($uniqueid, $alias, $name, $label, $advanced, $field, $options = array()) {
-        parent::generalized_filter_type(
-                $uniqueid,
-                $alias,
-                $name,
-                $label,
-                $advanced,
-                (!empty($options['help']) ? $options['help'] : array('simpleselect', $label, 'filters'))
-        );
+        parent::__construct($uniqueid, $alias, $name, $label, $advanced,
+                (!empty($options['help']) ? $options['help'] : array('simpleselect', $label, 'filters')));
 
         $this->_field = $field;
 
