@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -55,8 +55,8 @@ class elis_custom_field_multiselect extends MoodleQuickForm_group {
      * @param array $options Options to control the element's display
      * @param mixed $attributes Either a typical HTML attribute string or an associative array
      */
-    public function elis_custom_field_multiselect($elementName=null, $elementLabel=null, $options=array(), $attributes=null) {
-        $this->HTML_QuickForm_element($elementName, $elementLabel, $attributes);
+    public function __construct($elementName=null, $elementLabel=null, $options=array(), $attributes=null) {
+        HTML_QuickForm_element::__construct($elementName, $elementLabel, $attributes);
         $this->_persistantFreeze = true;
         $this->_appendName = true;
         $this->_type = self::NAME;

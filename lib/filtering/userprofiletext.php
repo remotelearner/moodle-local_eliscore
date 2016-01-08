@@ -1,7 +1,7 @@
 <?php //$Id$
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  * @version    $Id$
  * @package    local_eliscore
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * userprofiletext.php - PHP Report filter for extra user profile text fields
  *
@@ -61,8 +61,8 @@ class generalized_filter_userprofiletext extends generalized_filter_text {
      * @param boolean $advanced advanced form element flag
      * @param string $field user table filed name
      */
-    function generalized_filter_userprofiletext($uniqueid, $alias, $name, $label, $advanced, $field, $options = array()) {
-        parent::generalized_filter_text($uniqueid, $alias, $name, $label, $advanced, $field, $options);
+    public function __construct($uniqueid, $alias, $name, $label, $advanced, $field, $options = array()) {
+        parent::__construct($uniqueid, $alias, $name, $label, $advanced, $field, $options);
         $this->_tables = $options['tables'];
         $this->_fieldid = $options['fieldid'];
         //print_object($this);
