@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -31,8 +31,12 @@ require_once("HTML/QuickForm/xbutton.php");
  * HTML class for a push button
  */
 class elis_MoodleQuickForm_xbutton extends HTML_QuickForm_xbutton {
-    function elis_MoodleQuickForm_xbutton($elementName=null, $elementContent = null, $attributes = null) {
-        parent::HTML_QuickForm_xbutton($elementName, $elementContent, $attributes);
+
+    /**
+     * Constructor
+     */
+    public function __construct($elementName=null, $elementContent = null, $attributes = null) {
+        parent::__construct($elementName, $elementContent, $attributes);
     }
 
     /**
