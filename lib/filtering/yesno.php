@@ -1,7 +1,7 @@
 <?php //$Id$
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -40,11 +40,11 @@ class generalized_filter_yesno extends generalized_filter_simpleselect {
      * @param boolean $advanced advanced form element flag
      * @param string $field user table filed name
      */
-    function generalized_filter_yesno($uniqueid, $alias, $name, $label, $advanced, $field, $options = array()) {
+    public function __construct($uniqueid, $alias, $name, $label, $advanced, $field, $options = array()) {
         $options['choices'] = array(0 => get_string('no'),
                                     1 => get_string('yes'));
 
-        parent::generalized_filter_simpleselect($uniqueid, $alias, $name, $label, $advanced, $field, $options);
+        parent::__construct($uniqueid, $alias, $name, $label, $advanced, $field, $options);
     }
 }
 

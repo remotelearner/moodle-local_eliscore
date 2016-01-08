@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
  * @author     Brent Boghosian <brent.boghosian@remote-learner.net>
  * @package    local_eliscore
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -98,8 +98,8 @@ class generalized_filter_custom_field_text extends generalized_filter_text {
      * @param boolean $advanced Advanced form element flag
      * @param string $field     User table filed name
      */
-    function generalized_filter_custom_field_text($uniqueid, $alias, $name, $label, $advanced, $field, $options = array()) {
-        parent::generalized_filter_text($uniqueid, $alias, $name, $label, $advanced, $field, $options);
+    public function __construct($uniqueid, $alias, $name, $label, $advanced, $field, $options = array()) {
+        parent::__construct($uniqueid, $alias, $name, $label, $advanced, $field, $options);
 
         if (!array_key_exists('datatype', $options)) {
             print_error('missing_datatype', 'local_eliscore');

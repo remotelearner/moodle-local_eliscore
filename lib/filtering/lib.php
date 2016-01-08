@@ -1,7 +1,7 @@
 <?php //$Id$
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -46,7 +46,7 @@ class generalized_filtering {
      * @param array extra page parameters
      * @uses $SESSION
      */
-    function generalized_filtering($fields = null, $baseurl = null, $extraparams = null, $id = 0) {
+    public function __construct($fields = null, $baseurl = null, $extraparams = null, $id = 0) {
         global $SESSION;
 
         $this->_id = $id;
@@ -236,7 +236,7 @@ abstract class generalized_filter_type {
      * @param string $label the label of the filter instance
      * @param boolean $advanced advanced form element flag
      */
-    function generalized_filter_type($uniqueid, $alias, $name, $label, $advanced, $help = null) {
+    public function __construct($uniqueid, $alias, $name, $label, $advanced, $help = null) {
         $this->_uniqueid   = $uniqueid;
         $this->_alias      = $alias;
         $this->_name       = $name;
@@ -339,7 +339,10 @@ class generalized_filter_entry {
     public $type;
     public $options;
 
-    function generalized_filter_entry($uniqueid, $tablealias, $fieldname, $displayname, $advanced, $type, $options = array()) {
+    /**
+     * Constructor
+     */
+    public function __construct($uniqueid, $tablealias, $fieldname, $displayname, $advanced, $type, $options = array()) {
         $this->uniqueid    = $uniqueid;
         $this->tablealias  = $tablealias;
         $this->fieldname   = $fieldname;
@@ -348,6 +351,5 @@ class generalized_filter_entry {
         $this->type        = $type;
         $this->options     = $options;
     }
-
 }
 
