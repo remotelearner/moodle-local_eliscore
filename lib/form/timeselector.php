@@ -94,6 +94,23 @@ class elis_time_selector extends MoodleQuickForm_group {
     }
 
     // }}}
+    // {{{ elis_time_selector()
+
+    /**
+     * Due to implementation in: lib/pear/HTML/QuickForm/element.php on line 363
+     * This 'classname' method is required for Moodle.
+     *
+     * @access   public
+     * @param    string  Element's name
+     * @param    mixed   Label(s) for an element
+     * @param    array   Options to control the element's display
+     * @param    mixed   Either a typical HTML attribute string or an associative array
+     */
+    public function elis_time_selector($elementname = null, $elementlabel = null, $options = array(), $attributes = null) {
+        return self::__construct($elementname, $elementlabel, $options, $attributes);
+    }
+
+    // }}}
     // {{{ _createElements()
 
     function _createElements()

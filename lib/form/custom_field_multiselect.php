@@ -75,6 +75,20 @@ class elis_custom_field_multiselect extends MoodleQuickForm_group {
     }
 
     /**
+     * Due to implementation in: lib/pear/HTML/QuickForm/element.php on line 363
+     * This 'classname' method is required for Moodle.
+     * Construct a custom field multiselect.
+     *
+     * @param string $elementname Element's name
+     * @param mixed $elementlabel Label(s) for an element
+     * @param array $options Options to control the element's display
+     * @param mixed $attributes Either a typical HTML attribute string or an associative array
+     */
+    public function elis_custom_field_multiselect($elementname=null, $elementlabel=null, $options=array(), $attributes=null) {
+        return self::__construct($elementname, $elementlabel, $options, $attributes);
+    }
+
+    /**
      * Create the elements of the group
      */
     public function _createElements() {
