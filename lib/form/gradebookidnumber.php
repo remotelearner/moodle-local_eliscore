@@ -75,6 +75,20 @@ class elis_gradebook_idnumber_selector extends MoodleQuickForm_text {
         }
     }
 
+    /**
+     * Due to implementation in: lib/pear/HTML/QuickForm/element.php on line 363
+     * This 'classname' method is required for Moodle.
+     * Construct a gradebook ID number selector.
+     *
+     * @param string $elementname Element's name
+     * @param mixed $elementlabel Label(s) for an element
+     * @param array $options Options to control the element's display
+     * @param mixed $attributes Either a typical HTML attribute string or an associative array
+     */
+    public function elis_gradebook_idnumber_selector($elementname=null, $elementlabel=null, $options=array(), $attributes=null) {
+        return self::__construct($elementname, $elementlabel, $options, $attributes);
+    }
+
     public function toHtml() {
         if (!$this->_flagFrozen) {
             $this->_generateId();
