@@ -40,6 +40,14 @@ class elis_MoodleQuickForm_xbutton extends HTML_QuickForm_xbutton {
     }
 
     /**
+     * Due to implementation in: lib/pear/HTML/QuickForm/element.php on line 363
+     * This 'classname' method is required for Moodle.
+     */
+    public function elis_MoodleQuickForm_xbutton($elementname = null, $elementcontent = null, $attributes = null) {
+        return self::__construct($elementname, $elementcontent, $attributes);
+    }
+
+    /**
      * Slightly different container template when frozen. Don't want to display a submit
      * button if the form is frozen.
      *
