@@ -102,7 +102,7 @@ class generalized_filter_text extends generalized_filter_type {
         $operator = $field.'_op';
 
         if (property_exists($formdata, $operator)) {
-            $value = (property_exists($formdata, $field) && !empty($formdata->$field))
+            $value = (property_exists($formdata, $field) && (!empty($formdata->$field) || strlen($formdata->$field)))
                      ? $formdata->$field : '';
             //ELIS-3478: Fixed problems with 'is_empty' operator
 
@@ -124,7 +124,7 @@ class generalized_filter_text extends generalized_filter_type {
 
         $return_value = array('operator' => $data['operator']);
 
-        if (!empty($data['value'])) {
+        if (!empty($data['value']) || (isset($data['value']) && strlen($data['value']))) {
             $return_value['value'] = $data['value'];
         }
 
