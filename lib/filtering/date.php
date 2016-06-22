@@ -182,6 +182,9 @@ class generalized_filter_date extends generalized_filter_type {
         if (!array_key_exists($sck, $formdata) and !array_key_exists($eck, $formdata)) {
             return false;
         }
+        if (empty($formdata->$sck) && empty($formdata->$eck)) {
+            return false;
+        }
 
         $data = array();
         if (array_key_exists($sck, $formdata) && !empty($formdata->$sck)) {
@@ -222,7 +225,7 @@ class generalized_filter_date extends generalized_filter_type {
         $field  = $this->_field;
 
         $a = new object();
-        $a->label  = get_string('date', 'local_eliscore').':';
+        $a->label  = (!empty($this->_label) ? $this->_label : get_string('date', 'local_eliscore')).':';
         $a->after  = userdate($after, $this->_dateformat, $this->_timezone);
         $a->before = userdate($before, $this->_dateformat, $this->_timezone);
 
