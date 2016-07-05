@@ -33,6 +33,34 @@ function xmldb_eliscore_etl_upgrade($oldversion) {
     global $CFG, $DB;
     $result = true;
 
+    if ($result && $oldversion < 2015010402) {
+        if (get_config('eliscore_etl', 'upgrade_reset') === false) {
+            // ELIS-9209: Reset ETL to just after it stopped working.
+            $status = 'no-action';
+            $lastgood = $DB->get_field_select('eliscore_etl_useractivity', 'MAX(id)', 'courseid > 1');
+            if ($lastgood) {
+                $rec = $DB->get_record('eliscore_etl_useractivity', ['id' => $lastgood]);
+                $lasttime = $rec->hour + $rec->duration;
+                $lastetl = get_config('eliscore_etl', 'last_run');
+            }
+            if (!$lastgood) {
+                $status = 'restarted';
+                $DB->execute('TRUNCATE TABLE {eliscore_etl_useractivity}');
+                $DB->execute('TRUNCATE TABLE {eliscore_etl_modactivity}');
+                set_config('last_run', '0', 'eliscore_etl');
+                set_config('state', '0', 'eliscore_etl');
+            } else if (!$lastetl || $lastetl > $lasttime) {
+                $status = 'reset';
+                $DB->execute('DELETE FROM {eliscore_etl_useractivity} WHERE id > ?', [$lastgood]);
+                $DB->execute('DELETE FROM {eliscore_etl_modactivity} WHERE hour > ?', [$lasttime]);
+                set_config('last_run', $lasttime, 'eliscore_etl');
+                set_config('state', '0', 'eliscore_etl');
+            }
+            set_config('upgrade_reset', $status, 'eliscore_etl');
+        }
+        upgrade_plugin_savepoint($result, 2015010402, 'eliscore', 'etl');
+    }
+
     // Ensure ELIS scheduled tasks is initialized.
     require_once($CFG->dirroot.'/local/eliscore/lib/tasklib.php');
     elis_tasks_update_definition('eliscore_etl');
