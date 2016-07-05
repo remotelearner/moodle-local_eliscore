@@ -99,6 +99,7 @@ class eliscore_etl_useractivity {
                 $sessionhourduration = $starthour + HOURSECS - $sessionstart;
                 $params = array(
                     'userid' => $userid,
+                    'courseid' => $courseid,
                     'hour' => $starthour
                 );
                 if (!empty($cmid)) {
@@ -125,6 +126,7 @@ class eliscore_etl_useractivity {
             $remainder = $sessionend - $sessionstart;
             $params = array(
                 'userid' => $userid,
+                'courseid' => $courseid,
                 'hour' => $starthour
             );
             if (!empty($cmid)) {
