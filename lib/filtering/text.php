@@ -141,7 +141,7 @@ class generalized_filter_text extends generalized_filter_type {
         $value     = $data['value'];
         $operators = $this->getOperators();
 
-        $a = new object();
+        $a = new stdClass;
         $a->label    = $this->_label;
         $a->value    = '"'.s($value).'"';
         $a->operator = $operators[$operator];

@@ -525,7 +525,7 @@ class elis_data_object {
      * @return object The standard PHP object representation of the ELIS data object.
      */
     public function to_object($jsonsafe = false) {
-        $obj = new object;
+        $obj = new stdClass;
         // Add extradata fields first
         foreach ($this->_extradata as $key => $val) {
             $obj->$key = ($jsonsafe && gettype($val) == 'double' && strpos((string)$val, '.') === false) ? "{$val}.0" : $val;

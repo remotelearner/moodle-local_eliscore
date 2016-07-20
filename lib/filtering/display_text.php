@@ -74,7 +74,7 @@ class generalized_filter_display_text extends generalized_filter_type {
     function get_label($data) {
         $value = $data['value'];
 
-        $a = new object();
+        $a = new stdClass;
         $a->label    = $this->_label;
         $a->value    = $value;
         $a->operator = get_string('isequalto','filters');
