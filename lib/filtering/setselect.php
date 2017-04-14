@@ -160,7 +160,7 @@ class generalized_filter_setselect extends generalized_filter_type {
      * @return string active filter label
      */
     function get_label($data) {
-        $a        = new object();
+        $a        = new stdClass();
         $a->label = $this->_label;
         $a->value = '';
         foreach ($this->_options as $key => $value) {

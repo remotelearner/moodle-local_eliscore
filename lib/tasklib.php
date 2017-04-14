@@ -135,7 +135,7 @@ function elis_tasks_update_definition($component='moodle') {
 
             } else {
                 // same task matches, this task has been updated, update the datebase
-                $task = new object();
+                $task = new stdClass();
                 $task->id           = $cachedtask['id'];
                 $task->callfile     = $filetask['callfile'];
                 $task->callfunction = $callfunction;
@@ -155,7 +155,7 @@ function elis_tasks_update_definition($component='moodle') {
         } else {
             // if we are here, this event handler is not present in db (new)
             // add it
-            $task = new object();
+            $task = new stdClass();
             $task->plugin       = $component;
             $task->callfile     = $filetask['callfile'];
             $task->callfunction = $callfunction;

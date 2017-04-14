@@ -224,7 +224,7 @@ class generalized_filter_date extends generalized_filter_type {
         $never = $data['never'];
         $field  = $this->_field;
 
-        $a = new object();
+        $a = new stdClass();
         $a->label  = (!empty($this->_label) ? $this->_label : get_string('date', 'local_eliscore')).':';
         $a->after  = userdate($after, $this->_dateformat, $this->_timezone);
         $a->before = userdate($before, $this->_dateformat, $this->_timezone);

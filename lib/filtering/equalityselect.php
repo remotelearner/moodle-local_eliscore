@@ -141,7 +141,7 @@ class generalized_filter_equalityselect extends generalized_filter_type {
             return '';
         }
 
-        $a = new object();
+        $a = new stdClass();
         $a->label    = $this->_label;
         $a->value    = '"'.s($this->_options[$value]).'"';
         $a->operator = $operators[$operator];

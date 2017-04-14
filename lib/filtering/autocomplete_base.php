@@ -296,7 +296,7 @@ abstract class generalized_filter_autocomplete_base extends generalized_filter_t
     public function get_label($data) {
         $value = $data['value'];
 
-        $a = new object();
+        $a = new stdClass();
         $a->label    = $this->_label;
         $a->value    = '"'.s($value).'"';
         $a->operator = get_string('contains','filters');

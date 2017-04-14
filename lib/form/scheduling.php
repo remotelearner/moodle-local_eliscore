@@ -291,14 +291,18 @@ class scheduling_form_step_schedule extends moodleform {
 
         $steps = $workflow->get_steps();
         $prevstep = null;
+        $nextstep = false;
+        $exitloop = false;
         foreach ($steps as $key => $step) {
-            if ($key == $currentstep) {
+            if ($exitloop) {
+                $nextstep = $key;
                 break;
             }
-            $prevstep = $key;
-        }
-        if (($nextstep = next($steps))) {
-            $nextstep = key(current($steps));
+            if ($key == $currentstep) {
+                $exitloop = true;
+            } else {
+                $prevstep = $key;
+            }
         }
         if ($nextstep === false) {
             $nextstep = workflow::STEP_FINISH;

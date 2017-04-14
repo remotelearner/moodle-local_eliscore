@@ -161,7 +161,7 @@ class generalized_filter_simpleselect extends generalized_filter_type {
     function get_label($data) {
         $value = $data['value'];
 
-        $a = new object();
+        $a = new stdClass();
         $a->label = $this->_label;
 
         if (is_array($value)) {
