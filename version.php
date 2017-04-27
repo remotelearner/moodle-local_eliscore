@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2017 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    local_eliscore
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2017 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->version = 2016052300;
 $plugin->requires = 2016052300;
-$plugin->release = '3.1.0.0 (Build: 20160720)';
+$plugin->release = '3.1.5.1 (Build: 20170427)';
 $plugin->component = 'local_eliscore';
 $plugin->maturity = MATURITY_STABLE;
 
