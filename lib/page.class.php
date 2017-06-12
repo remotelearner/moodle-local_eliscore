@@ -448,6 +448,15 @@ abstract class elis_page extends moodle_page {
  * see elis_pg_reqs_manager class, below.
  */
 class eliscorepage extends elis_page {
+    /**
+     * Return the page parameters for the page.  Used by the constructor for
+     * calling $this->set_url().
+     *
+     * @return array
+     */
+    protected function _get_page_params() {
+        return [];
+    }
 }
 
 /**
