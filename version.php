@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->version = 2016120501;
 $plugin->requires = 2016120501;
-$plugin->release = '3.2.0.1 (Build: 20170427)';
+$plugin->release = '3.2.3.0 (Build: 20170621)';
 $plugin->component = 'local_eliscore';
 $plugin->maturity = MATURITY_STABLE;
 
