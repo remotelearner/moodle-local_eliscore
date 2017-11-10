@@ -32,8 +32,8 @@ define('ETL_TABLE',     'eliscore_etl_useractivity');
 define('ETL_MOD_TABLE', 'eliscore_etl_modactivity');
 define('MDL_LOG_TABLE', 'logstore_standard_log');
 
-// process 10,000 records at a time
-define ('USERACT_RECORD_CHUNK', 10000);
+// ELIS-9478: process 1,000 records at a time (down from 10K).
+define ('USERACT_RECORD_CHUNK', 1000);
 // max out at 2 minutes (= 120 seconds)
 define ('USERACT_TIME_LIMIT', 120);
 
