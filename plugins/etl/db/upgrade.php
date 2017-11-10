@@ -32,6 +32,7 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_eliscore_etl_upgrade($oldversion) {
     global $CFG, $DB;
     $result = true;
+    $dbman = $DB->get_manager();
 
     if ($result && $oldversion < 2015051101) {
         if (get_config('eliscore_etl', 'upgrade_reset') === false) {
@@ -59,6 +60,21 @@ function xmldb_eliscore_etl_upgrade($oldversion) {
             set_config('upgrade_reset', $status, 'eliscore_etl');
         }
         upgrade_plugin_savepoint($result, 2015051101, 'eliscore', 'etl');
+    }
+
+    if ($result && $oldversion < 2015051102) {
+        // ELIS-9478: avoid duration overflow.
+        $tables = [new xmldb_table('eliscore_etl_useractivity'),
+                new xmldb_table('eliscore_etl_modactivity')];
+        foreach ($tables as $table) {
+            if ($dbman->table_exists($table)) {
+                $field = new xmldb_field('duration', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, 0, 0, 'hour');
+                $dbman->change_field_precision($table, $field);
+            } else {
+                $result = false;
+            }
+        }
+        upgrade_plugin_savepoint($result, 2015051102, 'eliscore', 'etl');
     }
 
     // Ensure ELIS scheduled tasks is initialized.
