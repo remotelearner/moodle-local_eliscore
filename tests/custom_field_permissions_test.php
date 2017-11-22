@@ -199,7 +199,7 @@ class custom_field_permissions_testcase extends elis_database_test {
         $mform = $form->get_mform();
         manual_field_add_form_element($form, $mform, $coursecontext, array(), $field, false, $editparam, $viewparam);
         $element = $mform->getElement('field_field');
-        $this->assertEquals('checkbox', $element->getType());
+        $this->assertEquals('advcheckbox', $element->getType());
 
         // User with just edit.
         role_unassign($viewroleid, $USER->id, $coursecontext->id);
@@ -208,7 +208,7 @@ class custom_field_permissions_testcase extends elis_database_test {
         $mform = $form->get_mform();
         manual_field_add_form_element($form, $mform, $coursecontext, array(), $field, false, $editparam, $viewparam);
         $element = $mform->getElement('field_field');
-        $this->assertEquals('checkbox', $element->getType());
+        $this->assertEquals('advcheckbox', $element->getType());
 
         // User with just view.
         role_unassign($editroleid, $USER->id, $coursecontext->id);
