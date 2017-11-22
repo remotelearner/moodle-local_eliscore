@@ -78,7 +78,6 @@ if ($rec = $DB->record_exists_sql($sql, array())) {
             mtrace(' xxx '.get_string('preup_error_uniquecopy', 'local_eliscore'));
 
             $status = false;
-            break;
         }
     }
 
