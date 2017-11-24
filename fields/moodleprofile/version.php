@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2015102200;
-$plugin->requires = 2015101600.00; // Requires this Moodle version
-$plugin->release = '3.0.0.0 (Build: 20151022)';
+$plugin->version = 2015111600;
+$plugin->requires = 2015111600;
+$plugin->release = '9.0.0.0';
 $plugin->component = 'elisfields_moodleprofile';

@@ -25,9 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2015102201;
-$plugin->requires = 2015101600.00; // Requires this Moodle version
-$plugin->release = '3.0.10.1 (Build: 20170814)';
+$plugin->version = 2015111600;
+$plugin->requires = 2015111600;
+$plugin->release = '9.0.0.0';
 $plugin->component = 'local_eliscore';
 $plugin->maturity = MATURITY_STABLE;
 
